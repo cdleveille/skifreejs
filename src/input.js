@@ -15,5 +15,29 @@ export default class InputHandler{
 				game.skier.isCrashed = false;
 			}
 		});
+
+		let left = 37, right = 39;
+
+		document.addEventListener("keydown", (event) => {
+            switch(event.keyCode) {
+                case left:
+                    game.keyAction("left", null);
+                    break;
+                case right:
+                    game.keyAction("right", null);
+                    break;
+            }
+        });
+
+        document.addEventListener("keyup", (event) => {
+            switch(event.keyCode) {
+                case left:
+                    game.keyAction(null, "left");
+                    break;
+                case right:
+                    game.keyAction(null, "right");
+                    break;
+            }
+        });
 	}
 }

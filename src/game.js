@@ -7,9 +7,10 @@ export default class Game {
 		this.lastLogTime = null;
 		this.treeDensity = 1.0
 		this.treeCount;
+		this.collisionsEnabled = true;
 
 		this.loadGameImages();
-		this.populateTrees();
+		this.populateInitialTrees();
 	}
 
 	loadGameImages() {
@@ -28,7 +29,7 @@ export default class Game {
 		this.lodge.yc = -100;
 	}
 
-	populateTrees() {
+	populateInitialTrees() {
 		// generate trees to put on screen at start of game
 		this.trees = [];
 
@@ -43,7 +44,7 @@ export default class Game {
 			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
 			let y = this.randomInt(-height / 3, height * 5 / 3);
 
-			this.trees.push([x, y]);
+			this.trees.push([x, y, false]);
 		}
 	}
 
@@ -69,7 +70,7 @@ export default class Game {
 					x += this.gameWidth;
 				}
 			}
-		return [x, y];
+		return [x, y, false];
 	}
 
 	// adapt game to the size of the window
@@ -80,10 +81,10 @@ export default class Game {
 		this.skier.x = this.gameWidth / 2;
 		this.skier.y = this.gameHeight / 3;
 
-		this.manageTreeCount();
+		this.adaptTreeCountToScreenSize();
 	}
 
-	manageTreeCount() {
+	adaptTreeCountToScreenSize() {
 		this.treeCount = Math.floor(this.gameWidth * this.gameHeight * (50 / 562860.0) * this.treeDensity);
 
 		// trim excess offscreen trees
@@ -115,15 +116,15 @@ export default class Game {
 		return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 	}
 	
-	// update the position/velocity of game objects
+	// update game objects
 	update(step) {
 		this.updateSkier(this.crunchSomeNumbas(), step);
 		this.handleCollisions();
 
+		// scale the number of trees to the size of the screen
 		if (this.treeCount != this.trees.length) {
-			this.manageTreeCount();
+			this.adaptTreeCountToScreenSize();
 		}
-		this.logEveryHalfSecond([this.treeCount, this.trees.length]);
 
 		// update position of game objects based on speed/direction of skier
 		for (let i = 0; i < this.trees.length; i++) {
@@ -135,23 +136,29 @@ export default class Game {
 		this.lodge.yc -= this.skier.yv * step;
 	}
 
+	// account for collions between game objects
 	handleCollisions() {
 		for (let i = 0; i < this.trees.length; i++) {
 			let treeX = this.trees[i][0];
 			let treeY = this.trees[i][1];
+			let hitThisTreeAlready = this.trees[i][2];
 
-			if (this.skier.y - treeY > this.gameHeight * (2/3) + 50) {
-				this.trees.splice(i, 1);
-				this.trees.push(this.spawnNewTreeOffScreen());
+			// delete uphill offscreen trees once they are passed
+			if (this.skier.y - treeY > this.gameHeight * (2 /3 ) + 50) {
+				this.trees[i] = this.spawnNewTreeOffScreen();
 			}
 
+			// if the skier hits a tree they haven't hit already, set isCrashed to true
 			if (Math.abs(treeX) < 20 && Math.abs(treeY) < 20) {
-				this.skier.isCrashed = true;
+				if (this.collisionsEnabled && !hitThisTreeAlready) {
+					this.skier.isCrashed = true;
+					this.trees[i][2] = true;
+				}
 			}
 		}
-		//this.logEveryHalfSecond(this.trees.length);
 	}
 
+	// do sum mathz
 	crunchSomeNumbas() {
 		let mouseDiffX = -(this.mousePos[0] - ((this.gameWidth / 2) + 8));
 		let mouseDiffY = -(this.mousePos[1] - ((this.gameHeight / 3) + 32));
@@ -227,18 +234,16 @@ export default class Game {
 		let speed = mouseToSkierDifferential[4];
 		let vVectors = mouseToSkierDifferential[5];
 
-		//this.logEveryHalfSecond([this.skier.xv, this.skier.yv]);
-		//this.logEveryHalfSecond(vVectors);
-		//this.logEveryHalfSecond(mouseAngleVectors);
-		//this.logEveryHalfSecond(mouseToSkierDistance);
-
-		if (mouseToSkierDistance > 350) {
-			mouseToSkierDistance = 350;
-		}
-
 		let maxSpeedX = 500;
 		let maxSpeedY = 600;
 
+		//this.log([this.skier.xv, this.skier.yv]);
+		//this.log(vVectors);
+		//this.log(mouseAngleVectors);
+		//this.log(mouseToSkierDistance);
+		//this.log(speed);
+
+		// handle player jumps
 		if (this.skier.isJumping) {
 			this.skier.jumpOffset += this.skier.jumpV;
 			this.skier.jumpV -= this.skier.jumpGravity;
@@ -249,16 +254,28 @@ export default class Game {
 			}
 		}
 		
+		// mouse up / left
 		if (mouseToSkierAngle < 90 && mouseToSkierAngle > -5) {
 			if (this.skier.isJumping) {
 				this.skier.currentImage = this.skier.skier_jump_left;
+			} else if (this.skier.isSkatingLeft) {
+				//this.skier.xv = -this.skier.skateV;
+				//this.skier.currentImage = this.skier.skier_skate_left;
+			} else if (this.skier.isSkatingRight) {
+				//this.skier.xv = this.skier.skateV;
+				//this.skier.currentImage = this.skier.skier_skate_right;
 			} else {
 				this.skier.currentImage = this.skier.skier_left;
 				this.stopSkier(vVectors);
 			}
+		// mouse up / right
 		} else if (mouseToSkierAngle < -175 || (mouseToSkierAngle > 90 && mouseToSkierAngle < 180)) {
 			if (this.skier.isJumping) {
 				this.skier.currentImage = this.skier.skier_jump_right;
+			} else if (this.skier.isSkatingLeft) {
+				//this.skier.currentImage = this.skier.skier_skate_left;
+			} else if (this.skier.isSkatingRight) {
+				//this.skier.currentImage = this.skier.skier_skate_right;
 			} else {
 				this.skier.currentImage = this.skier.skier_right;
 				this.stopSkier(vVectors);
@@ -296,19 +313,30 @@ export default class Game {
 				}
 			}
 
-			if (!this.skier.isCrashed) {
-				this.skier.xv += this.skier.accelX * mouseAngleVectors[0];
-				this.skier.yv += this.skier.accelY * mouseAngleVectors[1];
-				this.skier.isStopped = false;
+			let allowYVIncr = true;
+			if (Math.abs(this.skier.xv) >= maxSpeedX) {
+				allowYVIncr = true;
 			}
 
-			if (this.skier.xv < -maxSpeedX) {
-				this.skier.xv = -maxSpeedX;
-			} else if (this.skier.xv > maxSpeedX) {
-				this.skier.xv = maxSpeedX;
+			if (!this.skier.isCrashed) {
+				this.skier.isStopped = false;
+
+				this.skier.xv += this.skier.accelX * mouseAngleVectors[0];
+				if (allowYVIncr) {
+					this.skier.yv += this.skier.accelY * mouseAngleVectors[1];
+				}
 			}
-			if (this.skier.yv > maxSpeedY) {
-				this.skier.yv = maxSpeedY;
+
+			let enforceMaxSpeed = true;
+			if (enforceMaxSpeed) {
+				if (this.skier.xv < -maxSpeedX) {
+					this.skier.xv = -maxSpeedX;
+				} else if (this.skier.xv > maxSpeedX) {
+					this.skier.xv = maxSpeedX;
+				}
+				if (this.skier.yv > maxSpeedY) {
+					this.skier.yv = maxSpeedY;
+				}
 			}
 		}
 
@@ -335,6 +363,29 @@ export default class Game {
 			}
 		}
 	}
+
+	// handle keyboard input
+    keyAction(keyDown, keyUp) {
+		if (this.skier.isStopped && !this.skier.isCrashed && !this.skier.isJumping) {
+			switch(keyDown) {
+				case "left":
+					this.skier.isSkatingLeft = true;
+					break;
+				case "right":
+					this.skier.isSkatingRight = true;
+					break;
+			}
+		}
+
+		switch(keyUp) {
+			case "left":
+				this.skier.isSkatingLeft = false;
+				break;
+			case "right":
+				this.skier.isSkatingRight = false;
+				break;
+		}
+    }
 
 	// convert radians to degrees
 	degrees(radians) {
@@ -373,7 +424,7 @@ export default class Game {
 		//ctx.drawImage(this.boarder_bro, this.skier.x + 50, this.skier.y - 200);
 	}
 
-	logEveryHalfSecond(toLog) {
+	log(toLog) {
 		if (this.lastLogTime == null) {
 			this.lastLogTime = this.timestamp();
 		}

@@ -5,7 +5,8 @@ export default class Skier{
 		this.y = game.gameHeight / 3;
 		this.xv = 0;
 		this.yv = 0;
-		this.accelX = 5;
+		this.skateV = 225;
+		this.accelX = 4;
 		this.accelY = 5;
 		this.decel = -5;
 		this.loadSkierImages();
@@ -15,8 +16,10 @@ export default class Skier{
 		this.isJumping = false;
 		this.jumpOffset = 0;
 		this.jumpV = 0;
-		this.jumpVInit = 1;
-		this.jumpGravity = .015;
+		this.jumpVInit = 0.8;
+		this.jumpGravity = .01;
+		this.isSkatingLeft = false;
+		this.isSkatingRight = false;
 	}
 
 	loadSkierImages() {
@@ -46,6 +49,11 @@ export default class Skier{
 		this.skier_sit.src = "/img/skier_sit.png";
 		this.skier_shadow = new Image();
 		this.skier_shadow.src = "/img/skier_shadow.png";
+		this.skier_skate_left = new Image();
+		this.skier_skate_left.src = "/img/skier_skate_left.png";
+		this.skier_skate_right = new Image();
+		this.skier_skate_right.src = "/img/skier_skate_right.png";
+
 	}
 
 	draw(ctx) {
