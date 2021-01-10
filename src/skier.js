@@ -58,9 +58,5 @@ export default class Skier{
 
 	draw(ctx) {
 		ctx.drawImage(this.currentImage, this.x, this.y - this.jumpOffset);
-
-		if (this.isJumping) {
-			//ctx.drawImage(this.skier_shadow, this.x + 3, this.y + 25);
-		}
 	}
 }
