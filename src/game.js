@@ -7,12 +7,17 @@ export default class Game {
 		this.lastLogTime = null;
 		this.treeDensity = 0.8
 		this.bumpDensity = 1.0
-		this.collisionsEnabled = true;
+		this.collisionsEnabled = false;
 		this.skierTrail = []
 		this.liftSpeed = 50;
 		this.liftX = 100;
 		this.liftChairSpacing = 500;
 		this.liftTowerSpacing = 1000;
+		this.enforceMaxSpeed = true;
+
+		this.mouseHeadingAccel = 0.001;
+		this.mouseHeadingX = 0;
+		this.mouseHeadingY = 0;
 
 		this.loadGameImages();
 		this.populateInitialGameObjects();
@@ -63,7 +68,7 @@ export default class Game {
 
 		// number of game objects to generate is proportional to total screen area
 		this.treeCount = Math.floor(area * (50 / 562860.0) * this.treeDensity);
-		this.bumpsCount = Math.floor(area * (50 / 562860.0) * this.bumpDensity);
+		this.bumpCount = Math.floor(area * (50 / 562860.0) * this.bumpDensity);
 
 		// create trees
 		this.trees = [];
@@ -75,7 +80,7 @@ export default class Game {
 
 		// create bumps
 		this.bumps = [];
-		for (let n = 0; n < this.treeCount; n++) {
+		for (let n = 0; n < this.bumpCount; n++) {
 			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
 			let y = this.randomInt(-height / 3, height * 5 / 3);
 			this.bumps.push([x, y, this.randomInt(0, 3)]);
@@ -153,11 +158,31 @@ export default class Game {
 				this.trees.push(this.spawnNewGameObjectOffScreen());
 			}
 		}
-	}
 
-	// get the current time (high precision)
-	timestamp() {
-		return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+		this.bumpCount = Math.floor(this.gameWidth * this.gameHeight * (50 / 562860.0) * this.bumpDensity);
+
+		// trim excess offscreen bumps
+		if (this.bumps.length > this.bumpCount) {
+			let diff = this.bumps.length - this.bumpCount;
+			let trimCount = 0;
+			for (let i = 0; i < this.bumps.length; i++) {
+				let x = this.bumps[i][0];
+				let y = this.bumps[i][1];
+
+				// remove the bump if it is offscreen
+				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
+					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
+						trimCount++;
+						this.bumps.splice(i, 1);
+				}
+			}
+		// add some new bumps offscreen
+		} else if (this.bumps.length < this.bumpCount) {
+			let diff = this.bumpCount - this.bumps.length;
+			for (let n = 0; n < diff; n++) {
+				this.bumps.push(this.spawnNewGameObjectOffScreen());
+			}
+		}
 	}
 	
 	update(step) {
@@ -165,7 +190,7 @@ export default class Game {
 		this.updateGameObjects();
 
 		// scale the number of game objects to the size of the screen
-		if (this.treeCount != this.trees.length) {
+		if (this.treeCount != this.trees.length || this.bumpCount != this.bumps.length) {
 			this.adaptGameObjectCountToScreenSize();
 		}
 
@@ -393,9 +418,6 @@ export default class Game {
 		let speed = someNumbers[4];
 		let vVectors = someNumbers[5];
 
-		let maxSpeedX = 400;
-		let maxSpeedY = 500;
-
 		// handle player jumps
 		if (this.skier.isJumping) {
 			this.skier.jumpOffset += this.skier.jumpV;
@@ -466,22 +488,24 @@ export default class Game {
 				}
 			}
 
-			let allowYVIncr = true;
-			if (Math.abs(this.skier.xv) >= maxSpeedX) {
-				allowYVIncr = true;
+			let xFlip = 1;
+			if (mouseToSkierAngle > -90 && mouseToSkierAngle < 0) {
+				xFlip = -1;
 			}
+
+			let maxSpeed = 700;
+			let maxSpeedX = maxSpeed * mouseAngleVectors[0] * xFlip;
+			let maxSpeedY = maxSpeed * mouseAngleVectors[1];
 
 			if (!this.skier.isCrashed) {
 				this.skier.isStopped = false;
-
 				this.skier.xv += this.skier.accelX * mouseAngleVectors[0];
-				if (allowYVIncr) {
-					this.skier.yv += this.skier.accelY * mouseAngleVectors[1];
-				}
+				this.skier.yv += this.skier.accelY * mouseAngleVectors[1];
 			}
 
-			let enforceMaxSpeed = true;
-			if (enforceMaxSpeed) {
+			//this.log(mouseToSkierAngle);
+
+			if (this.enforceMaxSpeed) {
 				if (this.skier.xv < -maxSpeedX) {
 					this.skier.xv = -maxSpeedX;
 				} else if (this.skier.xv > maxSpeedX) {
@@ -489,9 +513,6 @@ export default class Game {
 				}
 				if (this.skier.yv > maxSpeedY) {
 					this.skier.yv = maxSpeedY;
-				}
-				if (this.skier.yv < 0) {
-					this.skier.yv = 0;
 				}
 			}
 		}
@@ -564,6 +585,11 @@ export default class Game {
 		min = Math.ceil(min);
 		max = Math.floor(max);
 		return Math.floor(Math.random() * (max - min) + min); 
+	}
+
+	// get the current time (high precision)
+	timestamp() {
+		return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 	}
 
 	// render the current state of the game

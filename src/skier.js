@@ -6,7 +6,7 @@ export default class Skier{
 		this.xv = 0;
 		this.yv = 0;
 		this.skateV = 225;
-		this.accelX = 4;
+		this.accelX = 5;
 		this.accelY = 5;
 		this.decel = -5;
 		this.loadSkierImages();
@@ -47,8 +47,6 @@ export default class Skier{
 		this.skier_falling.src = "/img/skier_falling.png";
 		this.skier_sit = new Image();
 		this.skier_sit.src = "/img/skier_sit.png";
-		this.skier_shadow = new Image();
-		this.skier_shadow.src = "/img/skier_shadow.png";
 		this.skier_skate_left = new Image();
 		this.skier_skate_left.src = "/img/skier_skate_left.png";
 		this.skier_skate_right = new Image();
