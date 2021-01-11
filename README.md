@@ -1,4 +1,6 @@
 # SkiFree
+Optimized for a 1920 x 1080 display with Windows scaling set to 100%.
+
 **Play from Source Code:**
 1. Download or clone repository
 2. Install [Node.js](https://nodejs.org/en/)

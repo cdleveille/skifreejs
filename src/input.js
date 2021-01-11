@@ -16,15 +16,19 @@ export default class InputHandler{
 			}
 		});
 
-		let left = 37, right = 39;
+		let left = 65, right = 68;
 
 		document.addEventListener("keydown", (event) => {
             switch(event.keyCode) {
                 case left:
-                    game.keyAction("left", null);
+					if (game.skier.isStopped) {
+						game.skier.isSkatingLeft = true;
+					}
                     break;
                 case right:
-                    game.keyAction("right", null);
+					if (game.skier.isStopped) {
+						game.skier.isSkatingRight = true;
+					}
                     break;
             }
         });
@@ -32,10 +36,10 @@ export default class InputHandler{
         document.addEventListener("keyup", (event) => {
             switch(event.keyCode) {
                 case left:
-                    game.keyAction(null, "left");
+					game.skier.isSkatingLeft = false;
                     break;
                 case right:
-                    game.keyAction(null, "right");
+					game.skier.isSkatingRight = false;
                     break;
             }
         });

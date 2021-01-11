@@ -1,17 +1,17 @@
 import Skier from "/src/skier.js";
+import Lift from "/src/lift.js";
 
 export default class Game {
 	constructor() {
 		this.skier = new Skier(this);
+		this.lift = new Lift(this);
 		this.mousePos = [0, 0];
 		this.lastLogTime = null;
-		this.treeDensity = 0.8
-		this.bumpDensity = 1.0
-		this.skierTrail = []
-		this.liftSpeed = 50;
-		this.liftX = 100;
-		this.liftChairSpacing = 500;
-		this.liftTowerSpacing = 1000;
+		this.treeDensity = 0.8;
+		this.bumpDensity = 1.0;
+		this.rockDensity = 0.25;
+		this.skierTrail = [];
+		this.maxSpeed = 600;
 		this.collisionsEnabled = true;
 		this.enforceMaxSpeed = true;
 
@@ -46,17 +46,8 @@ export default class Game {
 		this.bump_group = new Image();
 		this.bump_group.src = "/img/bump_group.png";
 
-		this.lift_tower = new Image();
-		this.lift_tower.src = "/img/lift_tower.png";
-
-		this.lift_chair_up1 = new Image();
-		this.lift_chair_up1.src = "/img/lift_chair_up1.png";
-
-		this.lift_chair_up2 = new Image();
-		this.lift_chair_up2.src = "/img/lift_chair_up2.png";
-
-		this.lift_chair_down = new Image();
-		this.lift_chair_down.src = "/img/lift_chair_down.png";
+		this.rock = new Image();
+		this.rock.src = "/img/rock.png";
 	}
 
 	// generate game objects to put on and around screen at start of game
@@ -68,6 +59,7 @@ export default class Game {
 		// number of game objects to generate is proportional to total screen area
 		this.treeCount = Math.floor(area * (50 / 562860.0) * this.treeDensity);
 		this.bumpCount = Math.floor(area * (50 / 562860.0) * this.bumpDensity);
+		this.rockCount = Math.floor(area * (50 / 562860.0) * this.rockDensity);
 
 		// create trees
 		this.trees = [];
@@ -75,6 +67,7 @@ export default class Game {
 			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
 			let y = this.randomInt(-height / 3, height * 5 / 3);
 			this.trees.push([x, y, false, this.randomInt(0, 3)]);
+			// x-coordinate, y-coordinate, hasSkierHitThisTreeYet, treeType
 		}
 
 		// create bumps
@@ -83,12 +76,17 @@ export default class Game {
 			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
 			let y = this.randomInt(-height / 3, height * 5 / 3);
 			this.bumps.push([x, y, this.randomInt(0, 3)]);
+			// x-coordinate, y-coordinate, bumpType
 		}
 
-		// create lift tower and chairs
-		this.liftTowers = [[this.liftX, 0, false]];
-		this.liftChairsDown = [[this.liftX - 18, 0]];
-		this.liftChairsUp = [[this.liftX + 24, 0, this.randomInt(0, 2)]];
+		// create rocks
+		this.rocks = [];
+		for (let n = 0; n < this.rockCount; n++) {
+			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
+			let y = this.randomInt(-height / 3, height * 5 / 3);
+			this.rocks.push([x, y, false]);
+			// x-coordinate, y-coordinate, hasSkierHitThisRockYet
+		}
 	}
 
 	spawnNewGameObjectOffScreen(type) {
@@ -118,6 +116,8 @@ export default class Game {
 			return [x, y, this.randomInt(0, 3)];
 		} else if (type == 'tree') {
 			return [x, y, false, this.randomInt(0, 3)];
+		} else if (type == 'rock') {
+			return [x, y, false];
 		}
 	}
 
@@ -176,11 +176,34 @@ export default class Game {
 				this.bumps.push(this.spawnNewGameObjectOffScreen('bump'));
 			}
 		}
+
+		this.rockCount = Math.floor(this.gameWidth * this.gameHeight * (50 / 562860.0) * this.rockDensity);
+
+		// trim excess offscreen rocks
+		if (this.rocks.length > this.rockCount) {
+			for (let i = 0; i < this.rocks.length; i++) {
+				let x = this.rocks[i][0];
+				let y = this.rocks[i][1];
+
+				// remove the rock if it is offscreen
+				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
+					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
+						this.rocks.splice(i, 1);
+				}
+			}
+		// add some new rocks offscreen
+		} else if (this.rocks.length < this.rockCount) {
+			let diff = this.rockCount - this.rocks.length;
+			for (let n = 0; n < diff; n++) {
+				this.rocks.push(this.spawnNewGameObjectOffScreen('rock'));
+			}
+		}
 	}
 	
 	update(step) {
 		this.updateSkier(this.crunchSomeNumbas());
 		this.updateGameObjects();
+		this.lift.update(step);
 
 		// scale the number of game objects to the size of the screen
 		if (this.treeCount != this.trees.length || this.bumpCount != this.bumps.length) {
@@ -196,29 +219,15 @@ export default class Game {
 			this.bumps[i][0] -= this.skier.xv * step;
 			this.bumps[i][1] -= this.skier.yv * step;
 		}
+		for (let i = 0; i < this.rocks.length; i++) {
+			this.rocks[i][0] -= this.skier.xv * step;
+			this.rocks[i][1] -= this.skier.yv * step;
+		}
 
 		// update position of coordinate points in the skier trail
 		for (let i = 0; i < this.skierTrail.length; i++) {
 			this.skierTrail[i][0] -= this.skier.xv * step;
 			this.skierTrail[i][1] -= this.skier.yv * step;
-		}
-
-		// update position of lift towers
-		for (let i = 0; i < this.liftTowers.length; i++) {
-			this.liftTowers[i][0] -= this.skier.xv * step;
-			this.liftTowers[i][1] -= this.skier.yv * step;
-		}
-
-		// update position of lift chairs going down
-		for (let i = 0; i < this.liftChairsDown.length; i++) {
-			this.liftChairsDown[i][0] -= this.skier.xv * step;
-			this.liftChairsDown[i][1] -= (this.skier.yv - this.liftSpeed) * step;
-		}
-
-		// update position of lift chairs going up
-		for (let i = 0; i < this.liftChairsUp.length; i++) {
-			this.liftChairsUp[i][0] -= this.skier.xv * step;
-			this.liftChairsUp[i][1] -= (this.skier.yv + this.liftSpeed) * step;
 		}
 
 		// update position of lodge
@@ -253,6 +262,26 @@ export default class Game {
 			}
 		}
 
+		for (let i = 0; i < this.rocks.length; i++) {
+			let rockX = this.rocks[i][0];
+			let rockY = this.rocks[i][1];
+			let hitThisRockAlready = this.rocks[i][2];
+
+			// recycle uphill offscreen rocks once they are passed
+			if (this.skier.y - rockY > this.gameHeight * (2 / 3) + 50) {
+				this.rocks[i] = this.spawnNewGameObjectOffScreen('rock');
+			}
+
+			// if the skier hits a rock they haven't hit already, set isCrashed to true
+			//if (Math.abs(rockX) < 20 && Math.abs(rockY) < 11 && this.skier.jumpOffset < 11) {
+			if (this.isCollidingWithPlayer(rockX, rockY, this.rock.width, this.rock.height) && this.skier.jumpOffset < this.rock.height) {
+				if (this.collisionsEnabled && !hitThisRockAlready) {
+					this.skier.isCrashed = true;
+					this.rocks[i][2] = true;
+				}
+			}
+		}
+
 		// delete skier trail if offscreen
 		for (let i = 0; i < this.skierTrail.length; i++) {
 			let y = this.skierTrail[i][1];
@@ -260,76 +289,19 @@ export default class Game {
 				this.skierTrail.splice(i, 1);
 			}
 		}
-
-		// if the skier hits a lift tower, set isCrashed to true
-		for (let i = 0; i < this.liftTowers.length; i++) {
-			if (Math.abs(this.liftTowers[i][0] + 3) < 8 && Math.abs(this.liftTowers[i][1] + 40) < 20) {
-				if (this.collisionsEnabled && !this.liftTowers[i][2]) {
-					this.skier.isCrashed = true;
-					this.liftTowers[i][2] = true;
-				}
-			}
-		}
-
-		this.updateLift();
 	}
 
-	updateLift() {
-		let highestTower = this.liftTowers[this.liftTowers.length - 1];
-		let lowestTower = this.liftTowers[0];
+	isCollidingWithPlayer(objectX, objectY, objectWidth, objectHeight) {
+		let rect1 = {x: 0, y: 0, width: this.skier.currentImage.width, height: this.skier.currentImage.height};
+		let rect2 = {x: objectX, y: objectY, width: objectWidth, height: objectHeight};
 
-		// if the highest tower is on the game screen, spawn a new tower above it
-		if (highestTower[1] < this.gameHeight * 2 / 3 && highestTower[1] > -this.gameHeight / 3 - this.lift_tower.height) {
-			this.liftTowers.push([highestTower[0], highestTower[1] - this.liftTowerSpacing]);
-		}
-		// if the highest tower is offscreen upwards and is not the only remaining tower, delete it
-		else if (highestTower[1] < -this.gameHeight / 3 - this.liftTowerSpacing && this.liftTowers.length > 1) {
-			this.liftTowers.splice(this.liftTowers.length - 1, 1);
-		}
-
-		// if the lowest tower is on the game screen, spawn a new tower below it
-		if (lowestTower[1] < this.gameHeight * 2 / 3 && lowestTower[1] > -this.gameHeight / 3 - this.lift_tower.height) {
-			this.liftTowers.unshift([lowestTower[0], lowestTower[1] + this.liftTowerSpacing]);
-		}
-
-		let highestChairDown = this.liftChairsDown[this.liftChairsDown.length - 1];
-		let lowestChairDown = this.liftChairsDown[0];
-
-		// if the highest chair going down is on the game screen, spawn a new chair above it
-		if (highestChairDown[1] < this.gameHeight * 2 / 3 && highestChairDown[1] > -this.gameHeight / 3 - this.lift_chair_down.height) {
-			this.liftChairsDown.push([highestChairDown[0], highestChairDown[1] - this.liftChairSpacing]);
-		}
-		// if the highest chair going down is off-screen upwards, move it below the lowest chair going down
-		else if (highestChairDown[1] < -this.gameHeight / 3 - this.lift_chair_down.height - this.liftChairSpacing) {
-			this.liftChairsDown.splice(this.liftChairsDown.length - 1, 1);
-			this.liftChairsDown.unshift([this.liftChairsDown[0][0], this.liftChairsDown[0][1] + this.liftChairSpacing]);
-		}
-
-		// if the lowest chair going down is on the game screen, spawn a new chair below it
-		if (lowestChairDown[1] < this.gameHeight * 2 / 3 && lowestChairDown[1] > -this.gameHeight / 3 - this.lift_chair_down.height) {
-			this.liftChairsDown.unshift([lowestChairDown[0], lowestChairDown[1] + this.liftChairSpacing]);
-		}
-		// if the lowest chair going down is off-screen downwards and is not the only remaining chair, delete it
-		else if (lowestChairDown[1] > this.gameHeight * 2 / 3 + this.liftChairSpacing && this.liftChairsDown.length > 1) {
-			this.liftChairsDown.splice(0, 1);
-		}
-
-		let highestChairUp = this.liftChairsUp[this.liftChairsUp.length - 1];
-		let lowestChairUp = this.liftChairsUp[0];
-
-		// if the lowest chair going up is on the game screen, spawn a new chair below it
-		if (lowestChairUp[1] < this.gameHeight * 2 / 3 && lowestChairUp[1] > -this.gameHeight / 3 - this.lift_chair_up1.height) {
-			this.liftChairsUp.unshift([lowestChairUp[0], lowestChairUp[1] + this.liftChairSpacing, this.randomInt(0, 2)]);
-		}
-
-		// if the highest chair going up is on the game screen, spawn a new chair above it
-		if (highestChairUp[1] < this.gameHeight * 2 / 3 && highestChairUp[1] > -this.gameHeight / 3 - this.lift_chair_up1.height) {
-			this.liftChairsUp.push([highestChairUp[0], highestChairUp[1] - this.liftChairSpacing, this.randomInt(0, 2)]);
-		}
-		// if the highest chair going up is off-screen upwards and is not the only remaining chair, delete it
-		else if (highestChairUp[1] < -this.gameHeight / 3 - this.lift_chair_up1.height - this.liftChairSpacing && this.liftChairsUp.length > 1) {
-			this.liftChairsUp.splice(this.liftChairsUp.length - 1, 1);
-		}
+		if (rect1.x < rect2.x + rect2.width &&
+			rect1.x + rect1.width > rect2.x &&
+			rect1.y < rect2.y + rect2.height &&
+			rect1.y + rect1.height > rect2.y) {
+				return true;
+		 }
+		 return false;
 	}
 
 	// do sum mathz
@@ -364,7 +336,6 @@ export default class Game {
 			mouseDiffXVector = Math.cos(this.radians(mouseAngle));
             mouseDiffYVector = Math.sin(this.radians(mouseAngle));
 		}
-		let mouseDistance = Math.sqrt(Math.pow(mouseDiffX, 2) + Math.pow(mouseDiffY, 2));
 
 		let vAtanDegrees = this.degrees(Math.atan(this.skier.yv / this.skier.xv));
 		let vAngle = 0, xvVector = 0, yvVector = 0;
@@ -394,19 +365,14 @@ export default class Game {
 			xvVector = Math.cos(this.radians(vAngle));
             yvVector = Math.sin(this.radians(vAngle));
 		}
-		let speed = Math.sqrt(Math.pow(this.skier.xv, 2) + Math.pow(this.skier.yv, 2));
 
-		return [mouseAngle, mouseDistance, [mouseDiffXVector, mouseDiffYVector], vAngle, speed, [xvVector, yvVector]];
+		return [mouseAngle, [mouseDiffXVector, mouseDiffYVector], [xvVector, yvVector]];
 	}
 
 	updateSkier(someNumbers) {
 		let mouseToSkierAngle = someNumbers[0];
-		let mouseToSkierDistance = someNumbers[1];
-		let mouseAngleVectors = someNumbers[2];
-
-		let vAngle = someNumbers[3];
-		let speed = someNumbers[4];
-		let vVectors = someNumbers[5];
+		let mouseAngleVectors = someNumbers[1];
+		let vVectors = someNumbers[2];
 
 		// handle player jumps
 		if (this.skier.isJumping) {
@@ -417,18 +383,22 @@ export default class Game {
 				this.skier.jumpOffset = 0;
 				this.skier.isJumping = false;
 			}
+
+			//console.log(this.skier.jumpOffset); 32.4 max @initV 0.8
 		}
 
 		// mouse up / left
 		if ((mouseToSkierAngle < 90 && mouseToSkierAngle > -5) || mouseToSkierAngle == -90) {
 			if (this.skier.isJumping) {
 				this.skier.currentImage = this.skier.skier_jump_left;
-			} else if (this.skier.isSkatingLeft) {
-				//this.skier.xv = -this.skier.skateV;
-				//this.skier.currentImage = this.skier.skier_skate_left;
-			} else if (this.skier.isSkatingRight) {
-				//this.skier.xv = this.skier.skateV;
-				//this.skier.currentImage = this.skier.skier_skate_right;
+			} else if (this.skier.isSkatingLeft && !this.skier.isCrashed) {
+				this.skier.currentImage = this.skier.skier_skate_left;
+				this.skier.xv = -this.skier.skateV;
+				this.skier.isStopped = false;
+			} else if (this.skier.isSkatingRight && !this.skier.isCrashed) {
+				this.skier.currentImage = this.skier.skier_skate_right;
+				this.skier.xv = this.skier.skateV;
+				this.skier.isStopped = false;
 			} else {
 				this.skier.currentImage = this.skier.skier_left;
 				this.stopSkier(vVectors);
@@ -437,10 +407,14 @@ export default class Game {
 		} else if (mouseToSkierAngle < -175 || (mouseToSkierAngle > 90 && mouseToSkierAngle < 180)) {
 			if (this.skier.isJumping) {
 				this.skier.currentImage = this.skier.skier_jump_right;
-			} else if (this.skier.isSkatingLeft) {
-				//this.skier.currentImage = this.skier.skier_skate_left;
-			} else if (this.skier.isSkatingRight) {
-				//this.skier.currentImage = this.skier.skier_skate_right;
+			} else if (this.skier.isSkatingLeft && !this.skier.isCrashed) {
+				this.skier.currentImage = this.skier.skier_skate_left;
+				this.skier.xv = -this.skier.skateV;
+				this.skier.isStopped = false;
+			} else if (this.skier.isSkatingRight && !this.skier.isCrashed) {
+				this.skier.currentImage = this.skier.skier_skate_right;
+				this.skier.xv = this.skier.skateV;
+				this.skier.isStopped = false;
 			} else {
 				this.skier.currentImage = this.skier.skier_right;
 				this.stopSkier(vVectors);
@@ -478,22 +452,24 @@ export default class Game {
 				}
 			}
 
+			if (!this.skier.isStopped) {
+				this.skier.isSkatingLeft = false;
+				this.skier.isSkatingRight = false;
+			}
+
 			let xFlip = 1;
 			if (mouseToSkierAngle > -90 && mouseToSkierAngle < 0) {
 				xFlip = -1;
 			}
 
-			let maxSpeed = 600;
-			let maxSpeedX = maxSpeed * mouseAngleVectors[0] * xFlip * .75;
-			let maxSpeedY = maxSpeed * mouseAngleVectors[1];
+			let maxSpeedX = this.maxSpeed * mouseAngleVectors[0] * xFlip * .75;
+			let maxSpeedY = this.maxSpeed * mouseAngleVectors[1];
 
-			if (!this.skier.isCrashed) {
+			if (!this.skier.isCrashed && !this.skier.isJumping) {
 				this.skier.isStopped = false;
 				this.skier.xv += this.skier.accelX * mouseAngleVectors[0];
 				this.skier.yv += this.skier.accelY * mouseAngleVectors[1];
 			}
-
-			//this.log(mouseToSkierAngle);
 
 			if (this.enforceMaxSpeed) {
 				if (this.skier.xv < -maxSpeedX) {
@@ -512,6 +488,11 @@ export default class Game {
 		} else if (this.skier.isCrashed) {
 			this.skier.currentImage = this.skier.skier_sit;
 			this.stopSkier(vVectors);
+
+			if (this.skier.isStopped) {
+				this.skier.xv = 0;
+				this.skier.yv = 0;
+			}
 		}
 
 		// add coordinate(s) to skier trail
@@ -522,7 +503,7 @@ export default class Game {
 
 	// decelerate the skier until he is stopped
 	stopSkier(vVectors) {
-		if (!this.skier.isStopped) {
+		if (!this.skier.isStopped && !this.skier.isJumping) {
 			let xDecelAmt = this.skier.decel * vVectors[0];
 			let yDecelAmt = this.skier.decel * vVectors[1];
 
@@ -608,6 +589,11 @@ export default class Game {
 			ctx.fillRect(this.skier.x + this.skierTrail[i][0] + 2, this.skier.y + this.skierTrail[i][1], 2, 1);
 			ctx.fillRect(this.skier.x + this.skierTrail[i][0] - 6, this.skier.y + this.skierTrail[i][1], 2, 1);
 		}
+
+		// draw rocks
+		for (let i = 0; i < this.rocks.length; i++) {
+			ctx.drawImage(this.rock, this.skier.x + this.rocks[i][0], this.skier.y + this.rocks[i][1]);
+		}
 		
 		// draw trees
 		for (let i = 0; i < this.trees.length; i++) {
@@ -626,26 +612,13 @@ export default class Game {
 		this.skier.draw(ctx);
 
 		// draw lift chairs
-		for (let i = 0; i < this.liftChairsDown.length; i++) {
-			ctx.drawImage(this.lift_chair_down, this.skier.x + this.liftChairsDown[i][0], this.skier.y + this.liftChairsDown[i][1]);
-		}
-		for (let i = 0; i < this.liftChairsUp.length; i++) {
-			let img = this.lift_chair_up1;
-			if (this.liftChairsUp[i][2] == 1) {
-				img = this.lift_chair_up2;
-			}
-			ctx.drawImage(img, this.skier.x + this.liftChairsUp[i][0], this.skier.y + this.liftChairsUp[i][1]);
-		}
+		this.lift.drawChairs(ctx);
 
 		// draw lift cables
-		ctx.fillStyle = "#555555";
-		ctx.fillRect(this.skier.x + this.liftTowers[0][0] + 1, this.skier.y - this.gameHeight / 3, 1, this.gameHeight);
-		ctx.fillRect(this.skier.x + this.liftTowers[0][0] + 30, this.skier.y - this.gameHeight / 3, 1, this.gameHeight);
+		this.lift.drawCables(ctx);
 
 		// draw lift towers
-		for (let i = 0; i < this.liftTowers.length; i++) {
-			ctx.drawImage(this.lift_tower, this.skier.x + this.liftTowers[i][0], this.skier.y + this.liftTowers[i][1]);
-		}
+		this.lift.drawTowers(ctx);
 
 		// draw lodge
 		//ctx.drawImage(this.lodge, this.skier.x + this.lodge.xc, this.skier.y + this.lodge.yc);
