@@ -7,17 +7,13 @@ export default class Game {
 		this.lastLogTime = null;
 		this.treeDensity = 0.8
 		this.bumpDensity = 1.0
-		this.collisionsEnabled = true;
 		this.skierTrail = []
 		this.liftSpeed = 50;
 		this.liftX = 100;
 		this.liftChairSpacing = 500;
 		this.liftTowerSpacing = 1000;
+		this.collisionsEnabled = true;
 		this.enforceMaxSpeed = true;
-
-		this.mouseHeadingAccel = 0.001;
-		this.mouseHeadingX = 0;
-		this.mouseHeadingY = 0;
 
 		this.loadGameImages();
 		this.populateInitialGameObjects();
@@ -27,8 +23,11 @@ export default class Game {
 		this.tree_small = new Image();
 		this.tree_small.src = "/img/tree_small.png";
 
-		this.tree2 = new Image();
-		this.tree2.src = "/img/tree2.png";
+		this.tree_large = new Image();
+		this.tree_large.src = "/img/tree_large.png";
+
+		this.tree_bare = new Image();
+		this.tree_bare.src = "/img/tree_bare.png";
 
 		this.boarder_bro = new Image();
 		this.boarder_bro.src = "/img/boarder_bro.png";
@@ -75,7 +74,7 @@ export default class Game {
 		for (let n = 0; n < this.treeCount; n++) {
 			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
 			let y = this.randomInt(-height / 3, height * 5 / 3);
-			this.trees.push([x, y, false]);
+			this.trees.push([x, y, false, this.randomInt(0, 3)]);
 		}
 
 		// create bumps
@@ -117,8 +116,8 @@ export default class Game {
 
 		if (type == 'bump') {
 			return [x, y, this.randomInt(0, 3)];
-		} else {
-			return [x, y, false];
+		} else if (type == 'tree') {
+			return [x, y, false, this.randomInt(0, 3)];
 		}
 	}
 
@@ -152,7 +151,7 @@ export default class Game {
 		} else if (this.trees.length < this.treeCount) {
 			let diff = this.treeCount - this.trees.length;
 			for (let n = 0; n < diff; n++) {
-				this.trees.push(this.spawnNewGameObjectOffScreen());
+				this.trees.push(this.spawnNewGameObjectOffScreen('tree'));
 			}
 		}
 
@@ -174,7 +173,7 @@ export default class Game {
 		} else if (this.bumps.length < this.bumpCount) {
 			let diff = this.bumpCount - this.bumps.length;
 			for (let n = 0; n < diff; n++) {
-				this.bumps.push(this.spawnNewGameObjectOffScreen());
+				this.bumps.push(this.spawnNewGameObjectOffScreen('bump'));
 			}
 		}
 	}
@@ -235,7 +234,7 @@ export default class Game {
 
 			// recycle uphill offscreen trees once they are passed
 			if (this.skier.y - treeY > this.gameHeight * (2 / 3) + 50) {
-				this.trees[i] = this.spawnNewGameObjectOffScreen();
+				this.trees[i] = this.spawnNewGameObjectOffScreen('tree');
 			}
 
 			// if the skier hits a tree they haven't hit already, set isCrashed to true
@@ -484,8 +483,8 @@ export default class Game {
 				xFlip = -1;
 			}
 
-			let maxSpeed = 400;
-			let maxSpeedX = maxSpeed * mouseAngleVectors[0] * xFlip;
+			let maxSpeed = 600;
+			let maxSpeedX = maxSpeed * mouseAngleVectors[0] * xFlip * .75;
 			let maxSpeedY = maxSpeed * mouseAngleVectors[1];
 
 			if (!this.skier.isCrashed) {
@@ -612,7 +611,15 @@ export default class Game {
 		
 		// draw trees
 		for (let i = 0; i < this.trees.length; i++) {
-			ctx.drawImage(this.tree_small, this.skier.x + this.trees[i][0], this.skier.y + this.trees[i][1]);
+			let type = this.trees[i][3];
+			let img = this.tree_small;
+			if (type == 0) {
+				img = this.tree_bare;
+			} else if (type == 1) {
+				img = this.tree_small;
+			}
+
+			ctx.drawImage(img, this.skier.x + this.trees[i][0], this.skier.y + this.trees[i][1]);
 		}
 
 		// draw skier
