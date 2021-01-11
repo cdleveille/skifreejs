@@ -6,9 +6,9 @@ export default class Skier{
 		this.xv = 0;
 		this.yv = 0;
 		this.skateV = 225;
-		this.accelX = 5;
-		this.accelY = 5;
-		this.decel = -5;
+		this.accelX = 4;
+		this.accelY = 4;
+		this.decel = -4;
 		this.loadSkierImages();
 		this.currentImage = this.skier_left;
 		this.isStopped = true;

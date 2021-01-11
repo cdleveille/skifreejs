@@ -7,7 +7,7 @@ export default class Game {
 		this.lastLogTime = null;
 		this.treeDensity = 0.8
 		this.bumpDensity = 1.0
-		this.collisionsEnabled = false;
+		this.collisionsEnabled = true;
 		this.skierTrail = []
 		this.liftSpeed = 50;
 		this.liftX = 100;
@@ -138,8 +138,6 @@ export default class Game {
 
 		// trim excess offscreen trees
 		if (this.trees.length > this.treeCount) {
-			let diff = this.trees.length - this.treeCount;
-			let trimCount = 0;
 			for (let i = 0; i < this.trees.length; i++) {
 				let x = this.trees[i][0];
 				let y = this.trees[i][1];
@@ -147,7 +145,6 @@ export default class Game {
 				// remove the tree if it is offscreen
 				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
 					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
-						trimCount++;
 						this.trees.splice(i, 1);
 				}
 			}
@@ -163,8 +160,6 @@ export default class Game {
 
 		// trim excess offscreen bumps
 		if (this.bumps.length > this.bumpCount) {
-			let diff = this.bumps.length - this.bumpCount;
-			let trimCount = 0;
 			for (let i = 0; i < this.bumps.length; i++) {
 				let x = this.bumps[i][0];
 				let y = this.bumps[i][1];
@@ -172,7 +167,6 @@ export default class Game {
 				// remove the bump if it is offscreen
 				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
 					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
-						trimCount++;
 						this.bumps.splice(i, 1);
 				}
 			}
@@ -253,12 +247,9 @@ export default class Game {
 			}
 		}
 
+		// recycle bumps once they are passed
 		for (let i = 0; i < this.bumps.length; i++) {
-			let bumpX = this.bumps[i][0];
-			let bumpY = this.bumps[i][1];
-
-			// recycle bumps once they are passed
-			if (this.skier.y - bumpY > this.gameHeight * (2 / 3) + 50) {
+			if (this.skier.y - this.bumps[i][1] > this.gameHeight * (2 / 3) + 50) {
 				this.bumps[i] = this.spawnNewGameObjectOffScreen('bump');
 			}
 		}
@@ -298,7 +289,7 @@ export default class Game {
 		}
 
 		// if the lowest tower is on the game screen, spawn a new tower below it
-		if (lowestTower[1] < this.gameHeight * 2 / 3 && lowestTower[1] > -this.gameHeight / 3) {
+		if (lowestTower[1] < this.gameHeight * 2 / 3 && lowestTower[1] > -this.gameHeight / 3 - this.lift_tower.height) {
 			this.liftTowers.unshift([lowestTower[0], lowestTower[1] + this.liftTowerSpacing]);
 		}
 
@@ -310,13 +301,13 @@ export default class Game {
 			this.liftChairsDown.push([highestChairDown[0], highestChairDown[1] - this.liftChairSpacing]);
 		}
 		// if the highest chair going down is off-screen upwards, move it below the lowest chair going down
-		else if (highestChairDown[1] < -this.gameHeight / 3 - this.liftChairSpacing) {
+		else if (highestChairDown[1] < -this.gameHeight / 3 - this.lift_chair_down.height - this.liftChairSpacing) {
 			this.liftChairsDown.splice(this.liftChairsDown.length - 1, 1);
 			this.liftChairsDown.unshift([this.liftChairsDown[0][0], this.liftChairsDown[0][1] + this.liftChairSpacing]);
 		}
 
 		// if the lowest chair going down is on the game screen, spawn a new chair below it
-		if (lowestChairDown[1] < this.gameHeight * 2 / 3 && lowestChairDown[1] > -this.gameHeight / 3) {
+		if (lowestChairDown[1] < this.gameHeight * 2 / 3 && lowestChairDown[1] > -this.gameHeight / 3 - this.lift_chair_down.height) {
 			this.liftChairsDown.unshift([lowestChairDown[0], lowestChairDown[1] + this.liftChairSpacing]);
 		}
 		// if the lowest chair going down is off-screen downwards and is not the only remaining chair, delete it
@@ -328,16 +319,16 @@ export default class Game {
 		let lowestChairUp = this.liftChairsUp[0];
 
 		// if the lowest chair going up is on the game screen, spawn a new chair below it
-		if (lowestChairUp[1] < this.gameHeight * 2 / 3 && lowestChairUp[1] > -this.gameHeight / 3) {
+		if (lowestChairUp[1] < this.gameHeight * 2 / 3 && lowestChairUp[1] > -this.gameHeight / 3 - this.lift_chair_up1.height) {
 			this.liftChairsUp.unshift([lowestChairUp[0], lowestChairUp[1] + this.liftChairSpacing, this.randomInt(0, 2)]);
 		}
 
 		// if the highest chair going up is on the game screen, spawn a new chair above it
-		if (highestChairUp[1] < this.gameHeight * 2 / 3 && highestChairUp[1] > -this.gameHeight / 3) {
+		if (highestChairUp[1] < this.gameHeight * 2 / 3 && highestChairUp[1] > -this.gameHeight / 3 - this.lift_chair_up1.height) {
 			this.liftChairsUp.push([highestChairUp[0], highestChairUp[1] - this.liftChairSpacing, this.randomInt(0, 2)]);
 		}
 		// if the highest chair going up is off-screen upwards and is not the only remaining chair, delete it
-		else if (highestChairUp[1] < -this.gameHeight / 3 - this.liftChairSpacing && this.liftChairsUp.length > 1) {
+		else if (highestChairUp[1] < -this.gameHeight / 3 - this.lift_chair_up1.height - this.liftChairSpacing && this.liftChairsUp.length > 1) {
 			this.liftChairsUp.splice(this.liftChairsUp.length - 1, 1);
 		}
 	}
@@ -493,7 +484,7 @@ export default class Game {
 				xFlip = -1;
 			}
 
-			let maxSpeed = 700;
+			let maxSpeed = 400;
 			let maxSpeedX = maxSpeed * mouseAngleVectors[0] * xFlip;
 			let maxSpeedY = maxSpeed * mouseAngleVectors[1];
 
