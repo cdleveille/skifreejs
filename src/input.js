@@ -11,7 +11,7 @@ export default class InputHandler{
 			if (!game.skier.isJumping && !game.skier.isCrashed) {
 				game.skier.isJumping = true;
 				game.skier.jumpV = game.skier.jumpVInit;
-			} else if (game.skier.isCrashed && game.skier.yv == 0) {
+			} else if (game.skier.isCrashed && game.skier.isStopped) {
 				game.skier.isCrashed = false;
 			}
 		});
@@ -19,29 +19,29 @@ export default class InputHandler{
 		let left = 65, right = 68;
 
 		document.addEventListener("keydown", (event) => {
-            switch(event.keyCode) {
-                case left:
+			switch(event.keyCode) {
+				case left:
 					if (game.skier.isStopped) {
 						game.skier.isSkatingLeft = true;
 					}
-                    break;
-                case right:
+					break;
+				case right:
 					if (game.skier.isStopped) {
 						game.skier.isSkatingRight = true;
 					}
-                    break;
-            }
-        });
+					break;
+			}
+		});
 
-        document.addEventListener("keyup", (event) => {
-            switch(event.keyCode) {
-                case left:
+		document.addEventListener("keyup", (event) => {
+			switch(event.keyCode) {
+				case left:
 					game.skier.isSkatingLeft = false;
-                    break;
-                case right:
+					break;
+				case right:
 					game.skier.isSkatingRight = false;
-                    break;
-            }
-        });
+					break;
+			}
+		});
 	}
 }

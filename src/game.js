@@ -10,11 +10,9 @@ export default class Game {
 		this.treeDensity = 0.8;
 		this.bumpDensity = 1.0;
 		this.rockDensity = 0.1;
+		this.jumpDensity = 0.05;
 		this.skierTrail = [];
-		this.maxSpeed = 600;
 		this.collisionsEnabled = true;
-		this.enforceMaxSpeed = true;
-
 		this.loadGameImages();
 		this.populateInitialGameObjects();
 	}
@@ -48,6 +46,9 @@ export default class Game {
 
 		this.rock = new Image();
 		this.rock.src = "/img/rock.png";
+
+		this.jump = new Image();
+		this.jump.src = "/img/jump.png";
 	}
 
 	// generate game objects to put on and around screen at start of game
@@ -60,6 +61,7 @@ export default class Game {
 		this.treeCount = Math.floor(area * (50 / 562860.0) * this.treeDensity);
 		this.bumpCount = Math.floor(area * (50 / 562860.0) * this.bumpDensity);
 		this.rockCount = Math.floor(area * (50 / 562860.0) * this.rockDensity);
+		this.jumpCount = Math.floor(area * (50 / 562860.0) * this.jumpDensity);
 
 		// create trees
 		this.trees = [];
@@ -87,13 +89,23 @@ export default class Game {
 			this.rocks.push([x, y, false]);
 			// x-coordinate, y-coordinate, hasSkierHitThisRockYet
 		}
+
+		// create rocks
+		this.jumps = [];
+		for (let n = 0; n < this.jumpCount; n++) {
+			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
+			let y = this.randomInt(-height / 3, height * 5 / 3);
+			this.jumps.push([x, y, false]);
+			// x-coordinate, y-coordinate, hasSkierHitThisJumpYet
+		}
 	}
 
+	// spawn a new object of the given type in a random location offscreen
 	spawnNewGameObjectOffScreen(type) {
 		let x = this.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
 		let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
 
-		// if game object would be visible, spawn it nearby off screen instead
+		// if game object would be visible, spawn it nearby offscreen instead
 		if (x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
 			y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3) {
 				let flip = this.randomInt(0, 5);
@@ -116,7 +128,7 @@ export default class Game {
 			return [x, y, this.randomInt(0, 3)];
 		} else if (type == 'tree') {
 			return [x, y, false, this.randomInt(0, 3)];
-		} else if (type == 'rock') {
+		} else if (type == 'rock' || type == 'jump') {
 			return [x, y, false];
 		}
 	}
@@ -198,41 +210,58 @@ export default class Game {
 				this.rocks.push(this.spawnNewGameObjectOffScreen('rock'));
 			}
 		}
+
+		this.jumpCount = Math.floor(this.gameWidth * this.gameHeight * (50 / 562860.0) * this.jumpDensity);
+
+		// trim excess offscreen jumps
+		if (this.jumps.length > this.jumpCount) {
+			for (let i = 0; i < this.jumps.length; i++) {
+				let x = this.jumps[i][0];
+				let y = this.jumps[i][1];
+
+				// remove the jump if it is offscreen
+				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
+					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
+						this.jumps.splice(i, 1);
+				}
+			}
+		// add some new jumps offscreen
+		} else if (this.jumps.length < this.jumpCount) {
+			let diff = this.jumpCount - this.jumps.length;
+			for (let n = 0; n < diff; n++) {
+				this.jumps.push(this.spawnNewGameObjectOffScreen('jump'));
+			}
+		}
 	}
 	
 	update(step) {
-		this.updateSkier(this.crunchSomeNumbas());
-		this.updateGameObjects();
+		this.skier.update(this.crunchSomeNumbas());
 		this.lift.update(step);
+		this.updateGameObjects();
 
 		// scale the number of game objects to the size of the screen
-		if (this.treeCount != this.trees.length || this.bumpCount != this.bumps.length) {
+		if (this.treeCount != this.trees.length || this.bumpCount != this.bumps.length || 
+			this.rockCount != this.rocks.length || this.jumpCount != this.jumps.length) {
 			this.adaptGameObjectCountToScreenSize();
 		}
 
 		// update position of game objects based on speed/direction of skier
-		for (let i = 0; i < this.trees.length; i++) {
-			this.trees[i][0] -= this.skier.xv * step;
-			this.trees[i][1] -= this.skier.yv * step;
-		}
-		for (let i = 0; i < this.bumps.length; i++) {
-			this.bumps[i][0] -= this.skier.xv * step;
-			this.bumps[i][1] -= this.skier.yv * step;
-		}
-		for (let i = 0; i < this.rocks.length; i++) {
-			this.rocks[i][0] -= this.skier.xv * step;
-			this.rocks[i][1] -= this.skier.yv * step;
-		}
-
-		// update position of coordinate points in the skier trail
-		for (let i = 0; i < this.skierTrail.length; i++) {
-			this.skierTrail[i][0] -= this.skier.xv * step;
-			this.skierTrail[i][1] -= this.skier.yv * step;
-		}
+		this.updatePosition(this.trees, step);
+		this.updatePosition(this.bumps, step);
+		this.updatePosition(this.rocks, step);
+		this.updatePosition(this.jumps, step);
+		this.updatePosition(this.skierTrail, step);
 
 		// update position of lodge
 		//this.lodge.xc -= this.skier.xv * step;
 		//this.lodge.yc -= this.skier.yv * step;
+	}
+
+	updatePosition(gameObjectList, step) {
+		for (let i = 0; i < gameObjectList.length; i++) {
+			gameObjectList[i][0] -= this.skier.xv * step;
+			gameObjectList[i][1] -= this.skier.yv * step;
+		}
 	}
 
 	updateGameObjects() {
@@ -281,6 +310,25 @@ export default class Game {
 			}
 		}
 
+		for (let i = 0; i < this.jumps.length; i++) {
+			let jumpX = this.jumps[i][0];
+			let jumpY = this.jumps[i][1];
+			let hitThisJumpAlready = this.jumps[i][2];
+
+			// recycle uphill offscreen jumps once they are passed
+			if (this.skier.y - jumpY > this.gameHeight * (2 / 3) + 50) {
+				this.jumps[i] = this.spawnNewGameObjectOffScreen('jump');
+			}
+
+			// if the skier hits a jump they haven't hit already, mark it as hit and make the skier jump
+			if (this.isCollidingWithSkier(jumpX, jumpY, 32, 8) && !this.skier.isJumping) {
+				if (this.collisionsEnabled && !hitThisJumpAlready) {
+					this.skier.isJumping = true;
+					this.skier.jumpV = this.skier.jumpVInit * 2;
+				}
+			}
+		}
+
 		// delete skier trail if offscreen
 		for (let i = 0; i < this.skierTrail.length; i++) {
 			let y = this.skierTrail[i][1];
@@ -313,7 +361,7 @@ export default class Game {
 		if (mouseDiffX > 0) {
 			mouseAngle = mouseAtanDegrees;
 			mouseDiffXVector = -Math.cos(this.radians(mouseAngle));
-            mouseDiffYVector = -Math.sin(this.radians(mouseAngle));
+			mouseDiffYVector = -Math.sin(this.radians(mouseAngle));
 		} else if (mouseDiffX < 0) {
 			if (mouseDiffY > 0) {
 				mouseAngle = 180 + mouseAtanDegrees;
@@ -321,7 +369,7 @@ export default class Game {
 				mouseAngle = -180 + mouseAtanDegrees;
 			}
 			mouseDiffXVector = -Math.cos(this.radians(mouseAngle));
-            mouseDiffYVector = -Math.sin(this.radians(mouseAngle));
+			mouseDiffYVector = -Math.sin(this.radians(mouseAngle));
 		} else if (mouseDiffX == 0) {
 			if (mouseDiffY > 0) {
 				mouseAngle = -90;
@@ -329,11 +377,11 @@ export default class Game {
 				mouseAngle = 90
 			}
 			mouseDiffXVector = Math.cos(this.radians(mouseAngle));
-            mouseDiffYVector = Math.sin(this.radians(mouseAngle));
+			mouseDiffYVector = Math.sin(this.radians(mouseAngle));
 		} else if (mouseDiffY == 0) {
 			mouseAngle = 180;
 			mouseDiffXVector = Math.cos(this.radians(mouseAngle));
-            mouseDiffYVector = Math.sin(this.radians(mouseAngle));
+			mouseDiffYVector = Math.sin(this.radians(mouseAngle));
 		}
 
 		let vAtanDegrees = this.degrees(Math.atan(this.skier.yv / this.skier.xv));
@@ -342,7 +390,7 @@ export default class Game {
 		if (this.skier.xv > 0) {
 			vAngle = vAtanDegrees;
 			xvVector = -Math.cos(this.radians(vAngle));
-            yvVector = -Math.sin(this.radians(vAngle));
+			yvVector = -Math.sin(this.radians(vAngle));
 		} else if (this.skier.xv < 0) {
 			if (this.skier.yv > 0) {
 				vAngle = 180 + vAtanDegrees;
@@ -350,7 +398,7 @@ export default class Game {
 				vAngle = -180 + vAtanDegrees;
 			}
 			xvVector = -Math.cos(this.radians(vAngle));
-            yvVector = -Math.sin(this.radians(vAngle));
+			yvVector = -Math.sin(this.radians(vAngle));
 		} else if (this.skier.xv == 0) {
 			if (this.skier.yv > 0) {
 				vAngle = -90;
@@ -358,200 +406,15 @@ export default class Game {
 				vAngle = 90
 			}
 			xvVector = Math.cos(this.radians(vAngle));
-            yvVector = Math.sin(this.radians(vAngle));
+			yvVector = Math.sin(this.radians(vAngle));
 		} else if (this.skier.yv == 0) {
 			vAngle = 180;
 			xvVector = Math.cos(this.radians(vAngle));
-            yvVector = Math.sin(this.radians(vAngle));
+			yvVector = Math.sin(this.radians(vAngle));
 		}
 
 		return [mouseAngle, [mouseDiffXVector, mouseDiffYVector], [xvVector, yvVector]];
 	}
-
-	updateSkier(someNumbers) {
-		let mouseToSkierAngle = someNumbers[0];
-		let mouseAngleVectors = someNumbers[1];
-		let vVectors = someNumbers[2];
-
-		// handle player jumps
-		if (this.skier.isJumping) {
-			this.skier.jumpOffset += this.skier.jumpV;
-			this.skier.jumpV -= this.skier.jumpGravity;
-
-			if (this.skier.jumpOffset <= 0) {
-				this.skier.jumpOffset = 0;
-				this.skier.isJumping = false;
-			}
-
-			//console.log(this.skier.jumpOffset); 32.4 max @initV 0.8
-		}
-
-		// mouse up / left
-		if ((mouseToSkierAngle < 90 && mouseToSkierAngle > -5) || mouseToSkierAngle == -90) {
-			if (this.skier.isJumping) {
-				this.skier.currentImage = this.skier.skier_jump_left;
-			} else if (this.skier.isSkatingLeft && !this.skier.isCrashed) {
-				this.skier.currentImage = this.skier.skier_skate_left;
-				this.skier.xv = -this.skier.skateV;
-				this.skier.isStopped = false;
-			} else if (this.skier.isSkatingRight && !this.skier.isCrashed) {
-				this.skier.currentImage = this.skier.skier_skate_right;
-				this.skier.xv = this.skier.skateV;
-				this.skier.isStopped = false;
-			} else {
-				this.skier.currentImage = this.skier.skier_left;
-				this.stopSkier(vVectors);
-			}
-		// mouse up / right
-		} else if (mouseToSkierAngle < -175 || (mouseToSkierAngle > 90 && mouseToSkierAngle < 180)) {
-			if (this.skier.isJumping) {
-				this.skier.currentImage = this.skier.skier_jump_right;
-			} else if (this.skier.isSkatingLeft && !this.skier.isCrashed) {
-				this.skier.currentImage = this.skier.skier_skate_left;
-				this.skier.xv = -this.skier.skateV;
-				this.skier.isStopped = false;
-			} else if (this.skier.isSkatingRight && !this.skier.isCrashed) {
-				this.skier.currentImage = this.skier.skier_skate_right;
-				this.skier.xv = this.skier.skateV;
-				this.skier.isStopped = false;
-			} else {
-				this.skier.currentImage = this.skier.skier_right;
-				this.stopSkier(vVectors);
-			}
-		} else {
-			if (mouseToSkierAngle < -5 && mouseToSkierAngle > -50) {
-				if (this.skier.isJumping) {
-					this.skier.currentImage = this.skier.skier_jump_left;
-				} else {
-					this.skier.currentImage = this.skier.skier_left_down;
-				}
-			} else if (mouseToSkierAngle < -50 && mouseToSkierAngle > -75) {
-				if (this.skier.isJumping) {
-					this.skier.currentImage = this.skier.skier_jump_left;
-				} else {
-					this.skier.currentImage = this.skier.skier_down_left;
-				}
-			} else if (mouseToSkierAngle < -75 && mouseToSkierAngle > -105) {
-				if (this.skier.isJumping) {
-					this.skier.currentImage = this.skier.skier_jump_down;
-				} else {
-					this.skier.currentImage = this.skier.skier_down;
-				}
-			} else if (mouseToSkierAngle < -105 && mouseToSkierAngle > -130) {
-				if (this.skier.isJumping) {
-					this.skier.currentImage = this.skier.skier_jump_right;
-				} else {
-					this.skier.currentImage = this.skier.skier_down_right;
-				}
-			} else if (mouseToSkierAngle < -130 && mouseToSkierAngle > -175) {
-				if (this.skier.isJumping) {
-					this.skier.currentImage = this.skier.skier_jump_right;
-				} else {
-					this.skier.currentImage = this.skier.skier_right_down;
-				}
-			}
-
-			if (!this.skier.isStopped) {
-				this.skier.isSkatingLeft = false;
-				this.skier.isSkatingRight = false;
-			}
-
-			let xFlip = 1;
-			if (mouseToSkierAngle > -90 && mouseToSkierAngle < 0) {
-				xFlip = -1;
-			}
-
-			let maxSpeedX = this.maxSpeed * mouseAngleVectors[0] * xFlip * .75;
-			let maxSpeedY = this.maxSpeed * mouseAngleVectors[1];
-
-			if (!this.skier.isJumping) {
-				this.maxSpeedXBeforeJump = maxSpeedX;
-				this.maxSpeedYBeforeJump = maxSpeedY;
-			} else {
-				maxSpeedX = this.maxSpeedXBeforeJump;
-				maxSpeedY = this.maxSpeedYBeforeJump;
-			}
-
-			if (!this.skier.isCrashed && !this.skier.isJumping) {
-				this.skier.isStopped = false;
-				this.skier.xv += this.skier.accelX * mouseAngleVectors[0];
-				this.skier.yv += this.skier.accelY * mouseAngleVectors[1];
-			}
-
-			if (this.enforceMaxSpeed) {
-				if (this.skier.xv < -maxSpeedX) {
-					this.skier.xv = -maxSpeedX;
-				} else if (this.skier.xv > maxSpeedX) {
-					this.skier.xv = maxSpeedX;
-				}
-				if (this.skier.yv > maxSpeedY) {
-					this.skier.yv = maxSpeedY;
-				}
-			}
-		}
-
-		if (this.skier.isJumping && this.skier.isCrashed) {
-			this.skier.currentImage = this.skier.skier_falling;
-		} else if (this.skier.isCrashed) {
-			this.skier.currentImage = this.skier.skier_sit;
-			this.stopSkier(vVectors);
-
-			if (this.skier.isStopped) {
-				this.skier.xv = 0;
-				this.skier.yv = 0;
-			}
-		}
-
-		// add coordinate(s) to skier trail
-		if (!this.skier.isStopped && !this.skier.isJumping) {
-			this.skierTrail.push([2, 24]);
-		}
-	}
-
-	// decelerate the skier until he is stopped
-	stopSkier(vVectors) {
-		if (!this.skier.isStopped && !this.skier.isJumping) {
-			let xDecelAmt = this.skier.decel * vVectors[0];
-			let yDecelAmt = this.skier.decel * vVectors[1];
-
-			if (this.skier.isCrashed) {
-				xDecelAmt = this.skier.decelCrash * vVectors[0];
-				yDecelAmt = this.skier.decelCrash * vVectors[1];
-			}
-
-			this.skier.xv -= xDecelAmt;
-			this.skier.yv -= yDecelAmt;
-
-			if (this.skier.yv <= 0) {
-				this.skier.yv = 0
-				this.skier.xv = 0;
-				this.skier.isStopped = true;
-			}
-		}
-	}
-
-	// handle keyboard input
-    keyAction(keyDown, keyUp) {
-		if (this.skier.isStopped && !this.skier.isCrashed && !this.skier.isJumping) {
-			switch(keyDown) {
-				case "left":
-					this.skier.isSkatingLeft = true;
-					break;
-				case "right":
-					this.skier.isSkatingRight = true;
-					break;
-			}
-		}
-
-		switch(keyUp) {
-			case "left":
-				this.skier.isSkatingLeft = false;
-				break;
-			case "right":
-				this.skier.isSkatingRight = false;
-				break;
-		}
-    }
 
 	// convert radians to degrees
 	degrees(radians) {
@@ -600,6 +463,11 @@ export default class Game {
 			ctx.fillStyle = "#DDDDDD";
 			ctx.fillRect(this.skier.x + this.skierTrail[i][0], this.skier.y + this.skierTrail[i][1], 2, 1);
 			ctx.fillRect(this.skier.x + this.skierTrail[i][0] + 8, this.skier.y + this.skierTrail[i][1], 2, 1);
+		}
+
+		// draw jumps
+		for (let i = 0; i < this.jumps.length; i++) {
+			ctx.drawImage(this.jump, this.skier.x + this.jumps[i][0], this.skier.y + this.jumps[i][1]);
 		}
 
 		// draw rocks
@@ -651,6 +519,8 @@ export default class Game {
 
 		// draw lift towers below skier
 		this.lift.drawTowersBelowPlayer(ctx);
+
+		this.lift.drawTowerTops(ctx);
 
 		// draw lodge
 		//ctx.drawImage(this.lodge, this.skier.x + this.lodge.xc, this.skier.y + this.lodge.yc);
