@@ -12,6 +12,7 @@ export default class Skier{
 		this.accelY = 3;
 		this.decel = -2.75;
 		this.decelCrash = -4;
+		this.currentSpeed = 0;
 		this.isStopped = true;
 		this.isCrashed = false;
 		this.isJumping = false;
@@ -57,6 +58,7 @@ export default class Skier{
 	}
 
 	update(someNumbers) {
+		this.currentSpeed = Math.sqrt(Math.pow(this.xv, 2) + Math.pow(this.yv, 2));
 		let mouseToSkierAngle = someNumbers[0];
 		let mouseAngleVectors = someNumbers[1];
 		let vVectors = someNumbers[2];

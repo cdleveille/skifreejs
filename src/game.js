@@ -11,10 +11,16 @@ export default class Game {
 		this.bumpDensity = 1.0;
 		this.rockDensity = 0.1;
 		this.jumpDensity = 0.05;
+		this.jumpVBase = 0.7;
+		this.jumpVMult = 0.0022;
+		this.dist = 0;
 		this.skierTrail = [];
 		this.collisionsEnabled = true;
 		this.loadGameImages();
+		this.loadFont();
 		this.populateInitialGameObjects();
+
+		this.timestamp1 = this.timestamp();
 	}
 
 	loadGameImages() {
@@ -26,6 +32,14 @@ export default class Game {
 
 		this.tree_bare = new Image();
 		this.tree_bare.src = "/img/tree_bare.png";
+
+		this.tree_bare_fire1 = new Image();
+		this.tree_bare_fire1.src = "/img/tree_bare_fire1.png";
+
+		this.tree_bare_fire2 = new Image();
+		this.tree_bare_fire2.src = "/img/tree_bare_fire2.png";
+
+		this.currentTreeFireImg = this.tree_bare_fire1;
 
 		this.boarder_bro = new Image();
 		this.boarder_bro.src = "/img/boarder_bro.png";
@@ -47,8 +61,21 @@ export default class Game {
 		this.rock = new Image();
 		this.rock.src = "/img/rock.png";
 
+		this.stump = new Image();
+		this.stump.src = "/img/stump.png"
+
 		this.jump = new Image();
 		this.jump.src = "/img/jump.png";
+	}
+
+	loadFont() {
+		this.font = new FontFace('ModernDOS', 'url(font/ModernDOS8x16.ttf)');
+		this.font.load().then(function(loaded_face) {
+			document.fonts.add(loaded_face);
+			document.body.style.fontFamily = '"ModernDOS", Arial';
+		}).catch(function(error) {
+			console.log("Error loading font: ", error);
+		});
 	}
 
 	// generate game objects to put on and around screen at start of game
@@ -86,8 +113,8 @@ export default class Game {
 		for (let n = 0; n < this.rockCount; n++) {
 			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
 			let y = this.randomInt(-height / 3, height * 5 / 3);
-			this.rocks.push([x, y, false]);
-			// x-coordinate, y-coordinate, hasSkierHitThisRockYet
+			this.rocks.push([x, y, false, this.randomInt(0, 2)]);
+			// x-coordinate, y-coordinate, hasSkierHitThisRockYet, type (rock or stump)
 		}
 
 		// create rocks
@@ -106,11 +133,11 @@ export default class Game {
 		let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
 
 		// if game object would be visible, spawn it nearby offscreen instead
-		if (x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
+		if (x > -this.gameWidth / 2 - 50 && x < this.gameWidth / 2 && 
 			y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3) {
 				let flip = this.randomInt(0, 5);
 				if (flip == 0) {
-					x -= this.gameWidth;
+					x -= (this.gameWidth + 50);
 				} else if (flip == 1) {
 					x -= this.gameWidth;
 					y += this.gameHeight;
@@ -128,7 +155,9 @@ export default class Game {
 			return [x, y, this.randomInt(0, 3)];
 		} else if (type == 'tree') {
 			return [x, y, false, this.randomInt(0, 3)];
-		} else if (type == 'rock' || type == 'jump') {
+		} else if (type == 'rock') {
+			return [x, y, false, this.randomInt(0, 2)];
+		} else if (type == 'jump') {
 			return [x, y, false];
 		}
 	}
@@ -245,7 +274,7 @@ export default class Game {
 			this.adaptGameObjectCountToScreenSize();
 		}
 
-		// update position of game objects based on speed/direction of skier
+		// update position of game objects based on x/y-velocity of skier
 		this.updatePosition(this.trees, step);
 		this.updatePosition(this.bumps, step);
 		this.updatePosition(this.rocks, step);
@@ -269,6 +298,7 @@ export default class Game {
 			let treeX = this.trees[i][0];
 			let treeY = this.trees[i][1];
 			let hitThisTreeAlready = this.trees[i][2];
+			let type = this.trees[i][3];
 
 			// recycle uphill offscreen trees once they are passed
 			if (this.skier.y - treeY > this.gameHeight * (2 / 3) + 50) {
@@ -276,10 +306,20 @@ export default class Game {
 			}
 
 			// if the skier hits a tree they haven't hit already, set isCrashed to true
-			if (this.isCollidingWithSkier(treeX + 6, treeY + 24, 16, 7) && this.skier.jumpOffset < this.tree_small.height) {
+			let yOffset = 24;
+			let height = this.tree_small.height;
+			if (type == 2) {
+				yOffset = 48;
+				height = this.tree_large.height;
+			}
+			if (this.isCollidingWithSkier(treeX + 6, treeY + yOffset, 16, 12) && this.skier.jumpOffset < height) {
 				if (this.collisionsEnabled && !hitThisTreeAlready) {
 					this.skier.isCrashed = true;
 					this.trees[i][2] = true;
+
+					if (type == 1 && this.skier.isJumping && !this.skier.isStopped) {
+						this.trees[i][3] = 3;
+					}
 				}
 			}
 		}
@@ -295,6 +335,7 @@ export default class Game {
 			let rockX = this.rocks[i][0];
 			let rockY = this.rocks[i][1];
 			let hitThisRockAlready = this.rocks[i][2];
+			let type =  this.rocks[i][3];
 
 			// recycle uphill offscreen rocks once they are passed
 			if (this.skier.y - rockY > this.gameHeight * (2 / 3) + 50) {
@@ -302,7 +343,11 @@ export default class Game {
 			}
 
 			// if the skier hits a rock they haven't hit already, set isCrashed to true
-			if (this.isCollidingWithSkier(rockX, rockY, this.rock.width, this.rock.height) && this.skier.jumpOffset < this.rock.height) {
+			let widthOffset = 0;
+			if (type == 1) {
+				widthOffset = -7;
+			}
+			if (this.isCollidingWithSkier(rockX, rockY, this.rock.width + widthOffset, this.rock.height) && this.skier.jumpOffset < this.rock.height) {
 				if (this.collisionsEnabled && !hitThisRockAlready) {
 					this.skier.isCrashed = true;
 					this.rocks[i][2] = true;
@@ -322,14 +367,15 @@ export default class Game {
 
 			// if the skier hits a jump they haven't hit already, mark it as hit and make the skier jump
 			if (this.isCollidingWithSkier(jumpX, jumpY, 32, 8) && !this.skier.isJumping) {
-				if (this.collisionsEnabled && !hitThisJumpAlready) {
+				if (this.collisionsEnabled && !hitThisJumpAlready && !this.skier.isCrashed && !this.skier.isStopped) {
 					this.skier.isJumping = true;
-					this.skier.jumpV = this.skier.jumpVInit * 2;
+					this.skier.jumpV = this.skier.yv * this.jumpVMult + this.jumpVBase;
+					this.jumps[i][2] = true;
 				}
 			}
 		}
 
-		// delete skier trail if offscreen
+		// delete offscreen skier trail
 		for (let i = 0; i < this.skierTrail.length; i++) {
 			let y = this.skierTrail[i][1];
 			if (this.skier.y - y > this.gameHeight * (2 / 3) + 50) {
@@ -472,20 +518,36 @@ export default class Game {
 
 		// draw rocks
 		for (let i = 0; i < this.rocks.length; i++) {
-			ctx.drawImage(this.rock, this.skier.x + this.rocks[i][0], this.skier.y + this.rocks[i][1]);
+			let img = this.rock;
+			if (this.rocks[i][3] == 1) {
+				img = this.stump;
+			}
+			ctx.drawImage(img, this.skier.x + this.rocks[i][0], this.skier.y + this.rocks[i][1]);
 		}
 
 		// draw trees above skier
 		for (let i = 0; i < this.trees.length; i++) {
-			if (this.trees[i][1] < -2) {
-				let type = this.trees[i][3];
-				let img = this.tree_small;
-				if (type == 0) {
-					img = this.tree_bare;
-				} else if (type == 1) {
-					img = this.tree_small;
+			let type = this.trees[i][3];
+			let yThreshold = -2;
+			let img = this.tree_small;
+			if (type == 1) {
+				img = this.tree_bare;
+			} else if (type == 2) {
+				img = this.tree_large;
+				yThreshold = -34;
+			} else if (type == 3) {
+				let now = this.timestamp();
+				if (now - this.timestamp1 >= 50) {
+					if (this.currentTreeFireImg == this.tree_bare_fire1) {
+						this.currentTreeFireImg = this.tree_bare_fire2;
+					} else {
+						this.currentTreeFireImg = this.tree_bare_fire1;
+					}
+					this.timestamp1 = now;
 				}
-
+				img = this.currentTreeFireImg;
+			}
+			if (this.trees[i][1] < yThreshold) {
 				ctx.drawImage(img, this.skier.x + this.trees[i][0], this.skier.y + this.trees[i][1]);
 			}
 		}
@@ -498,15 +560,27 @@ export default class Game {
 		
 		// draw trees below skier
 		for (let i = 0; i < this.trees.length; i++) {
-			if (this.trees[i][1] >= -2) {
-				let type = this.trees[i][3];
-				let img = this.tree_small;
-				if (type == 0) {
-					img = this.tree_bare;
-				} else if (type == 1) {
-					img = this.tree_small;
+			let type = this.trees[i][3];
+			let yThreshold = -2;
+			let img = this.tree_small;
+			if (type == 1) {
+				img = this.tree_bare;
+			} else if (type == 2) {
+				img = this.tree_large;
+				yThreshold = -34;
+			} else if (type == 3) {
+				let now = this.timestamp();
+				if (now - this.timestamp1 >= 50) {
+					if (this.currentTreeFireImg == this.tree_bare_fire1) {
+						this.currentTreeFireImg = this.tree_bare_fire2;
+					} else {
+						this.currentTreeFireImg = this.tree_bare_fire1;
+					}
+					this.timestamp1 = now;
 				}
-
+				img = this.currentTreeFireImg;
+			}
+			if (this.trees[i][1] >= yThreshold) {
 				ctx.drawImage(img, this.skier.x + this.trees[i][0], this.skier.y + this.trees[i][1]);
 			}
 		}
@@ -519,8 +593,19 @@ export default class Game {
 
 		// draw lift towers below skier
 		this.lift.drawTowersBelowPlayer(ctx);
-
 		this.lift.drawTowerTops(ctx);
+
+		// draw hud (140 x 52)
+		ctx.fillStyle = "#000000";
+		ctx.fillRect(this.gameWidth - 140, 0, 140, 52);
+		ctx.fillStyle = "#FFFFFF";
+		ctx.fillRect(this.gameWidth - 139, 0, 139, 51);
+		ctx.font = "14px ModernDOS";
+		ctx.fillStyle = "#000000";
+		ctx.fillText("Time:", this.gameWidth - 136, 10);
+		ctx.fillText("Dist:", this.gameWidth - 136, 22);
+		ctx.fillText("Speed:    " + Math.ceil(this.skier.currentSpeed / 28.7514) + "m/s", this.gameWidth - 136, 34);
+		ctx.fillText("Style:", this.gameWidth - 136, 46);
 
 		// draw lodge
 		//ctx.drawImage(this.lodge, this.skier.x + this.lodge.xc, this.skier.y + this.lodge.yc);

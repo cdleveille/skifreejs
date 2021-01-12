@@ -152,7 +152,7 @@ export default class Lift {
 	}
 
 	drawCables(ctx) {
-		ctx.fillStyle = "#555555";
+		ctx.fillStyle = "#333333";
 		ctx.fillRect(this.game.skier.x + this.liftTowers[0][0] + 1, this.game.skier.y - this.game.gameHeight / 3, 1, this.game.gameHeight);
 		ctx.fillRect(this.game.skier.x + this.liftTowers[0][0] + 30, this.game.skier.y - this.game.gameHeight / 3, 1, this.game.gameHeight);
 	}
