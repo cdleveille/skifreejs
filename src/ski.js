@@ -6,9 +6,8 @@ let canvas = document.getElementById("gameScreen");
 let ctx = canvas.getContext("2d");
 
 let game = new Game();
-
-let inputHander = new InputHandler(canvas, game);
-let windowHandler = new WindowHandler(canvas, game);
+new InputHandler(canvas, game);
+new WindowHandler(canvas, game);
 
 let updateRate = 500;
 let dt, now, last = game.timestamp(), step = 1 / updateRate;

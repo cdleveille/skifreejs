@@ -9,7 +9,7 @@ export default class Game {
 		this.lastLogTime = null;
 		this.treeDensity = 0.8;
 		this.bumpDensity = 1.0;
-		this.rockDensity = 0.25;
+		this.rockDensity = 0.1;
 		this.skierTrail = [];
 		this.maxSpeed = 600;
 		this.collisionsEnabled = true;
@@ -247,7 +247,7 @@ export default class Game {
 			}
 
 			// if the skier hits a tree they haven't hit already, set isCrashed to true
-			if (Math.abs(treeX) < 20 && Math.abs(treeY) < 20) {
+			if (this.isCollidingWithSkier(treeX + 6, treeY + 24, 16, 7) && this.skier.jumpOffset < this.tree_small.height) {
 				if (this.collisionsEnabled && !hitThisTreeAlready) {
 					this.skier.isCrashed = true;
 					this.trees[i][2] = true;
@@ -273,8 +273,7 @@ export default class Game {
 			}
 
 			// if the skier hits a rock they haven't hit already, set isCrashed to true
-			//if (Math.abs(rockX) < 20 && Math.abs(rockY) < 11 && this.skier.jumpOffset < 11) {
-			if (this.isCollidingWithPlayer(rockX, rockY, this.rock.width, this.rock.height) && this.skier.jumpOffset < this.rock.height) {
+			if (this.isCollidingWithSkier(rockX, rockY, this.rock.width, this.rock.height) && this.skier.jumpOffset < this.rock.height) {
 				if (this.collisionsEnabled && !hitThisRockAlready) {
 					this.skier.isCrashed = true;
 					this.rocks[i][2] = true;
@@ -291,8 +290,8 @@ export default class Game {
 		}
 	}
 
-	isCollidingWithPlayer(objectX, objectY, objectWidth, objectHeight) {
-		let rect1 = {x: 0, y: 0, width: this.skier.currentImage.width, height: this.skier.currentImage.height};
+	isCollidingWithSkier(objectX, objectY, objectWidth, objectHeight) {
+		let rect1 = {x: 2, y: 24, width: 10, height: 2};
 		let rect2 = {x: objectX, y: objectY, width: objectWidth, height: objectHeight};
 
 		if (rect1.x < rect2.x + rect2.width &&
@@ -465,6 +464,14 @@ export default class Game {
 			let maxSpeedX = this.maxSpeed * mouseAngleVectors[0] * xFlip * .75;
 			let maxSpeedY = this.maxSpeed * mouseAngleVectors[1];
 
+			if (!this.skier.isJumping) {
+				this.maxSpeedXBeforeJump = maxSpeedX;
+				this.maxSpeedYBeforeJump = maxSpeedY;
+			} else {
+				maxSpeedX = this.maxSpeedXBeforeJump;
+				maxSpeedY = this.maxSpeedYBeforeJump;
+			}
+
 			if (!this.skier.isCrashed && !this.skier.isJumping) {
 				this.skier.isStopped = false;
 				this.skier.xv += this.skier.accelX * mouseAngleVectors[0];
@@ -497,7 +504,7 @@ export default class Game {
 
 		// add coordinate(s) to skier trail
 		if (!this.skier.isStopped && !this.skier.isJumping) {
-			this.skierTrail.push([10, 22]);
+			this.skierTrail.push([2, 24]);
 		}
 	}
 
@@ -506,6 +513,11 @@ export default class Game {
 		if (!this.skier.isStopped && !this.skier.isJumping) {
 			let xDecelAmt = this.skier.decel * vVectors[0];
 			let yDecelAmt = this.skier.decel * vVectors[1];
+
+			if (this.skier.isCrashed) {
+				xDecelAmt = this.skier.decelCrash * vVectors[0];
+				yDecelAmt = this.skier.decelCrash * vVectors[1];
+			}
 
 			this.skier.xv -= xDecelAmt;
 			this.skier.yv -= yDecelAmt;
@@ -586,30 +598,50 @@ export default class Game {
 		// draw skier trail
 		for (let i = 0; i < this.skierTrail.length; i++) {
 			ctx.fillStyle = "#DDDDDD";
-			ctx.fillRect(this.skier.x + this.skierTrail[i][0] + 2, this.skier.y + this.skierTrail[i][1], 2, 1);
-			ctx.fillRect(this.skier.x + this.skierTrail[i][0] - 6, this.skier.y + this.skierTrail[i][1], 2, 1);
+			ctx.fillRect(this.skier.x + this.skierTrail[i][0], this.skier.y + this.skierTrail[i][1], 2, 1);
+			ctx.fillRect(this.skier.x + this.skierTrail[i][0] + 8, this.skier.y + this.skierTrail[i][1], 2, 1);
 		}
 
 		// draw rocks
 		for (let i = 0; i < this.rocks.length; i++) {
 			ctx.drawImage(this.rock, this.skier.x + this.rocks[i][0], this.skier.y + this.rocks[i][1]);
 		}
-		
-		// draw trees
-		for (let i = 0; i < this.trees.length; i++) {
-			let type = this.trees[i][3];
-			let img = this.tree_small;
-			if (type == 0) {
-				img = this.tree_bare;
-			} else if (type == 1) {
-				img = this.tree_small;
-			}
 
-			ctx.drawImage(img, this.skier.x + this.trees[i][0], this.skier.y + this.trees[i][1]);
+		// draw trees above skier
+		for (let i = 0; i < this.trees.length; i++) {
+			if (this.trees[i][1] < -2) {
+				let type = this.trees[i][3];
+				let img = this.tree_small;
+				if (type == 0) {
+					img = this.tree_bare;
+				} else if (type == 1) {
+					img = this.tree_small;
+				}
+
+				ctx.drawImage(img, this.skier.x + this.trees[i][0], this.skier.y + this.trees[i][1]);
+			}
 		}
+
+		// draw lift towers above skier
+		this.lift.drawTowersAbovePlayer(ctx);
 
 		// draw skier
 		this.skier.draw(ctx);
+		
+		// draw trees below skier
+		for (let i = 0; i < this.trees.length; i++) {
+			if (this.trees[i][1] >= -2) {
+				let type = this.trees[i][3];
+				let img = this.tree_small;
+				if (type == 0) {
+					img = this.tree_bare;
+				} else if (type == 1) {
+					img = this.tree_small;
+				}
+
+				ctx.drawImage(img, this.skier.x + this.trees[i][0], this.skier.y + this.trees[i][1]);
+			}
+		}
 
 		// draw lift chairs
 		this.lift.drawChairs(ctx);
@@ -617,12 +649,11 @@ export default class Game {
 		// draw lift cables
 		this.lift.drawCables(ctx);
 
-		// draw lift towers
-		this.lift.drawTowers(ctx);
+		// draw lift towers below skier
+		this.lift.drawTowersBelowPlayer(ctx);
 
 		// draw lodge
 		//ctx.drawImage(this.lodge, this.skier.x + this.lodge.xc, this.skier.y + this.lodge.yc);
-
 	}
 
 	log(toLog) {

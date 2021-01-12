@@ -9,6 +9,7 @@ export default class Skier{
 		this.accelX = 2;
 		this.accelY = 3;
 		this.decel = -2.75;
+		this.decelCrash = -4;
 		this.loadSkierImages();
 		this.currentImage = this.skier_left;
 		this.isStopped = true;
@@ -16,7 +17,7 @@ export default class Skier{
 		this.isJumping = false;
 		this.jumpOffset = 0;
 		this.jumpV = 0;
-		this.jumpVInit = 0.8;
+		this.jumpVInit = 0.7;
 		this.jumpGravity = .01;
 		this.isSkatingLeft = false;
 		this.isSkatingRight = false;
@@ -54,7 +55,16 @@ export default class Skier{
 
 	}
 
+	update(step) {
+
+	}
+
 	draw(ctx) {
-		ctx.drawImage(this.currentImage, this.x, this.y - this.jumpOffset);
+		let xOffset = 0;
+		if (this.currentImage == this.skier_sit || this.currentImage == this.skier_falling ||
+			this.currentImage == this.skier_jump_down) {
+			xOffset = -8;
+		}
+		ctx.drawImage(this.currentImage, this.x + xOffset, this.y - this.jumpOffset);
 	}
 }

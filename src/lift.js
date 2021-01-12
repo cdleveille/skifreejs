@@ -48,7 +48,7 @@ export default class Lift {
 
         // if the skier hits a lift tower, set isCrashed to true
 		for (let i = 0; i < this.liftTowers.length; i++) {
-			if (Math.abs(this.liftTowers[i][0] + 3) < 8 && Math.abs(this.liftTowers[i][1] + 40) < 20) {
+			if (this.game.isCollidingWithSkier(this.liftTowers[i][0] + 10, this.liftTowers[i][1] + 50, 11, 11) && this.game.skier.jumpOffset < 61) {
 				if (this.game.collisionsEnabled && !this.liftTowers[i][2]) {
 					this.game.skier.isCrashed = true;
 					this.liftTowers[i][2] = true;
@@ -113,9 +113,19 @@ export default class Lift {
 		}
     }
 
-    drawTowers(ctx) {
+    drawTowersAbovePlayer(ctx) {
         for (let i = 0; i < this.liftTowers.length; i++) {
-			ctx.drawImage(this.lift_tower, this.game.skier.x + this.liftTowers[i][0], this.game.skier.y + this.liftTowers[i][1]);
+            if (this.liftTowers[i][1] < -38) {
+                ctx.drawImage(this.lift_tower, this.game.skier.x + this.liftTowers[i][0], this.game.skier.y + this.liftTowers[i][1]);
+            }
+		}
+    }
+
+    drawTowersBelowPlayer(ctx) {
+        for (let i = 0; i < this.liftTowers.length; i++) {
+            if (this.liftTowers[i][1] >= -38) {
+                ctx.drawImage(this.lift_tower, this.game.skier.x + this.liftTowers[i][0], this.game.skier.y + this.liftTowers[i][1]);
+            }
 		}
     }
 
