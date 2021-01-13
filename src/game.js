@@ -13,14 +13,18 @@ export default class Game {
 		this.jumpDensity = 0.05;
 		this.jumpVBase = 0.7;
 		this.jumpVMult = 0.0022;
-		this.dist = 0;
+		this.yDist = 0;
+		this.style = 0;
 		this.skierTrail = [];
 		this.collisionsEnabled = true;
+		this.isPaused = false;
 		this.loadGameImages();
+		this.setUpGameObjects();
 		this.loadFont();
-		this.populateInitialGameObjects();
 
 		this.timestamp1 = this.timestamp();
+		this.startTime = this.timestamp();
+		this.currentTime = this.startTime;
 	}
 
 	loadGameImages() {
@@ -78,8 +82,12 @@ export default class Game {
 		});
 	}
 
-	// generate game objects to put on and around screen at start of game
-	populateInitialGameObjects() {
+	restart() {
+		
+	}
+
+	// initialize game settings and generate game objects to put on and around screen at start
+	setUpGameObjects() {
 		let width = window.innerWidth;
 		let height = window.innerHeight;
 		let area = width * height;
@@ -117,7 +125,7 @@ export default class Game {
 			// x-coordinate, y-coordinate, hasSkierHitThisRockYet, type (rock or stump)
 		}
 
-		// create rocks
+		// create jumps
 		this.jumps = [];
 		for (let n = 0; n < this.jumpCount; n++) {
 			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
@@ -264,6 +272,7 @@ export default class Game {
 	}
 	
 	update(step) {
+		this.currentTime = this.timestamp();
 		this.skier.update(this.crunchSomeNumbas());
 		this.lift.update(step);
 		this.updateGameObjects();
@@ -280,6 +289,19 @@ export default class Game {
 		this.updatePosition(this.rocks, step);
 		this.updatePosition(this.jumps, step);
 		this.updatePosition(this.skierTrail, step);
+
+		// update total distance traveled vertically
+		this.yDist += this.skier.yv * step;
+
+		let now = this.timestamp();
+		if (now - this.timestamp1 >= 50) {
+			if (this.currentTreeFireImg == this.tree_bare_fire1) {
+				this.currentTreeFireImg = this.tree_bare_fire2;
+			} else {
+				this.currentTreeFireImg = this.tree_bare_fire1;
+			}
+			this.timestamp1 = now;
+		}
 
 		// update position of lodge
 		//this.lodge.xc -= this.skier.xv * step;
@@ -300,22 +322,25 @@ export default class Game {
 			let hitThisTreeAlready = this.trees[i][2];
 			let type = this.trees[i][3];
 
-			// recycle uphill offscreen trees once they are passed
-			if (this.skier.y - treeY > this.gameHeight * (2 / 3) + 50) {
+			// recycle offscreen trees that go out of bounds
+			if (treeY < -this.gameHeight / 3 - 50) {
 				this.trees[i] = this.spawnNewGameObjectOffScreen('tree');
 			}
 
 			// if the skier hits a tree they haven't hit already, set isCrashed to true
-			let yOffset = 24;
+			let xOffset = 6, yOffset = 24, w = 16, h = 12;
 			let height = this.tree_small.height;
-			if (type == 2) {
+			if (type == 1) {
+				xOffset = 5, yOffset = 19, w = 12, h = 7;
+			} else if (type == 2) {
 				yOffset = 48;
 				height = this.tree_large.height;
 			}
-			if (this.isCollidingWithSkier(treeX + 6, treeY + yOffset, 16, 12) && this.skier.jumpOffset < height) {
+			if (this.isCollidingWithSkier(treeX + xOffset, treeY + yOffset, w, h) && this.skier.jumpOffset < height) {
 				if (this.collisionsEnabled && !hitThisTreeAlready) {
 					this.skier.isCrashed = true;
 					this.trees[i][2] = true;
+					this.style -= 32;
 
 					if (type == 1 && this.skier.isJumping && !this.skier.isStopped) {
 						this.trees[i][3] = 3;
@@ -351,6 +376,7 @@ export default class Game {
 				if (this.collisionsEnabled && !hitThisRockAlready) {
 					this.skier.isCrashed = true;
 					this.rocks[i][2] = true;
+					this.style -= 32;
 				}
 			}
 		}
@@ -369,7 +395,9 @@ export default class Game {
 			if (this.isCollidingWithSkier(jumpX, jumpY, 32, 8) && !this.skier.isJumping) {
 				if (this.collisionsEnabled && !hitThisJumpAlready && !this.skier.isCrashed && !this.skier.isStopped) {
 					this.skier.isJumping = true;
-					this.skier.jumpV = this.skier.yv * this.jumpVMult + this.jumpVBase;
+					let jumpV = this.skier.yv * this.jumpVMult + this.jumpVBase;
+					this.skier.jumpV = jumpV;
+					this.style += jumpV * 25;
 					this.jumps[i][2] = true;
 				}
 			}
@@ -536,15 +564,6 @@ export default class Game {
 				img = this.tree_large;
 				yThreshold = -34;
 			} else if (type == 3) {
-				let now = this.timestamp();
-				if (now - this.timestamp1 >= 50) {
-					if (this.currentTreeFireImg == this.tree_bare_fire1) {
-						this.currentTreeFireImg = this.tree_bare_fire2;
-					} else {
-						this.currentTreeFireImg = this.tree_bare_fire1;
-					}
-					this.timestamp1 = now;
-				}
 				img = this.currentTreeFireImg;
 			}
 			if (this.trees[i][1] < yThreshold) {
@@ -569,15 +588,6 @@ export default class Game {
 				img = this.tree_large;
 				yThreshold = -34;
 			} else if (type == 3) {
-				let now = this.timestamp();
-				if (now - this.timestamp1 >= 50) {
-					if (this.currentTreeFireImg == this.tree_bare_fire1) {
-						this.currentTreeFireImg = this.tree_bare_fire2;
-					} else {
-						this.currentTreeFireImg = this.tree_bare_fire1;
-					}
-					this.timestamp1 = now;
-				}
 				img = this.currentTreeFireImg;
 			}
 			if (this.trees[i][1] >= yThreshold) {
@@ -595,20 +605,64 @@ export default class Game {
 		this.lift.drawTowersBelowPlayer(ctx);
 		this.lift.drawTowerTops(ctx);
 
-		// draw hud (140 x 52)
+		// draw hud (140x52 black border 1px)
 		ctx.fillStyle = "#000000";
 		ctx.fillRect(this.gameWidth - 140, 0, 140, 52);
 		ctx.fillStyle = "#FFFFFF";
 		ctx.fillRect(this.gameWidth - 139, 0, 139, 51);
 		ctx.font = "14px ModernDOS";
 		ctx.fillStyle = "#000000";
-		ctx.fillText("Time:", this.gameWidth - 136, 10);
-		ctx.fillText("Dist:", this.gameWidth - 136, 22);
-		ctx.fillText("Speed:    " + Math.ceil(this.skier.currentSpeed / 28.7514) + "m/s", this.gameWidth - 136, 34);
-		ctx.fillText("Style:", this.gameWidth - 136, 46);
+		ctx.fillText("Time:  " + this.timeToString(this.currentTime - this.startTime), this.gameWidth - 136, 10);
+
+		let leadingSpace = '     ';
+		let dist = Math.ceil(this.yDist / 28.7514);
+		if (dist > 999999) {
+			leadingSpace = '';
+		} else if (dist > 99999) {
+			leadingSpace = ' ';
+		} else if (dist > 9999) {
+			leadingSpace = '  ';
+		} else if (dist > 999) {
+			leadingSpace = '   ';
+		} else if (dist > 99) {
+			leadingSpace = '    ';
+		}
+		
+		ctx.fillText('Dist:' + leadingSpace + this.padLeadingZero(dist) + 'm', this.gameWidth - 136, 22);
+		ctx.fillText('Speed:    ' + this.padLeadingZero(Math.ceil(this.skier.currentSpeed / 28.7514)) + 'm/s', this.gameWidth - 136, 34);
+		ctx.fillText('Style:       ' + Math.floor(this.style), this.gameWidth - 136, 46);
 
 		// draw lodge
 		//ctx.drawImage(this.lodge, this.skier.x + this.lodge.xc, this.skier.y + this.lodge.yc);
+	}
+
+	padLeadingZero(num) {
+		num = num.toString();
+		if (num.length < 2) {
+			num = '0' + num;
+		}
+		return num;
+	}
+
+	timeToString(time) {
+		let diffInHrs = time / 3600000;
+		let hh = Math.floor(diffInHrs);
+		
+		let diffInMin = (diffInHrs - hh) * 60;
+		let mm = Math.floor(diffInMin);
+		
+		let diffInSec = (diffInMin - mm) * 60;
+		let ss = Math.floor(diffInSec);
+		
+		let diffInMs = (diffInSec - ss) * 100;
+		let ms = Math.floor(diffInMs);
+		
+		let formattedHH = hh.toString().padStart(2, "0");
+		let formattedMM = mm.toString().padStart(2, "0");
+		let formattedSS = ss.toString().padStart(2, "0");
+		let formattedMS = ms.toString().padStart(2, "0");
+		
+		return `${formattedHH}:${formattedMM}:${formattedSS}.${formattedMS}`;
 	}
 
 	log(toLog) {

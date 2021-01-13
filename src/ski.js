@@ -13,12 +13,15 @@ let updateRate = 500;
 let dt, now, last = game.timestamp(), step = 1 / updateRate;
 
 function frame() {
+	
 	now = game.timestamp();
 	dt = Math.min(1, (now - last) / 1000);
 
 	while(dt > step) {
 		dt = dt - step;
-		game.update(step);
+		if (!game.isPaused) {
+			game.update(step);
+		}
 	}
 
 	game.draw(ctx);

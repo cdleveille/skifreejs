@@ -1,3 +1,5 @@
+import Game from "/src/game.js";
+
 export default class InputHandler{
 	constructor(canvas, game) {
 		canvas.addEventListener('mousemove', (event) => {
@@ -16,7 +18,7 @@ export default class InputHandler{
 			}
 		});
 
-		let left = 65, right = 68;
+		let left = 65, right = 68, p = 80, r = 82;
 
 		document.addEventListener("keydown", (event) => {
 			switch(event.keyCode) {
@@ -29,6 +31,16 @@ export default class InputHandler{
 					if (game.skier.isStopped) {
 						game.skier.isSkatingRight = true;
 					}
+					break;
+				case p:
+					if (game.isPaused) {
+						game.isPaused = false;
+					} else {
+						game.isPaused = true;
+					}
+					break;
+				case r:
+					game.restart();
 					break;
 			}
 		});
