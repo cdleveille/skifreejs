@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "prebuild",
+			"script": "postinstall",
 			"group": {
 				"kind": "build",
 				"isDefault": true
