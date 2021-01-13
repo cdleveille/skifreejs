@@ -6,6 +6,6 @@ if (navigator.serviceWorker.controller) {
 	navigator.serviceWorker
 		.register('../service-worker.js',)
 		.then(function (reg) {
-			console.log('Service worker  registered');
+			console.log('Service worker registered');
 		});
 }

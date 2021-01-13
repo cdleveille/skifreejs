@@ -8,13 +8,14 @@ export default class InputHandler {
 			game.mousePos = [mouseX, mouseY];
 		});
 
-		// eslint-disable-next-line no-unused-vars
-		canvas.addEventListener('click', (event) => {
-			if (!game.skier.isJumping && !game.skier.isCrashed) {
-				game.skier.isJumping = true;
-				game.skier.jumpV = game.skier.jumpVInit;
-			} else if (game.skier.isCrashed && game.skier.isStopped) {
-				game.skier.isCrashed = false;
+		canvas.addEventListener('click', () => {
+			if (!game.isPaused) {
+				if (!game.skier.isJumping && !game.skier.isCrashed) {
+					game.skier.isJumping = true;
+					game.skier.jumpV = game.skier.jumpVInit;
+				} else if (game.skier.isCrashed && game.skier.isStopped) {
+					game.skier.isCrashed = false;
+				}
 			}
 		});
 

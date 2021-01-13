@@ -7,12 +7,19 @@
 		{
 			"type": "pwa-node",
 			"request": "launch",
-			"name": "Ski Free Local",
+			"name": "start",
 			"preLaunchTask": "lint: fix",
 			"skipFiles": [
 				"<node_internals>/**"
 			],
 			"program": "${workspaceFolder}\\src\\index.js"
+		},
+		{
+			"type": "pwa-chrome",
+			"name": "dev",
+			"request": "launch",
+			"preLaunchTask": "lint: fix",
+			"url": "http://localhost:3000"
 		}
 	]
 }

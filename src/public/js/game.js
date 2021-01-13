@@ -87,48 +87,25 @@ export default class Game {
 
 	// load game assets
 	loadImages() {
-		this.tree_small = new Image();
-		this.tree_small.src = '../img/tree_small.png';
+		this.tree_small = this.loadImage('/img/tree_small.png');
+		this.tree_large = this.loadImage('/img/tree_large.png');
+		this.tree_bare = this.loadImage('/img/tree_bare.png');
+		this.tree_bare_fire1 = this.loadImage('/img/tree_bare_fire1.png');
+		this.tree_bare_fire2 = this.loadImage('/img/tree_bare_fire2.png');
+		this.lodge = this.loadImage('/img/lodge.png');
+		this.bump_small = this.loadImage('/img/bump_small.png');
+		this.bump_large = this.loadImage('/img/bump_large.png');
+		this.bump_group = this.loadImage('/img/bump_group.png');
+		this.rock = this.loadImage('/img/rock.png');
+		this.stump = this.loadImage('/img/stump.png');
+		this.jump = this.loadImage('/img/jump.png');
+	}
 
-		this.tree_large = new Image();
-		this.tree_large.src = '../img/tree_large.png';
-
-		this.tree_bare = new Image();
-		this.tree_bare.src = '../img/tree_bare.png';
-
-		this.tree_bare_fire1 = new Image();
-		this.tree_bare_fire1.src = '../img/tree_bare_fire1.png';
-
-		this.tree_bare_fire2 = new Image();
-		this.tree_bare_fire2.src = '../img/tree_bare_fire2.png';
-
-		this.currentTreeFireImg = this.tree_bare_fire1;
-
-		this.boarder_bro = new Image();
-		this.boarder_bro.src = '../img/boarder_bro.png';
-
-		this.lodge = new Image();
-		this.lodge.src = '../img/lodge.png';
-		this.lodge.xc = 50;
-		this.lodge.yc = -100;
-
-		this.bump_small = new Image();
-		this.bump_small.src = '../img/bump_small.png';
-
-		this.bump_large = new Image();
-		this.bump_large.src = '../img/bump_large.png';
-
-		this.bump_group = new Image();
-		this.bump_group.src = '../img/bump_group.png';
-
-		this.rock = new Image();
-		this.rock.src = '../img/rock.png';
-
-		this.stump = new Image();
-		this.stump.src = '../img/stump.png';
-
-		this.jump = new Image();
-		this.jump.src = '/img/jump.png';
+	// load single image from source file
+	loadImage(src) {
+		let img = new Image();
+		img.src = src;
+		return img;
 	}
 
 	// load the ModernDOS font family

@@ -4,6 +4,7 @@
 		"firefox-devtools.vscode-firefox-debug",
 		"eamodio.gitlens",
 		"pkief.material-icon-theme",
-		"coenraads.bracket-pair-colorizer-2"
+		"coenraads.bracket-pair-colorizer-2",
+		"dbaeumer.vscode-eslint"
 	]
 }

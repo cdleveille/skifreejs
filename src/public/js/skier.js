@@ -11,6 +11,12 @@ export default class Skier {
 		this.decelCrash = -4;
 		this.jumpVInit = 0.7;
 		this.jumpGravity = .01;
+		this.hitbox = {
+			x: 2,
+			y: 24,
+			width: 10,
+			height: 2
+		};
 		this.loadSkierImages();
 		this.init();
 	}
