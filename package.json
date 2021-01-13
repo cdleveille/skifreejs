@@ -2,10 +2,11 @@
   "name": "skifree",
   "version": "1.0.0",
   "description": "**Play from Source Code:**\r 1. Download or clone repository\r 2. Install [Node.js](https://nodejs.org/en/)\r 3. Install [http-server](https://www.npmjs.com/package/http-server): ```npm install http-server -g```\r 4. In the \\SkiFree directory, run: ```http-server -a localhost -p 8000 -c-1```\r 5. Go to [http://localhost:8000/ski.html](http://localhost:8000/ski.html)",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+	"dev": "nodemon src/index.js",
     "prebuild": "eslint --fix --ext .js,.jsx .",
-    "build": "http-server -a localhost -p 8000 -c-1"
+	"build": "node src/index.js"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,14 @@
     "husky": "^4.3.7"
   },
   "dependencies": {
-    "http-server": "^0.12.3"
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^4.3.1",
+    "http-server": "^0.12.3",
+    "morgan": "^1.10.0",
+    "response-time": "^2.3.2"
   },
   "husky": {
     "hooks": {

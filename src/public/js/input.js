@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 export default class InputHandler {
 	constructor(canvas, game) {
 		canvas.addEventListener('mousemove', (event) => {

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 export default class Skier {
 	constructor(game) {
 		this.game = game;
