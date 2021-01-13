@@ -2,9 +2,11 @@
     "configurations": [
         {
             "type": "pwa-chrome",
-            "name": "http://localhost:8000/ski.html",
-            "request": "launch",
-            "url": "http://localhost:8000/ski.html"
+            "name": "Ski Free Local",
+			"request": "launch",
+			"preLaunchTask": "lint: fix",
+			"url": "http://localhost:8000/ski.html",
+			"webRoot": "${workspaceRoot}",
         }
     ]
 }
