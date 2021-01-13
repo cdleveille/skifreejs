@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 export default class WindowHandler {
 	constructor(canvas, game) {
 		function resizeCanvas() {

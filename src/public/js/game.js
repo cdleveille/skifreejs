@@ -1,5 +1,6 @@
-import Skier from '/src/skier.js';
-import Lift from '/src/lift.js';
+/* eslint-disable no-undef */
+import Skier from './skier.js';
+import Lift from './lift.js';
 
 export default class Game {
 	constructor() {
@@ -87,44 +88,44 @@ export default class Game {
 	// load game assets
 	loadImages() {
 		this.tree_small = new Image();
-		this.tree_small.src = '/img/tree_small.png';
+		this.tree_small.src = '../img/tree_small.png';
 
 		this.tree_large = new Image();
-		this.tree_large.src = '/img/tree_large.png';
+		this.tree_large.src = '../img/tree_large.png';
 
 		this.tree_bare = new Image();
-		this.tree_bare.src = '/img/tree_bare.png';
+		this.tree_bare.src = '../img/tree_bare.png';
 
 		this.tree_bare_fire1 = new Image();
-		this.tree_bare_fire1.src = '/img/tree_bare_fire1.png';
+		this.tree_bare_fire1.src = '../img/tree_bare_fire1.png';
 
 		this.tree_bare_fire2 = new Image();
-		this.tree_bare_fire2.src = '/img/tree_bare_fire2.png';
+		this.tree_bare_fire2.src = '../img/tree_bare_fire2.png';
 
 		this.currentTreeFireImg = this.tree_bare_fire1;
 
 		this.boarder_bro = new Image();
-		this.boarder_bro.src = '/img/boarder_bro.png';
+		this.boarder_bro.src = '../img/boarder_bro.png';
 
 		this.lodge = new Image();
-		this.lodge.src = '/img/lodge.png';
+		this.lodge.src = '../img/lodge.png';
 		this.lodge.xc = 50;
 		this.lodge.yc = -100;
 
 		this.bump_small = new Image();
-		this.bump_small.src = '/img/bump_small.png';
+		this.bump_small.src = '../img/bump_small.png';
 
 		this.bump_large = new Image();
-		this.bump_large.src = '/img/bump_large.png';
+		this.bump_large.src = '../img/bump_large.png';
 
 		this.bump_group = new Image();
-		this.bump_group.src = '/img/bump_group.png';
+		this.bump_group.src = '../img/bump_group.png';
 
 		this.rock = new Image();
-		this.rock.src = '/img/rock.png';
+		this.rock.src = '../img/rock.png';
 
 		this.stump = new Image();
-		this.stump.src = '/img/stump.png';
+		this.stump.src = '../img/stump.png';
 
 		this.jump = new Image();
 		this.jump.src = '/img/jump.png';
@@ -132,7 +133,7 @@ export default class Game {
 
 	// load the ModernDOS font family
 	loadFont() {
-		this.font = new FontFace('ModernDOS', 'url(font/ModernDOS8x16.ttf)');
+		this.font = new FontFace('ModernDOS', 'url(../font/ModernDOS8x16.ttf)');
 		this.font.load().then(function (loaded_face) {
 			document.fonts.add(loaded_face);
 			document.body.style.fontFamily = '"ModernDOS", Arial';

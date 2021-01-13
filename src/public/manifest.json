@@ -1,0 +1,16 @@
+{
+	"name": "SkiFree",
+	"short_name": "SkiFree",
+	"start_url": ".",
+	"display": "standalone",
+	"background_color": "#fff",
+	"theme_color": "#317EFB",
+	"description": "S KiFree Borwser Port",
+	"icons": [{
+		"src": "./icons/ski.png",
+		"sizes": "512x512",
+		"type": "image/png",
+		"purpose": "any maskable"
+	}]
+  }
+  
