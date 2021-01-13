@@ -66,24 +66,24 @@ export default class Game {
 		this.rock.src = "/img/rock.png";
 
 		this.stump = new Image();
-		this.stump.src = "/img/stump.png"
+		this.stump.src = "/img/stump.png";
 
 		this.jump = new Image();
 		this.jump.src = "/img/jump.png";
 	}
 
 	loadFont() {
-		this.font = new FontFace('ModernDOS', 'url(font/ModernDOS8x16.ttf)');
-		this.font.load().then(function(loaded_face) {
+		this.font = new FontFace("ModernDOS", "url(font/ModernDOS8x16.ttf)");
+		this.font.load().then(function (loaded_face) {
 			document.fonts.add(loaded_face);
-			document.body.style.fontFamily = '"ModernDOS", Arial';
-		}).catch(function(error) {
+			document.body.style.fontFamily = "\"ModernDOS\", Arial";
+		}).catch(function (error) {
 			console.log("Error loading font: ", error);
 		});
 	}
 
 	restart() {
-		
+
 	}
 
 	// initialize game settings and generate game objects to put on and around screen at start
@@ -141,31 +141,31 @@ export default class Game {
 		let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
 
 		// if game object would be visible, spawn it nearby offscreen instead
-		if (x > -this.gameWidth / 2 - 50 && x < this.gameWidth / 2 && 
+		if (x > -this.gameWidth / 2 - 50 && x < this.gameWidth / 2 &&
 			y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3) {
-				let flip = this.randomInt(0, 5);
-				if (flip == 0) {
-					x -= (this.gameWidth + 50);
-				} else if (flip == 1) {
-					x -= this.gameWidth;
-					y += this.gameHeight;
-				} else if (flip == 2) {
-					y += this.gameHeight;
-				} else if (flip == 3) {
-					x += this.gameWidth;
-					y += this.gameHeight;
-				} else {
-					x += this.gameWidth;
-				}
+			let flip = this.randomInt(0, 5);
+			if (flip == 0) {
+				x -= (this.gameWidth + 50);
+			} else if (flip == 1) {
+				x -= this.gameWidth;
+				y += this.gameHeight;
+			} else if (flip == 2) {
+				y += this.gameHeight;
+			} else if (flip == 3) {
+				x += this.gameWidth;
+				y += this.gameHeight;
+			} else {
+				x += this.gameWidth;
 			}
+		}
 
-		if (type == 'bump') {
+		if (type == "bump") {
 			return [x, y, this.randomInt(0, 3)];
-		} else if (type == 'tree') {
+		} else if (type == "tree") {
 			return [x, y, false, this.randomInt(0, 3)];
-		} else if (type == 'rock') {
+		} else if (type == "rock") {
 			return [x, y, false, this.randomInt(0, 2)];
-		} else if (type == 'jump') {
+		} else if (type == "jump") {
 			return [x, y, false];
 		}
 	}
@@ -191,16 +191,16 @@ export default class Game {
 				let y = this.trees[i][1];
 
 				// remove the tree if it is offscreen
-				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
+				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 &&
 					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
-						this.trees.splice(i, 1);
+					this.trees.splice(i, 1);
 				}
 			}
-		// add some new trees offscreen
+			// add some new trees offscreen
 		} else if (this.trees.length < this.treeCount) {
 			let diff = this.treeCount - this.trees.length;
 			for (let n = 0; n < diff; n++) {
-				this.trees.push(this.spawnNewGameObjectOffScreen('tree'));
+				this.trees.push(this.spawnNewGameObjectOffScreen("tree"));
 			}
 		}
 
@@ -213,16 +213,16 @@ export default class Game {
 				let y = this.bumps[i][1];
 
 				// remove the bump if it is offscreen
-				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
+				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 &&
 					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
-						this.bumps.splice(i, 1);
+					this.bumps.splice(i, 1);
 				}
 			}
-		// add some new bumps offscreen
+			// add some new bumps offscreen
 		} else if (this.bumps.length < this.bumpCount) {
 			let diff = this.bumpCount - this.bumps.length;
 			for (let n = 0; n < diff; n++) {
-				this.bumps.push(this.spawnNewGameObjectOffScreen('bump'));
+				this.bumps.push(this.spawnNewGameObjectOffScreen("bump"));
 			}
 		}
 
@@ -235,16 +235,16 @@ export default class Game {
 				let y = this.rocks[i][1];
 
 				// remove the rock if it is offscreen
-				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
+				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 &&
 					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
-						this.rocks.splice(i, 1);
+					this.rocks.splice(i, 1);
 				}
 			}
-		// add some new rocks offscreen
+			// add some new rocks offscreen
 		} else if (this.rocks.length < this.rockCount) {
 			let diff = this.rockCount - this.rocks.length;
 			for (let n = 0; n < diff; n++) {
-				this.rocks.push(this.spawnNewGameObjectOffScreen('rock'));
+				this.rocks.push(this.spawnNewGameObjectOffScreen("rock"));
 			}
 		}
 
@@ -257,20 +257,20 @@ export default class Game {
 				let y = this.jumps[i][1];
 
 				// remove the jump if it is offscreen
-				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 && 
+				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 &&
 					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
-						this.jumps.splice(i, 1);
+					this.jumps.splice(i, 1);
 				}
 			}
-		// add some new jumps offscreen
+			// add some new jumps offscreen
 		} else if (this.jumps.length < this.jumpCount) {
 			let diff = this.jumpCount - this.jumps.length;
 			for (let n = 0; n < diff; n++) {
-				this.jumps.push(this.spawnNewGameObjectOffScreen('jump'));
+				this.jumps.push(this.spawnNewGameObjectOffScreen("jump"));
 			}
 		}
 	}
-	
+
 	update(step) {
 		this.currentTime = this.timestamp();
 		this.skier.update(this.crunchSomeNumbas());
@@ -278,7 +278,7 @@ export default class Game {
 		this.updateGameObjects();
 
 		// scale the number of game objects to the size of the screen
-		if (this.treeCount != this.trees.length || this.bumpCount != this.bumps.length || 
+		if (this.treeCount != this.trees.length || this.bumpCount != this.bumps.length ||
 			this.rockCount != this.rocks.length || this.jumpCount != this.jumps.length) {
 			this.adaptGameObjectCountToScreenSize();
 		}
@@ -352,7 +352,7 @@ export default class Game {
 		// recycle bumps once they are passed
 		for (let i = 0; i < this.bumps.length; i++) {
 			if (this.skier.y - this.bumps[i][1] > this.gameHeight * (2 / 3) + 50) {
-				this.bumps[i] = this.spawnNewGameObjectOffScreen('bump');
+				this.bumps[i] = this.spawnNewGameObjectOffScreen("bump");
 			}
 		}
 
@@ -360,11 +360,11 @@ export default class Game {
 			let rockX = this.rocks[i][0];
 			let rockY = this.rocks[i][1];
 			let hitThisRockAlready = this.rocks[i][2];
-			let type =  this.rocks[i][3];
+			let type = this.rocks[i][3];
 
 			// recycle uphill offscreen rocks once they are passed
 			if (this.skier.y - rockY > this.gameHeight * (2 / 3) + 50) {
-				this.rocks[i] = this.spawnNewGameObjectOffScreen('rock');
+				this.rocks[i] = this.spawnNewGameObjectOffScreen("rock");
 			}
 
 			// if the skier hits a rock they haven't hit already, set isCrashed to true
@@ -388,7 +388,7 @@ export default class Game {
 
 			// recycle uphill offscreen jumps once they are passed
 			if (this.skier.y - jumpY > this.gameHeight * (2 / 3) + 50) {
-				this.jumps[i] = this.spawnNewGameObjectOffScreen('jump');
+				this.jumps[i] = this.spawnNewGameObjectOffScreen("jump");
 			}
 
 			// if the skier hits a jump they haven't hit already, mark it as hit and make the skier jump
@@ -413,16 +413,16 @@ export default class Game {
 	}
 
 	isCollidingWithSkier(objectX, objectY, objectWidth, objectHeight) {
-		let rect1 = {x: 2, y: 24, width: 10, height: 2};
-		let rect2 = {x: objectX, y: objectY, width: objectWidth, height: objectHeight};
+		let rect1 = { x: 2, y: 24, width: 10, height: 2 };
+		let rect2 = { x: objectX, y: objectY, width: objectWidth, height: objectHeight };
 
 		if (rect1.x < rect2.x + rect2.width &&
 			rect1.x + rect1.width > rect2.x &&
 			rect1.y < rect2.y + rect2.height &&
 			rect1.y + rect1.height > rect2.y) {
-				return true;
-		 }
-		 return false;
+			return true;
+		}
+		return false;
 	}
 
 	// do sum mathz
@@ -448,7 +448,7 @@ export default class Game {
 			if (mouseDiffY > 0) {
 				mouseAngle = -90;
 			} else {
-				mouseAngle = 90
+				mouseAngle = 90;
 			}
 			mouseDiffXVector = Math.cos(this.radians(mouseAngle));
 			mouseDiffYVector = Math.sin(this.radians(mouseAngle));
@@ -477,7 +477,7 @@ export default class Game {
 			if (this.skier.yv > 0) {
 				vAngle = -90;
 			} else {
-				vAngle = 90
+				vAngle = 90;
 			}
 			xvVector = Math.cos(this.radians(vAngle));
 			yvVector = Math.sin(this.radians(vAngle));
@@ -504,7 +504,7 @@ export default class Game {
 	randomInt(min, max) {
 		min = Math.ceil(min);
 		max = Math.floor(max);
-		return Math.floor(Math.random() * (max - min) + min); 
+		return Math.floor(Math.random() * (max - min) + min);
 	}
 
 	// get the current time (high precision)
@@ -576,7 +576,7 @@ export default class Game {
 
 		// draw skier
 		this.skier.draw(ctx);
-		
+
 		// draw trees below skier
 		for (let i = 0; i < this.trees.length; i++) {
 			let type = this.trees[i][3];
@@ -627,7 +627,7 @@ export default class Game {
 		} else if (dist > 99) {
 			leadingSpace = '    ';
 		}
-		
+
 		ctx.fillText('Dist:' + leadingSpace + this.padLeadingZero(dist) + 'm', this.gameWidth - 136, 22);
 		ctx.fillText('Speed:    ' + this.padLeadingZero(Math.ceil(this.skier.currentSpeed / 28.7514)) + 'm/s', this.gameWidth - 136, 34);
 		ctx.fillText('Style:       ' + Math.floor(this.style), this.gameWidth - 136, 46);
@@ -647,21 +647,21 @@ export default class Game {
 	timeToString(time) {
 		let diffInHrs = time / 3600000;
 		let hh = Math.floor(diffInHrs);
-		
+
 		let diffInMin = (diffInHrs - hh) * 60;
 		let mm = Math.floor(diffInMin);
-		
+
 		let diffInSec = (diffInMin - mm) * 60;
 		let ss = Math.floor(diffInSec);
-		
+
 		let diffInMs = (diffInSec - ss) * 100;
 		let ms = Math.floor(diffInMs);
-		
+
 		let formattedHH = hh.toString().padStart(2, "0");
 		let formattedMM = mm.toString().padStart(2, "0");
 		let formattedSS = ss.toString().padStart(2, "0");
 		let formattedMS = ms.toString().padStart(2, "0");
-		
+
 		return `${formattedHH}:${formattedMM}:${formattedSS}.${formattedMS}`;
 	}
 
@@ -669,7 +669,7 @@ export default class Game {
 		if (this.lastLogTime == null) {
 			this.lastLogTime = this.timestamp();
 		}
-		
+
 		if (this.timestamp() - this.lastLogTime > 500) {
 			console.log(toLog);
 			this.lastLogTime = null;

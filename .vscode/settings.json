@@ -1,0 +1,15 @@
+{
+	"editor.detectIndentation": false,
+	"editor.tabSize": 4,
+	"editor.insertSpaces": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features",
+		"editor.formatOnSave": true
+	},
+	"eslint.validate": [
+		"javascript"
+	]
+}

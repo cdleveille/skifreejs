@@ -1,4 +1,4 @@
-export default class Skier{
+export default class Skier {
 	constructor(game) {
 		this.game = game;
 		this.x = game.gameWidth / 2;
@@ -90,7 +90,7 @@ export default class Skier{
 				this.currentImage = this.skier_left;
 				this.decelerateToStop(vVectors);
 			}
-		// mouse up / right
+			// mouse up / right
 		} else if (mouseToSkierAngle < -175 || (mouseToSkierAngle > 90 && mouseToSkierAngle < 180)) {
 			if (this.isJumping) {
 				this.currentImage = this.skier_jump_right;
@@ -211,7 +211,7 @@ export default class Skier{
 			this.yv -= yDecelAmt;
 
 			if (this.yv <= 0) {
-				this.yv = 0
+				this.yv = 0;
 				this.xv = 0;
 				this.isStopped = true;
 			}
