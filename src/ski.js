@@ -1,9 +1,9 @@
-import Game from "/src/game.js";
-import InputHandler from "/src/input.js";
-import WindowHandler from "/src/window.js";
+import Game from '/src/game.js';
+import InputHandler from '/src/input.js';
+import WindowHandler from '/src/window.js';
 
-let canvas = document.getElementById("gameScreen");
-let ctx = canvas.getContext("2d");
+let canvas = document.getElementById('gameScreen');
+let ctx = canvas.getContext('2d');
 
 let game = new Game();
 new InputHandler(canvas, game);

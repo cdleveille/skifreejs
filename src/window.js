@@ -4,7 +4,7 @@ export default class WindowHandler {
 			return [window.innerWidth, window.innerHeight];
 		}
 
-		window.addEventListener("resize", function () {
+		window.addEventListener('resize', function () {
 			[canvas.width, canvas.height] = resizeCanvas();
 			game.resize(canvas.width, canvas.height);
 		});

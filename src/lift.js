@@ -5,29 +5,31 @@ export default class Lift {
 		this.liftX = 100;
 		this.liftChairSpacing = 500;
 		this.liftTowerSpacing = 1000;
+		this.loadLiftImages();
+		this.init();
+	}
 
+	init() {
 		this.liftTowers = [[this.liftX, 0, false]];
 		this.liftChairsDown = [[this.liftX - 18, 0]];
-		this.liftChairsUp = [[this.liftX + 24, 0, game.randomInt(0, 2)]];
-		
-		this.loadLiftImages();
+		this.liftChairsUp = [[this.liftX + 24, 0, this.game.randomInt(0, 2)]];
 	}
 
 	loadLiftImages() {
 		this.lift_tower = new Image();
-		this.lift_tower.src = "/img/lift_tower.png";
+		this.lift_tower.src = '/img/lift_tower.png';
 
 		this.lift_tower_top = new Image();
-		this.lift_tower_top.src = "/img/lift_tower_top.png";
+		this.lift_tower_top.src = '/img/lift_tower_top.png';
 
 		this.lift_chair_up1 = new Image();
-		this.lift_chair_up1.src = "/img/lift_chair_up1.png";
+		this.lift_chair_up1.src = '/img/lift_chair_up1.png';
 
 		this.lift_chair_up2 = new Image();
-		this.lift_chair_up2.src = "/img/lift_chair_up2.png";
+		this.lift_chair_up2.src = '/img/lift_chair_up2.png';
 
 		this.lift_chair_down = new Image();
-		this.lift_chair_down.src = "/img/lift_chair_down.png";
+		this.lift_chair_down.src = '/img/lift_chair_down.png';
 	}
 
 	update(step) {
@@ -153,7 +155,7 @@ export default class Lift {
 	}
 
 	drawCables(ctx) {
-		ctx.fillStyle = "#333333";
+		ctx.fillStyle = '#333333';
 		ctx.fillRect(this.game.skier.x + this.liftTowers[0][0] + 1, this.game.skier.y - this.game.gameHeight / 3, 1, this.game.gameHeight);
 		ctx.fillRect(this.game.skier.x + this.liftTowers[0][0] + 30, this.game.skier.y - this.game.gameHeight / 3, 1, this.game.gameHeight);
 	}

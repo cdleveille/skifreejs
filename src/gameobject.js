@@ -9,15 +9,15 @@ export default class GameObject {
 		this.img = img;
 	}
 
-	update(step) {
+	update() {
 		// update position based on x/y-velocity of skier
-		
+
 
 		// check for collisions with skier
 
 	}
 
-	draw(ctx) {
+	draw() {
 
 	}
 }
