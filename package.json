@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
 	"dev": "nodemon src/index.js",
-    "prebuild": "eslint --fix --ext .js,.jsx .",
-	"build": "node src/index.js"
+	"postinstall": "eslint --fix --ext .js,.jsx .",
+	"start": "node src/index.js"
   },
   "repository": {
     "type": "git",
@@ -19,8 +19,7 @@
   },
   "homepage": "https://github.com/cdleveille/SkiFree#readme",
   "devDependencies": {
-    "eslint": "^7.17.0",
-    "husky": "^4.3.7"
+    "eslint": "^7.17.0"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -31,10 +30,5 @@
     "http-server": "^0.12.3",
     "morgan": "^1.10.0",
     "response-time": "^2.3.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run prebuild"
-    }
   }
 }
