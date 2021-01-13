@@ -1,4 +1,4 @@
-# SkiFree
+# skifreejs
 
 **Play from Source Code:**
 1. Download or clone repository
