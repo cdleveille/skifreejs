@@ -1,13 +1,14 @@
-export default class InputHandler{
+export default class InputHandler {
 	constructor(canvas, game) {
-		canvas.addEventListener('mousemove', (event) => {
+		canvas.addEventListener("mousemove", (event) => {
 			let mouseX = event.clientX - ((window.innerWidth - canvas.width) / 2);
 			let mouseY = event.clientY - ((window.innerHeight - canvas.height) / 2);
 
 			game.mousePos = [mouseX, mouseY];
 		});
 
-		canvas.addEventListener('click', (event) => {
+		// eslint-disable-next-line no-unused-vars
+		canvas.addEventListener("click", (event) => {
 			if (!game.skier.isJumping && !game.skier.isCrashed) {
 				game.skier.isJumping = true;
 				game.skier.jumpV = game.skier.jumpVInit;
@@ -19,7 +20,7 @@ export default class InputHandler{
 		let left = 65, right = 68;
 
 		document.addEventListener("keydown", (event) => {
-			switch(event.keyCode) {
+			switch (event.keyCode) {
 				case left:
 					if (game.skier.isStopped) {
 						game.skier.isSkatingLeft = true;
@@ -34,7 +35,7 @@ export default class InputHandler{
 		});
 
 		document.addEventListener("keyup", (event) => {
-			switch(event.keyCode) {
+			switch (event.keyCode) {
 				case left:
 					game.skier.isSkatingLeft = false;
 					break;
