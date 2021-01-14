@@ -5,11 +5,12 @@
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": true
 	},
-	"[javascript]": {
+	"[typescript]": {
 		"editor.defaultFormatter": "vscode.typescript-language-features",
 		"editor.formatOnSave": true
 	},
+	"typescript.tsdk": "node_modules\\typescript\\lib",
 	"eslint.validate": [
-		"javascript"
-	]
+        "javascript",  "typescript"
+    ]
 }
