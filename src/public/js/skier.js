@@ -231,9 +231,37 @@ export default class Skier {
 
 	draw(ctx) {
 		let xOffset = 0;
-		if (this.currentImage == this.skier_sit || this.currentImage == this.skier_falling ||
-			this.currentImage == this.skier_jump_down) {
-			xOffset = -8;
+		switch (this.currentImage) {
+			case this.skier_left:
+				xOffset = -4;
+				break;
+			case this.skier_left_down:
+				xOffset = -2;
+				break;
+			case this.skier_down_left:
+				xOffset = -1;
+				break;
+			case this.skier_right_down:
+				xOffset = -5;
+				break;
+			case this.skier_right:
+				xOffset = -4;
+				break;
+			case this.skier_sit:
+				xOffset = -8;
+				break;
+			case this.skier_jump_down:
+				xOffset = -6;
+				break;
+			case this.skier_falling:
+				xOffset = -9;
+				break;
+			case this.skier_jump_left:
+				xOffset = -7;
+				break;
+			case this.skier_jump_right:
+				xOffset = -6;
+				break;
 		}
 		ctx.drawImage(this.currentImage, this.x + xOffset, this.y - this.jumpOffset);
 	}
