@@ -151,22 +151,22 @@ export default class Game {
 		if (x > -this.gameWidth / 2 - 50 && x < this.gameWidth / 2 &&
 			y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3) {
 			switch (this.randomInt(0, 5)) {
-				case 0:
-					x -= (this.gameWidth + 50);
-					break;
-				case 1:
-					x -= this.gameWidth;
-					y += this.gameHeight;
-					break;
-				case 2:
-					y += this.gameHeight;
-					break;
-				case 3:
-					x += this.gameWidth;
-					y += this.gameHeight;
-					break;
-				default:
-					x += this.gameWidth;
+			case 0:
+				x -= (this.gameWidth + 50);
+				break;
+			case 1:
+				x -= this.gameWidth;
+				y += this.gameHeight;
+				break;
+			case 2:
+				y += this.gameHeight;
+				break;
+			case 3:
+				x += this.gameWidth;
+				y += this.gameHeight;
+				break;
+			default:
+				x += this.gameWidth;
 			}
 		}
 
@@ -176,16 +176,16 @@ export default class Game {
 	// spawn a new game object of specified type at the specified coordinates
 	spawnNewGameObject(type, x, y) {
 		switch (type) {
-			case 'bump':
-				return [x, y, this.randomInt(0, 3)];
-			case 'tree':
-				return [x, y, false, this.randomInt(0, 3)];
-			case 'rock':
-				return [x, y, false, this.randomInt(0, 2)];
-			case 'jump':
-				return [x, y, false];
-			case 'stump':
-				return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump };
+		case 'bump':
+			return [x, y, this.randomInt(0, 3)];
+		case 'tree':
+			return [x, y, false, this.randomInt(0, 3)];
+		case 'rock':
+			return [x, y, false, this.randomInt(0, 2)];
+		case 'jump':
+			return [x, y, false];
+		case 'stump':
+			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump };
 		}
 	}
 
