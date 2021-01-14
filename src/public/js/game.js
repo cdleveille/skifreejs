@@ -81,15 +81,10 @@ export default class Game {
 		}
 
 		// create stumps
-		this.stumps = [];
-		for (let n = 0; n < this.stumpCount; n++) {
-			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
-			let y = this.randomInt(-height / 3, height * 5 / 3);
-			this.stumps.push({ game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.onCollision, img: this.stump });
-		}
+		this.stumps = this.initializeGameObjectsOnScreen('stump', this.stumpCount);
 	}
 
-	onCollision() {
+	crashOnCollision() {
 		this.game.skier.isCrashed = true;
 		this.game.style -= 32;
 	}
@@ -117,14 +112,14 @@ export default class Game {
 		this.jump = this.loadImage('/img/jump.png');
 	}
 
-	// load single image from source file
+	// load a single image from the specified source file
 	loadImage(src) {
 		let img = new Image();
 		img.src = src;
 		return img;
 	}
 
-	// load the ModernDOS font family
+	// load the font family used for the in-game hud
 	loadFont() {
 		this.font = new FontFace('ModernDOS', 'url(../font/ModernDOS8x16.ttf)');
 		this.font.load().then(function (loaded_face) {
@@ -133,6 +128,33 @@ export default class Game {
 		}).catch(function (error) {
 			console.log('Error loading font: ', error);
 		});
+	}
+
+	// spawn the specified number of the specified type of game object on and around the screen at start of game
+	initializeGameObjectsOnScreen(type, count) {
+		let gameObjects = [];
+		for (let n = 0; n < count; n++) {
+			let x = this.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
+			let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
+			switch (type) {
+				case 'tree':
+
+					break;
+				case 'bump':
+
+					break;
+				case 'rock':
+
+					break;
+				case 'jump':
+
+					break;
+				case 'stump':
+					gameObjects.push({ game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump });
+					break;
+			}
+		}
+		return gameObjects;
 	}
 
 	// spawn a new object of the given type in a random location offscreen
@@ -173,7 +195,7 @@ export default class Game {
 			case 'jump':
 				return [x, y, false];
 			case 'stump':
-				return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.onCollision, img: this.stump };
+				return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump };
 		}
 	}
 
