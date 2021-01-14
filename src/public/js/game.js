@@ -81,7 +81,13 @@ export default class Game {
 		}
 
 		// create stumps
-		this.stumps = this.initializeGameObjectsOnScreen('stump', this.stumpCount);
+		this.stumps = [];
+		for (let n = 0; n < this.stumpCount; n++) {
+			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
+			let y = this.randomInt(-height / 3, height * 5 / 3);
+			this.stumps.push({ game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump });
+			//this.stumps = this.initializeGameObjectsOnScreen('stump', this.stumpCount);
+		}
 	}
 
 	crashOnCollision() {
