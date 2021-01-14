@@ -5,7 +5,7 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
 
 [skifreejs.herokuapp.com](https://skifreejs.herokuapp.com/)
 
-**Play from Source Code:**
+**Play locally from Source Code:**
 1. Download or clone repository
 2. Install [Node.js](https://nodejs.org/en/)
 3. Install package dependencies: ```npm i```
