@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"module": "commonjs",
+		"target": "esnext",
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"outDir": "build",
+		"baseUrl": ".",
+		"skipLibCheck": true,
+		"paths": {
+			"*": [
+				"node_modules/*"
+			]
+		}
+	},
+	"include": [
+		"src/**/*"
+	]
+}
