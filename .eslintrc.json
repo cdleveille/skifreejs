@@ -9,10 +9,6 @@
         "sourceType": "module"
     },
     "rules": {
-        "indent": [
-            "warn",
-            "tab"
-        ],
         "linebreak-style": [
             "warn",
             "windows"

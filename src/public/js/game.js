@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import Skier from './skier.js';
 import Lift from './lift.js';
+//import Collidable from './collidable.js';
 
 export default class Game {
 	constructor() {
@@ -8,15 +9,16 @@ export default class Game {
 		this.lift = new Lift(this);
 		this.treeDensity = 0.8;
 		this.bumpDensity = 1.0;
-		this.rockDensity = 0.1;
+		this.rockDensity = 0.05;
+		this.stumpDensity = 0.5;
 		this.jumpDensity = 0.05;
 		this.jumpVBase = 0.7;
 		this.jumpVMult = 0.0022;
 		this.resCoefficient = 50 / 562860.0;
 		this.collisionsEnabled = true;
-		this.init();
 		this.loadImages();
 		this.loadFont();
+		this.init();
 	}
 
 	// initialize game settings and generate game objects for start of game
@@ -40,6 +42,7 @@ export default class Game {
 		this.bumpCount = Math.floor(area * this.resCoefficient * this.bumpDensity);
 		this.rockCount = Math.floor(area * this.resCoefficient * this.rockDensity);
 		this.jumpCount = Math.floor(area * this.resCoefficient * this.jumpDensity);
+		this.stumpCount = Math.floor(area * this.resCoefficient * this.stumpDensity);
 
 		// create trees
 		this.trees = [];
@@ -76,6 +79,19 @@ export default class Game {
 			this.jumps.push([x, y, false]);
 			// x-coordinate, y-coordinate, hasSkierHitThisJumpYet
 		}
+
+		// create stumps
+		this.stumps = [];
+		for (let n = 0; n < this.stumpCount; n++) {
+			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
+			let y = this.randomInt(-height / 3, height * 5 / 3);
+			this.stumps.push({ game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.onCollision, img: this.stump });
+		}
+	}
+
+	onCollision() {
+		this.game.skier.isCrashed = true;
+		this.game.style -= 32;
 	}
 
 	// restart the game
@@ -127,30 +143,37 @@ export default class Game {
 		// if game object would be visible, spawn it nearby offscreen instead
 		if (x > -this.gameWidth / 2 - 50 && x < this.gameWidth / 2 &&
 			y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3) {
-			let flip = this.randomInt(0, 5);
-			if (flip == 0) {
-				x -= (this.gameWidth + 50);
-			} else if (flip == 1) {
-				x -= this.gameWidth;
-				y += this.gameHeight;
-			} else if (flip == 2) {
-				y += this.gameHeight;
-			} else if (flip == 3) {
-				x += this.gameWidth;
-				y += this.gameHeight;
-			} else {
-				x += this.gameWidth;
+			switch (this.randomInt(0, 5)) {
+				case 0:
+					x -= (this.gameWidth + 50);
+					break;
+				case 1:
+					x -= this.gameWidth;
+					y += this.gameHeight;
+					break;
+				case 2:
+					y += this.gameHeight;
+					break;
+				case 3:
+					x += this.gameWidth;
+					y += this.gameHeight;
+					break;
+				default:
+					x += this.gameWidth;
 			}
 		}
 
-		if (type == 'bump') {
-			return [x, y, this.randomInt(0, 3)];
-		} else if (type == 'tree') {
-			return [x, y, false, this.randomInt(0, 3)];
-		} else if (type == 'rock') {
-			return [x, y, false, this.randomInt(0, 2)];
-		} else if (type == 'jump') {
-			return [x, y, false];
+		switch (type) {
+			case 'bump':
+				return [x, y, this.randomInt(0, 3)];
+			case 'tree':
+				return [x, y, false, this.randomInt(0, 3)];
+			case 'rock':
+				return [x, y, false, this.randomInt(0, 2)];
+			case 'jump':
+				return [x, y, false];
+			case 'stump':
+				return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.onCollision, img: this.stump };
 		}
 	}
 
@@ -254,6 +277,28 @@ export default class Game {
 				this.jumps.push(this.spawnNewGameObjectOffScreen('jump'));
 			}
 		}
+
+		this.stumpCount = Math.floor(this.gameWidth * this.gameHeight * (50 / 562860.0) * this.stumpDensity);
+
+		// trim excess offscreen stumps
+		if (this.stumps.length > this.stumpCount) {
+			for (let i = 0; i < this.stumps.length; i++) {
+				let x = this.stumps[i].x;
+				let y = this.stumps[i].y;
+
+				// remove the stump if it is offscreen
+				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 &&
+					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
+					this.stumps.splice(i, 1);
+				}
+			}
+			// add some new stumps offscreen
+		} else if (this.stumps.length < this.stumpCount) {
+			let diff = this.stumpCount - this.stumps.length;
+			for (let n = 0; n < diff; n++) {
+				this.stumps.push(this.spawnNewGameObjectOffScreen('stump'));
+			}
+		}
 	}
 
 	// update the gamestate
@@ -265,7 +310,8 @@ export default class Game {
 
 		// scale the number of game objects to the size of the screen
 		if (this.treeCount != this.trees.length || this.bumpCount != this.bumps.length ||
-			this.rockCount != this.rocks.length || this.jumpCount != this.jumps.length) {
+			this.rockCount != this.rocks.length || this.jumpCount != this.jumps.length ||
+			this.stumpCount != this.stumps.length) {
 			this.adaptGameObjectCountToScreenSize();
 		}
 
@@ -275,6 +321,13 @@ export default class Game {
 		this.updatePosition(this.rocks, step);
 		this.updatePosition(this.jumps, step);
 		this.updatePosition(this.skierTrail, step);
+		//this.updatePosition(this.stumps, step);
+
+		// update position of stumps
+		for (let i = 0; i < this.stumps.length; i++) {
+			this.stumps[i].x -= this.skier.xv * step;
+			this.stumps[i].y -= this.skier.yv * step;
+		}
 
 		// update total distance traveled vertically
 		this.yDist += this.skier.yv * step;
@@ -345,7 +398,6 @@ export default class Game {
 			let rockX = this.rocks[i][0];
 			let rockY = this.rocks[i][1];
 			let hitThisRockAlready = this.rocks[i][2];
-			let type = this.rocks[i][3];
 
 			// recycle uphill offscreen rocks once they are passed
 			if (this.skier.y - rockY > this.gameHeight * (2 / 3) + 50) {
@@ -353,11 +405,7 @@ export default class Game {
 			}
 
 			// if the skier hits a rock they haven't hit already, set isCrashed to true
-			let widthOffset = 0;
-			if (type == 1) {
-				widthOffset = -7;
-			}
-			if (this.isCollidingWithSkier(rockX, rockY, this.rock.width + widthOffset, this.rock.height) && this.skier.jumpOffset < this.rock.height) {
+			if (this.isCollidingWithSkier(rockX, rockY, this.rock.width, this.rock.height) && this.skier.jumpOffset < this.rock.height) {
 				if (this.collisionsEnabled && !hitThisRockAlready) {
 					this.skier.isCrashed = true;
 					this.rocks[i][2] = true;
@@ -388,6 +436,23 @@ export default class Game {
 			}
 		}
 
+		for (let i = 0; i < this.stumps.length; i++) {
+			let stump = this.stumps[i];
+
+			// recycle uphill offscreen stumps once they are passed
+			if (this.skier.y - stump.y > this.gameHeight * (2 / 3) + 50) {
+				this.stumps[i] = this.spawnNewGameObjectOffScreen('stump');
+			}
+
+			// if the skier hits a stump they haven't hit already, set isCrashed to true
+			if (this.isCollidingWithSkier(stump.x + stump.hbXOffset, stump.y + stump.hbYOffset, stump.img.width, stump.img.height) && this.skier.jumpOffset < stump.img.height) {
+				if (this.collisionsEnabled && !stump.hasCollided) {
+					this.stumps[i].hasCollided = true;
+					stump.onCollision();
+				}
+			}
+		}
+
 		// delete offscreen skier trail
 		for (let i = 0; i < this.skierTrail.length; i++) {
 			let y = this.skierTrail[i][1];
@@ -399,16 +464,13 @@ export default class Game {
 
 	// determine if the provided object dimensions are colliding with the skier
 	isCollidingWithSkier(objectX, objectY, objectWidth, objectHeight) {
-		let rect1 = { x: 2, y: 24, width: 10, height: 2 };
+		let rect1 = this.skier.hitbox;
 		let rect2 = { x: objectX, y: objectY, width: objectWidth, height: objectHeight };
 
-		if (rect1.x < rect2.x + rect2.width &&
+		return (rect1.x < rect2.x + rect2.width &&
 			rect1.x + rect1.width > rect2.x &&
 			rect1.y < rect2.y + rect2.height &&
-			rect1.y + rect1.height > rect2.y) {
-			return true;
-		}
-		return false;
+			rect1.y + rect1.height > rect2.y);
 	}
 
 	// do sum mathz
@@ -498,6 +560,45 @@ export default class Game {
 		return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 	}
 
+	// add a leading zero to single digit numbers
+	padLeadingZero(num) {
+		return num.toString().padStart(2, '0');
+	}
+
+	// format the current time (milliseconds) to hh:mm:ss.ms
+	timeToString(time) {
+		let diffInHrs = time / 3600000;
+		let hh = Math.floor(diffInHrs);
+
+		let diffInMin = (diffInHrs - hh) * 60;
+		let mm = Math.floor(diffInMin);
+
+		let diffInSec = (diffInMin - mm) * 60;
+		let ss = Math.floor(diffInSec);
+
+		let diffInMs = (diffInSec - ss) * 100;
+		let ms = Math.floor(diffInMs);
+
+		let formattedHH = hh.toString().padStart(2, '0');
+		let formattedMM = mm.toString().padStart(2, '0');
+		let formattedSS = ss.toString().padStart(2, '0');
+		let formattedMS = ms.toString().padStart(2, '0');
+
+		return `${formattedHH}:${formattedMM}:${formattedSS}.${formattedMS}`;
+	}
+
+	// log every half-second
+	log(toLog) {
+		if (this.lastLogTime == null) {
+			this.lastLogTime = this.timestamp();
+		}
+
+		if (this.timestamp() - this.lastLogTime > 500) {
+			console.log(toLog);
+			this.lastLogTime = null;
+		}
+	}
+
 	// render the current state of the game
 	draw(ctx) {
 		// clear and fill with background color
@@ -532,11 +633,13 @@ export default class Game {
 
 		// draw rocks
 		for (let i = 0; i < this.rocks.length; i++) {
-			let img = this.rock;
-			if (this.rocks[i][3] == 1) {
-				img = this.stump;
-			}
-			ctx.drawImage(img, this.skier.x + this.rocks[i][0], this.skier.y + this.rocks[i][1]);
+			ctx.drawImage(this.rock, this.skier.x + this.rocks[i][0], this.skier.y + this.rocks[i][1]);
+		}
+
+		// draw stumps
+		for (let i = 0; i < this.stumps.length; i++) {
+			ctx.drawImage(this.stump, this.skier.x + this.stumps[i].x, this.skier.y + this.stumps[i].y);
+			//this.stumps[i].draw(ctx);
 		}
 
 		// draw trees above skier
@@ -620,44 +723,5 @@ export default class Game {
 
 		// draw lodge
 		//ctx.drawImage(this.lodge, this.skier.x + this.lodge.xc, this.skier.y + this.lodge.yc);
-	}
-
-	// add a leading zero to single digit numbers
-	padLeadingZero(num) {
-		return num.toString().padStart(2, '0');
-	}
-
-	// format the current time (milliseconds) to hh:mm:ss.ms
-	timeToString(time) {
-		let diffInHrs = time / 3600000;
-		let hh = Math.floor(diffInHrs);
-
-		let diffInMin = (diffInHrs - hh) * 60;
-		let mm = Math.floor(diffInMin);
-
-		let diffInSec = (diffInMin - mm) * 60;
-		let ss = Math.floor(diffInSec);
-
-		let diffInMs = (diffInSec - ss) * 100;
-		let ms = Math.floor(diffInMs);
-
-		let formattedHH = hh.toString().padStart(2, '0');
-		let formattedMM = mm.toString().padStart(2, '0');
-		let formattedSS = ss.toString().padStart(2, '0');
-		let formattedMS = ms.toString().padStart(2, '0');
-
-		return `${formattedHH}:${formattedMM}:${formattedSS}.${formattedMS}`;
-	}
-
-	// log every half-second
-	log(toLog) {
-		if (this.lastLogTime == null) {
-			this.lastLogTime = this.timestamp();
-		}
-
-		if (this.timestamp() - this.lastLogTime > 500) {
-			console.log(toLog);
-			this.lastLogTime = null;
-		}
 	}
 }

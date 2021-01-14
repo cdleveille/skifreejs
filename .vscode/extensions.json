@@ -1,7 +1,6 @@
 {
 	"recommendations": [
 		"msjsdiag.debugger-for-chrome",
-		"firefox-devtools.vscode-firefox-debug",
 		"eamodio.gitlens",
 		"pkief.material-icon-theme",
 		"coenraads.bracket-pair-colorizer-2",

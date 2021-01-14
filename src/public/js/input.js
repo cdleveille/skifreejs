@@ -23,39 +23,39 @@ export default class InputHandler {
 
 		document.addEventListener('keydown', (event) => {
 			switch (event.keyCode) {
-			case left:
-				if (game.skier.isStopped) {
-					game.skier.isSkatingLeft = true;
-				}
-				break;
-			case right:
-				if (game.skier.isStopped) {
-					game.skier.isSkatingRight = true;
-				}
-				break;
-			case p:
-				if (game.isPaused) {
-					game.startTime += (game.timestamp() - game.timePausedAt);
-					game.isPaused = false;
-				} else {
-					game.timePausedAt = game.timestamp();
-					game.isPaused = true;
-				}
-				break;
-			case r:
-				game.restart();
-				break;
+				case left:
+					if (game.skier.isStopped) {
+						game.skier.isSkatingLeft = true;
+					}
+					break;
+				case right:
+					if (game.skier.isStopped) {
+						game.skier.isSkatingRight = true;
+					}
+					break;
 			}
 		});
 
 		document.addEventListener('keyup', (event) => {
 			switch (event.keyCode) {
-			case left:
-				game.skier.isSkatingLeft = false;
-				break;
-			case right:
-				game.skier.isSkatingRight = false;
-				break;
+				case left:
+					game.skier.isSkatingLeft = false;
+					break;
+				case right:
+					game.skier.isSkatingRight = false;
+					break;
+				case p:
+					if (game.isPaused) {
+						game.startTime += (game.timestamp() - game.timePausedAt);
+						game.isPaused = false;
+					} else {
+						game.timePausedAt = game.timestamp();
+						game.isPaused = true;
+					}
+					break;
+				case r:
+					game.restart();
+					break;
 			}
 		});
 	}
