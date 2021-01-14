@@ -33,9 +33,9 @@ export default class Game {
 		this.currentTime = this.startTime;
 		this.lastLogTime = null;
 
-		let width = window.innerWidth;
-		let height = window.innerHeight;
-		let area = width * height;
+		this.gameWidth = window.innerWidth;
+		this.gameHeight = window.innerHeight;
+		let area = this.gameWidth * this.gameHeight;
 
 		// number of game objects to generate is proportional to total screen area
 		this.treeCount = Math.floor(area * this.resCoefficient * this.treeDensity);
@@ -47,8 +47,8 @@ export default class Game {
 		// create trees
 		this.trees = [];
 		for (let n = 0; n < this.treeCount; n++) {
-			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
-			let y = this.randomInt(-height / 3, height * 5 / 3);
+			let x = this.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
+			let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
 			this.trees.push([x, y, false, this.randomInt(0, 3)]);
 			// x-coordinate, y-coordinate, hasSkierHitThisTreeYet, treeType
 		}
@@ -56,8 +56,8 @@ export default class Game {
 		// create bumps
 		this.bumps = [];
 		for (let n = 0; n < this.bumpCount; n++) {
-			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
-			let y = this.randomInt(-height / 3, height * 5 / 3);
+			let x = this.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
+			let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
 			this.bumps.push([x, y, this.randomInt(0, 3)]);
 			// x-coordinate, y-coordinate, bumpType
 		}
@@ -65,8 +65,8 @@ export default class Game {
 		// create rocks
 		this.rocks = [];
 		for (let n = 0; n < this.rockCount; n++) {
-			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
-			let y = this.randomInt(-height / 3, height * 5 / 3);
+			let x = this.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
+			let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
 			this.rocks.push([x, y, false, this.randomInt(0, 2)]);
 			// x-coordinate, y-coordinate, hasSkierHitThisRockYet, type (rock or stump)
 		}
@@ -74,20 +74,14 @@ export default class Game {
 		// create jumps
 		this.jumps = [];
 		for (let n = 0; n < this.jumpCount; n++) {
-			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
-			let y = this.randomInt(-height / 3, height * 5 / 3);
+			let x = this.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
+			let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
 			this.jumps.push([x, y, false]);
 			// x-coordinate, y-coordinate, hasSkierHitThisJumpYet
 		}
 
 		// create stumps
-		this.stumps = [];
-		for (let n = 0; n < this.stumpCount; n++) {
-			let x = this.randomInt(-width * 3 / 2, width * 3 / 2);
-			let y = this.randomInt(-height / 3, height * 5 / 3);
-			this.stumps.push({ game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump });
-			//this.stumps = this.initializeGameObjectsOnScreen('stump', this.stumpCount);
-		}
+		this.stumps = this.initializeGameObjectsOnScreen('stump', this.stumpCount);
 	}
 
 	crashOnCollision() {
@@ -142,23 +136,8 @@ export default class Game {
 		for (let n = 0; n < count; n++) {
 			let x = this.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
 			let y = this.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
-			switch (type) {
-				case 'tree':
 
-					break;
-				case 'bump':
-
-					break;
-				case 'rock':
-
-					break;
-				case 'jump':
-
-					break;
-				case 'stump':
-					gameObjects.push({ game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: this.stump.width, hbHeight: this.stump.height, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump });
-					break;
-			}
+			gameObjects.push(this.spawnNewGameObject(type, x, y));
 		}
 		return gameObjects;
 	}
@@ -191,6 +170,11 @@ export default class Game {
 			}
 		}
 
+		return this.spawnNewGameObject(type, x, y);
+	}
+
+	// spawn a new game object of specified type at the specified coordinates
+	spawnNewGameObject(type, x, y) {
 		switch (type) {
 			case 'bump':
 				return [x, y, this.randomInt(0, 3)];
