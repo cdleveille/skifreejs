@@ -10,7 +10,7 @@ export default class Game {
 		this.treeDensity = 0.8;
 		this.bumpDensity = 1.0;
 		this.rockDensity = 0.05;
-		this.stumpDensity = 0.5;
+		this.stumpDensity = 0.05;
 		this.jumpDensity = 0.05;
 		this.jumpVBase = 0.7;
 		this.jumpVMult = 0.0022;
