@@ -8,3 +8,8 @@ export const enum Environment {
 	stg = 'staging',
 	prod = 'production'
 }
+
+export const enum ShouldCache {
+	true = 'true',
+	false = 'false'
+}

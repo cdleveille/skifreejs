@@ -10,7 +10,9 @@
 		<link rel="manifest" href="./manifest.json">
 		<link rel="apple-touch-icon" href="./img/ski.png">
 		<meta name="theme-color" content="#317EFB"/>
-		<script src="./js/sw.js"></script>
+		<%if (shouldCache == 'true' || shouldCache == true) { %>
+			<script src="./js/sw.js"></script>
+		<% } %>
 		<style>
 			#gameScreen {
 				position: absolute;
