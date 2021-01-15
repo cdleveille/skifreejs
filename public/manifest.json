@@ -1,11 +1,11 @@
 {
-	"name": "SkiFree",
-	"short_name": "SkiFree",
+	"name": "skifreejs",
+	"short_name": "skifreejs",
 	"start_url": ".",
 	"display": "standalone",
 	"background_color": "#fff",
 	"theme_color": "#317EFB",
-	"description": "S KiFree Borwser Port",
+	"description": "Fan remake of the classic game from Windows Entertainment Pack 3",
 	"icons": [{
 		"src": "./icons/ski.png",
 		"sizes": "512x512",

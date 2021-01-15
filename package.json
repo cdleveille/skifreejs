@@ -1,5 +1,5 @@
 {
-  "name": "skifree",
+  "name": "skifreejs",
   "version": "1.0.0",
   "module": "commonjs",
   "description": "**Play from Source Code:**\r 1. Download or clone repository\r 2. Install [Node.js](https://nodejs.org/en/)\r 3. Install [http-server](https://www.npmjs.com/package/http-server): ```npm install http-server -g```\r 4. In the \\SkiFree directory, run: ```http-server -a localhost -p 8000 -c-1```\r 5. Go to [http://localhost:8000/ski.html](http://localhost:8000/ski.html)",
