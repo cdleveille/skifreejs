@@ -1,12 +1,12 @@
 import mongoose, { Document } from 'mongoose';
 
-export interface IScore extends Document {
+export interface IUser extends Document {
 	_id: string,
 	username: number,
 	score: number
 }
 
-const Score = new mongoose.Schema(
+const User = new mongoose.Schema(
 	{
 		username: {
 			type: String,
@@ -18,8 +18,8 @@ const Score = new mongoose.Schema(
 		}
 	},
 	{
-		collection: 'Score',
+		collection: 'User',
 		versionKey: false
 	}
 );
-export default mongoose.model<IScore>('Score', Score);
+export default mongoose.model<IUser>('User', User);
