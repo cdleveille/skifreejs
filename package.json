@@ -36,13 +36,17 @@
   },
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cluster": "^0.7.7",
     "compression": "^1.7.4",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "helmet": "^4.3.1",
     "http-server": "^0.12.3",
+    "mongodb": "^3.6.3",
+    "mongoose": "^5.11.12",
     "morgan": "^1.10.0",
+    "os": "^0.1.1",
     "path": "^0.12.7",
     "response-time": "^2.3.2",
     "winston": "^3.3.3"
