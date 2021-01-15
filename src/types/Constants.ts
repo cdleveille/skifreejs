@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 export const enum Errors {
-	invalidScoreRequest = 'missing required body { username: <string>, score: <number> }'
+	invalidScoreRequest = 'missing required body { username: <string>, password: <string>, score: <number> }',
+	notAuthorized = 'not authorized'
 }
 
 export const enum Environment {
