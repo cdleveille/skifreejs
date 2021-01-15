@@ -9,5 +9,5 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
 1. Download or clone repository
 2. Install [Node.js](https://nodejs.org/en/)
 3. Install package dependencies: ```npm i```
-4. Run: ```npm run start```
+4. Start the game: ```npm run start```
 5. Go to [http://localhost:3000](http://localhost:3000/)

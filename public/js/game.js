@@ -2,15 +2,18 @@
 import Lift from './lift.js';
 import Skier from './skier.js';
 import Util from './util.js';
-//import Collidable from './collidable.js';
 
 export default class Game {
 	constructor() {
 		this.util = new Util();
 		this.skier = new Skier(this);
 		this.lift = new Lift(this);
-		this.treeDensity = 0.8;
-		this.bumpDensity = 0.5;
+		this.treeSmallDensity = 0.6;
+		this.treeLargeDensity = 0.2;
+		this.treeBareDensity = 0.2;
+		this.bumpGroupDensity = 0.3;
+		this.bumpSmallDensity = 0.1;
+		this.bumpLargeDensity = 0.1;
 		this.rockDensity = 0.05;
 		this.stumpDensity = 0.05;
 		this.jumpDensity = 0.05;
@@ -36,11 +39,16 @@ export default class Game {
 		this.gameWidth = window.innerWidth;
 		this.gameHeight = window.innerHeight;
 		this.skierTrail = [];
+		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.calculateGameObjectCounts();
 
 		// spawn game objects on and around the game screen for start of game
-		this.trees = this.initializeGameObjectsAtStart('tree_small', this.treeCount);
-		this.bumps = this.initializeGameObjectsAtStart('bump_group', this.bumpCount);
+		this.treesSmall = this.initializeGameObjectsAtStart('tree_small', this.treeSmallCount);
+		this.treesLarge = this.initializeGameObjectsAtStart('tree_large', this.treeLargeCount);
+		this.treesBare = this.initializeGameObjectsAtStart('tree_bare', this.treeBareCount);
+		this.bumpsGroup = this.initializeGameObjectsAtStart('bump_group', this.bumpGroupCount);
+		this.bumpsSmall = this.initializeGameObjectsAtStart('bump_small', this.bumpSmallCount);
+		this.bumpsLarge = this.initializeGameObjectsAtStart('bump_large', this.bumpLargeCount);
 		this.rocks = this.initializeGameObjectsAtStart('rock', this.rockCount);
 		this.jumps = this.initializeGameObjectsAtStart('jump', this.jumpCount);
 		this.stumps = this.initializeGameObjectsAtStart('stump', this.stumpCount);
@@ -132,15 +140,25 @@ export default class Game {
 	spawnNewGameObject(type, x, y) {
 		switch (type) {
 		case 'bump_group':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 64, hbHeight: 32, onCollision: this.slowOnCollision, img: this.bump_group };
+			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 64, hbHeight: 32, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_group };
+		case 'bump_small':
+			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 4, jumpOverHeight: 4, onCollision: this.slowOnCollision, img: this.bump_small };
+		case 'bump_large':
+			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 24, hbHeight: 8, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_large };
 		case 'tree_small':
-			return { game: this, x: x, y: y, hbXOffset: 6, hbYOffset: 24, hbWidth: 16, hbHeight: 12, hasCollided: false, onCollision: this.crashOnCollision, img: this.tree_small };
+			return { game: this, x: x, y: y, hbXOffset: 8, hbYOffset: 22, hbWidth: 14, hbHeight: 10, jumpOverHeight: 32, hasCollided: false, onCollision: this.crashOnCollision, img: this.tree_small, drawThresholdY: -5 };
+		case 'tree_large':
+			return { game: this, x: x, y: y, hbXOffset: 9, hbYOffset: 52, hbWidth: 15, hbHeight: 12, jumpOverHeight: 64, hasCollided: false, onCollision: this.crashOnCollision, img: this.tree_large, drawThresholdY: -37 };
+		case 'tree_bare':
+			return { game: this, x: x, y: y, hbXOffset: 7, hbYOffset: 18, hbWidth: 9, hbHeight: 9, jumpOverHeight: 27, hasCollided: false, onCollision: this.crashOnCollision, img: this.tree_bare, drawThresholdY: 1 , isOnFire: false};
 		case 'rock':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 23, hbHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, img: this.rock };
+			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 23, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, img: this.rock };
 		case 'jump':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 32, hbHeight: 8, hasCollided: false, onCollision: this.jumpOnCollision, img: this.jump };
+			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 32, hbHeight: 8, jumpOverHeight: 8, hasCollided: false, onCollision: this.jumpOnCollision, img: this.jump };
 		case 'stump':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump };
+			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, img: this.stump };
+		default:
+			throw('Error! Invalid game object type: ' + type);
 		}
 	}
 
@@ -155,12 +173,15 @@ export default class Game {
 		this.adaptGameObjectCountToScreenSize();
 	}
 
+	// determine the target number of game objects of each type proportional to total game screen area
 	calculateGameObjectCounts() {
 		let area = this.gameWidth * this.gameHeight;
-
-		// number of game objects is proportional to total game screen area
-		this.treeCount = Math.floor(area * this.resCoefficient * this.treeDensity);
-		this.bumpCount = Math.floor(area * this.resCoefficient * this.bumpDensity);
+		this.treeSmallCount = Math.floor(area * this.resCoefficient * this.treeSmallDensity);
+		this.treeLargeCount = Math.floor(area * this.resCoefficient * this.treeLargeDensity);
+		this.treeBareCount = Math.floor(area * this.resCoefficient * this.treeBareDensity);
+		this.bumpGroupCount = Math.floor(area * this.resCoefficient * this.bumpGroupDensity);
+		this.bumpSmallCount = Math.floor(area * this.resCoefficient * this.bumpSmallDensity);
+		this.bumpLargeCount = Math.floor(area * this.resCoefficient * this.bumpLargeDensity);
 		this.rockCount = Math.floor(area * this.resCoefficient * this.rockDensity);
 		this.jumpCount = Math.floor(area * this.resCoefficient * this.jumpDensity);
 		this.stumpCount = Math.floor(area * this.resCoefficient * this.stumpDensity);
@@ -169,8 +190,12 @@ export default class Game {
 	// trim or add new game objects proportionally to the size of the window
 	adaptGameObjectCountToScreenSize() {
 		this.calculateGameObjectCounts();
-		this.correctGameObjectCount(this.trees, this.treeCount, 'tree_small');
-		this.correctGameObjectCount(this.bumps, this.bumpCount, 'bump_group');
+		this.correctGameObjectCount(this.treesSmall, this.treeSmallCount, 'tree_small');
+		this.correctGameObjectCount(this.treesLarge, this.treeLargeCount, 'tree_large');
+		this.correctGameObjectCount(this.treesBare, this.treeBareCount, 'tree_bare');
+		this.correctGameObjectCount(this.bumpsGroup, this.bumpGroupCount, 'bump_group');
+		this.correctGameObjectCount(this.bumpsSmall, this.bumpSmallCount, 'bump_small');
+		this.correctGameObjectCount(this.bumpsLarge, this.bumpLargeCount, 'bump_large');
 		this.correctGameObjectCount(this.rocks, this.rockCount, 'rock');
 		this.correctGameObjectCount(this.jumps, this.jumpCount, 'jump');
 		this.correctGameObjectCount(this.stumps, this.stumpCount, 'stump');
@@ -212,15 +237,23 @@ export default class Game {
 		this.skier.update(this.getMouseAndVelocityInfo());
 		this.lift.update(step);
 
-		this.recycleGameObjects(this.bumps);
-		this.recycleGameObjectsAndCheckForCollisions(this.trees);
+		this.recycleGameObjectsAndCheckForCollisions(this.bumpsGroup);
+		this.recycleGameObjectsAndCheckForCollisions(this.bumpsSmall);
+		this.recycleGameObjectsAndCheckForCollisions(this.bumpsLarge);
+		this.recycleGameObjectsAndCheckForCollisions(this.treesSmall);
+		this.recycleGameObjectsAndCheckForCollisions(this.treesLarge);
+		this.recycleGameObjectsAndCheckForCollisions(this.treesBare);
 		this.recycleGameObjectsAndCheckForCollisions(this.rocks);
 		this.recycleGameObjectsAndCheckForCollisions(this.jumps);
 		this.recycleGameObjectsAndCheckForCollisions(this.stumps);
-		
+
 		// update position of game objects based on x/y-velocity of skier
-		this.updatePosition(this.trees, step);
-		this.updatePosition(this.bumps, step);
+		this.updatePosition(this.bumpsGroup, step);
+		this.updatePosition(this.bumpsSmall, step);
+		this.updatePosition(this.bumpsLarge, step);
+		this.updatePosition(this.treesSmall, step);
+		this.updatePosition(this.treesLarge, step);
+		this.updatePosition(this.treesBare, step);
 		this.updatePosition(this.rocks, step);
 		this.updatePosition(this.jumps, step);
 		this.updatePosition(this.stumps, step);
@@ -259,9 +292,8 @@ export default class Game {
 			gameObjectList[i].y -= this.skier.yv * step;
 		}
 	}
-	// recycle uphill offscreen game objects once they are passed
+	// recycle the position of a list of game objects
 	recycleGameObjects(gameObjects) {
-		
 		for (let i = 0; i < gameObjects.length; i++) {
 			let object = gameObjects[i];
 			if (this.hasGameObjectBeenPassed(object)) {
@@ -275,15 +307,19 @@ export default class Game {
 		for (let i = 0; i < gameObjects.length; i++) {
 			let object = gameObjects[i];
 
-			// recycle uphill offscreen game objects once they are passed
+			// recycle the position of uphill offscreen game objects once they are passed
 			if (this.hasGameObjectBeenPassed(object)) {
 				this.recycleGameObjectPosition(gameObjects[i]);
 			}
-			// if the skier hits an object they haven't hit already, mark it as hit and 
-			else if (this.isGameObjectCollidingWithSkier(object) && this.skier.jumpOffset < object.hbHeight) {
-				if (this.collisionsEnabled && !object.hasCollided) {
-					gameObjects[i].hasCollided = true;
-					if (object.onCollision) {
+			// if the skier hits an object they haven't hit already, mark it as hit and do collision action if applicable
+			else if (this.isGameObjectCollidingWithSkier(object) && this.skier.jumpOffset < object.jumpOverHeight && this.collisionsEnabled) {
+				if (typeof object.onCollision !== 'undefined') {
+					if (typeof object.hasCollided !== 'undefined') {
+						if (!object.hasCollided) {
+							object.onCollision();
+							object.hasCollided = true;
+						}
+					} else {
 						object.onCollision();
 					}
 				}
@@ -296,7 +332,11 @@ export default class Game {
 		let xy = this.getRandomCoordinateOffScreen();
 		gameObject.x = xy.x;
 		gameObject.y = xy.y;
-		gameObject.hasCollided = false;
+		if (typeof gameObject.hasCollided !== undefined)
+			gameObject.hasCollided = false;
+		if (typeof gameObject.isOnFire !== undefined) {
+			gameObject.isOnFire = false;
+		}
 	}
 
 	// return true if the given game object is offscreen uphill or is far enough away horizontally
@@ -318,14 +358,21 @@ export default class Game {
 	crashOnCollision() {
 		this.game.skier.isCrashed = true;
 		this.game.style -= 32;
+		if (typeof this.isOnFire !== undefined) {
+			if (this.game.skier.isJumping) {
+				this.isOnFire = true;
+			}
+		}
 	}
 
 	// make the skier jump
 	jumpOnCollision() {
-		let jumpV = this.game.skier.yv * this.game.jumpVMult + this.game.jumpVBase;
-		this.game.skier.jumpV = jumpV;
-		this.game.skier.isJumping = true;
-		this.game.style += jumpV * 25;
+		if (!this.game.skier.isCrashed && !this.game.skier.isSkatingLeft && !this.game.skier.isSkatingRight && !this.game.skier.isJumping) {
+			let jumpV = this.game.skier.yv * this.game.jumpVMult + this.game.jumpVBase;
+			this.game.skier.jumpV = jumpV;
+			this.game.skier.isJumping = true;
+			this.game.style += jumpV * 25;
+		}
 	}
 
 	// make the skier slow down
@@ -406,8 +453,17 @@ export default class Game {
 		ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
 
 		// draw bumps
-		for (let i = 0; i < this.bumps.length; i++) {
-			ctx.drawImage(this.bumps[i].img, this.skier.x + this.bumps[i].x, this.skier.y + this.bumps[i].y);
+		for (let i = 0; i < this.bumpsGroup.length; i++) {
+			let bump = this.bumpsGroup[i];
+			ctx.drawImage(bump.img, this.skier.x + bump.x, this.skier.y + bump.y);
+		}
+		for (let i = 0; i < this.bumpsSmall.length; i++) {
+			let bump = this.bumpsSmall[i];
+			ctx.drawImage(bump.img, this.skier.x + bump.x, this.skier.y + bump.y);
+		}
+		for (let i = 0; i < this.bumpsLarge.length; i++) {
+			let bump = this.bumpsLarge[i];
+			ctx.drawImage(bump.img, this.skier.x + bump.x, this.skier.y + bump.y);
 		}
 
 		// draw skier trail
@@ -419,25 +475,43 @@ export default class Game {
 
 		// draw jumps
 		for (let i = 0; i < this.jumps.length; i++) {
-			ctx.drawImage(this.jumps[i].img, this.skier.x + this.jumps[i].x, this.skier.y + this.jumps[i].y);
+			let jump = this.jumps[i];
+			ctx.drawImage(jump.img, this.skier.x + jump.x, this.skier.y + jump.y);
 		}
 
 		// draw rocks
 		for (let i = 0; i < this.rocks.length; i++) {
-			ctx.drawImage(this.rocks[i].img, this.skier.x + this.rocks[i].x, this.skier.y + this.rocks[i].y);
+			let rock = this.rocks[i];
+			ctx.drawImage(rock.img, this.skier.x + rock.x, this.skier.y + rock.y);
 		}
 
 		// draw stumps
 		for (let i = 0; i < this.stumps.length; i++) {
-			ctx.drawImage(this.stumps[i].img, this.skier.x + this.stumps[i].x, this.skier.y + this.stumps[i].y);
-			//this.stumps[i].draw(ctx);
+			let stump = this.stumps[i];
+			ctx.drawImage(stump.img, this.skier.x + stump.x, this.skier.y + stump.y);
 		}
 
 		// draw trees above skier
-		for (let i = 0; i < this.trees.length; i++) {
-			let yThreshold = -2;
-			if (this.trees[i].y < yThreshold) {
-				ctx.drawImage(this.trees[i].img, this.skier.x + this.trees[i].x, this.skier.y + this.trees[i].y);
+		for (let i = 0; i < this.treesSmall.length; i++) {
+			let tree = this.treesSmall[i];
+			if (tree.y < tree.drawThresholdY) {
+				ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
+			}
+		}
+		for (let i = 0; i < this.treesLarge.length; i++) {
+			let tree = this.treesLarge[i];
+			if (tree.y < tree.drawThresholdY) {
+				ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
+			}
+		}
+		for (let i = 0; i < this.treesBare.length; i++) {
+			let tree = this.treesBare[i];
+			if (tree.y < tree.drawThresholdY) {
+				if (tree.isOnFire) {
+					ctx.drawImage(this.currentTreeFireImg, this.skier.x + tree.x, this.skier.y + tree.y);
+				} else {
+					ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
+				}
 			}
 		}
 
@@ -448,10 +522,26 @@ export default class Game {
 		this.skier.draw(ctx);
 
 		// draw trees below skier
-		for (let i = 0; i < this.trees.length; i++) {
-			let yThreshold = -2;
-			if (this.trees[i].y >= yThreshold) {
-				ctx.drawImage(this.trees[i].img, this.skier.x + this.trees[i].x, this.skier.y + this.trees[i].y);
+		for (let i = 0; i < this.treesSmall.length; i++) {
+			let tree = this.treesSmall[i];
+			if (tree.y >= tree.drawThresholdY) {
+				ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
+			}
+		}
+		for (let i = 0; i < this.treesLarge.length; i++) {
+			let tree = this.treesLarge[i];
+			if (tree.y >= tree.drawThresholdY) {
+				ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
+			}
+		}
+		for (let i = 0; i < this.treesBare.length; i++) {
+			let tree = this.treesBare[i];
+			if (tree.y >= tree.drawThresholdY) {
+				if (tree.isOnFire) {
+					ctx.drawImage(this.currentTreeFireImg, this.skier.x + tree.x, this.skier.y + tree.y);
+				} else {
+					ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
+				}
 			}
 		}
 
@@ -473,7 +563,6 @@ export default class Game {
 		ctx.font = '14px ModernDOS';
 		ctx.fillStyle = '#000000';
 		ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), this.gameWidth - 136, 10);
-
 		let leadingSpace = '     ';
 		let dist = Math.ceil(this.yDist / 28.7514);
 		if (dist > 999999) {
@@ -487,7 +576,6 @@ export default class Game {
 		} else if (dist > 99) {
 			leadingSpace = '    ';
 		}
-
 		ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', this.gameWidth - 136, 22);
 		ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', this.gameWidth - 136, 34);
 		ctx.fillText('Style:       ' + Math.floor(this.style), this.gameWidth - 136, 46);

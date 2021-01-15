@@ -3,7 +3,6 @@ self.addEventListener('install', function (event) {
 	event.waitUntil(
 		caches.open('v1').then(function (cache) {
 			return cache.addAll([
-				'./js/collidable.js',
 				'./js/game.js',
 				'./js/input.js',
 				'./js/lift.js',

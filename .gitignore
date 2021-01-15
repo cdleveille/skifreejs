@@ -42,7 +42,3 @@ yarn.lock
 
 # py stuff
 __pycache__/
-
-# client-side debugging files
-public/.vscode
-public/debug.html
