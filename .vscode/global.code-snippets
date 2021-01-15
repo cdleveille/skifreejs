@@ -14,5 +14,30 @@
 			"\t}",
 			"}"
 		]
+	},
+	"New Mongoose Entity": {
+		"prefix": "nme",
+		"body": [
+			"import mongoose, { Document } from \"mongoose\";",
+			"",
+			"export interface I${TM_FILENAME_BASE} extends Document {",
+			"\t_id: string",
+			"\tfield: string",
+			"}",
+			"",
+			"const ${TM_FILENAME_BASE} = new mongoose.Schema(",
+			"\t{",
+			"\t\tfield: {",
+			"\t\t\ttype: String,",
+			"\t\t\trequired: true",
+			"\t\t}",
+			"\t},",
+			"\t{",
+			"\t\tcollection: \"${TM_FILENAME_BASE}\",",
+			"\t\tversionKey: false",
+			"\t}",
+			");",
+			"export default mongoose.model<I${TM_FILENAME_BASE}>(\"${TM_FILENAME_BASE}\", ${TM_FILENAME_BASE});"
+		]
 	}
 }
