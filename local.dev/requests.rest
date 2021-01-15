@@ -5,4 +5,3 @@ Content-Type: application/json
 	"username": "Sk8terBoi69",
 	"score": 73465
 }
-###
