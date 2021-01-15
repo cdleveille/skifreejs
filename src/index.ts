@@ -1,3 +1,4 @@
+import cluster from 'cluster';
 import config from './helpers/config';
 import path from 'path';
 import express, { Request, Response } from 'express';
@@ -21,4 +22,11 @@ const start = async (): Promise<void> => {
 	});
 };
 
-start();
+if (cluster.isMaster) {
+	for (let i = 0; i < config.CORES; i++) {
+		cluster.fork();
+	}
+}
+else {
+	start();
+}
