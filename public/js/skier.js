@@ -17,7 +17,7 @@ export default class Skier {
 			width: 10,
 			height: 2
 		};
-		this.loadSkierImages();
+		this.loadImages();
 		this.init();
 	}
 
@@ -37,42 +37,28 @@ export default class Skier {
 		this.isJumping = false;
 	}
 
-	loadSkierImages() {
-		this.skier_left = new Image();
-		this.skier_left.src = '/img/skier_left.png';
-		this.skier_left_down = new Image();
-		this.skier_left_down.src = '/img/skier_left_down.png';
-		this.skier_down_left = new Image();
-		this.skier_down_left.src = '/img/skier_down_left.png';
-		this.skier_down = new Image();
-		this.skier_down.src = '/img/skier_down.png';
-		this.skier_down_right = new Image();
-		this.skier_down_right.src = '/img/skier_down_right.png';
-		this.skier_right_down = new Image();
-		this.skier_right_down.src = '/img/skier_right_down.png';
-		this.skier_right = new Image();
-		this.skier_right.src = '/img/skier_right.png';
-		this.skier_jump_down = new Image();
-		this.skier_jump_down.src = '/img/skier_jump_down.png';
-		this.skier_jump_left = new Image();
-		this.skier_jump_left.src = '/img/skier_jump_left.png';
-		this.skier_jump_right = new Image();
-		this.skier_jump_right.src = '/img/skier_jump_right.png';
-		this.skier_falling = new Image();
-		this.skier_falling.src = '/img/skier_falling.png';
-		this.skier_sit = new Image();
-		this.skier_sit.src = '/img/skier_sit.png';
-		this.skier_skate_left = new Image();
-		this.skier_skate_left.src = '/img/skier_skate_left.png';
-		this.skier_skate_right = new Image();
-		this.skier_skate_right.src = '/img/skier_skate_right.png';
+	loadImages() {
+		this.skier_left = this.game.util.loadImage('/img/skier_left.png');
+		this.skier_left_down = this.game.util.loadImage('/img/skier_left_down.png');
+		this.skier_down_left = this.game.util.loadImage('/img/skier_down_left.png');
+		this.skier_down = this.game.util.loadImage('/img/skier_down.png');
+		this.skier_down_right = this.game.util.loadImage('/img/skier_down_right.png');
+		this.skier_right_down = this.game.util.loadImage('/img/skier_right_down.png');
+		this.skier_right = this.game.util.loadImage('/img/skier_right.png');
+		this.skier_jump_down = this.game.util.loadImage('/img/skier_jump_down.png');
+		this.skier_jump_left = this.game.util.loadImage('/img/skier_jump_left.png');
+		this.skier_jump_right = this.game.util.loadImage('/img/skier_jump_right.png');
+		this.skier_falling = this.game.util.loadImage('/img/skier_falling.png');
+		this.skier_sit = this.game.util.loadImage('/img/skier_sit.png');
+		this.skier_skate_left = this.game.util.loadImage('/img/skier_skate_left.png');
+		this.skier_skate_right = this.game.util.loadImage('/img/skier_skate_right.png');
 	}
 
-	update(someNumbers) {
+	update(mouseAndVelocityInfo) {
 		this.currentSpeed = Math.sqrt(Math.pow(this.xv, 2) + Math.pow(this.yv, 2));
-		let mouseToSkierAngle = someNumbers[0];
-		let mouseAngleVectors = someNumbers[1];
-		let vVectors = someNumbers[2];
+		let mouseToSkierAngle = mouseAndVelocityInfo[0];
+		let mouseAngleVectors = mouseAndVelocityInfo[1];
+		let vVectors = mouseAndVelocityInfo[2];
 
 		// handle jumps
 		if (this.isJumping) {
@@ -232,36 +218,36 @@ export default class Skier {
 	draw(ctx) {
 		let xOffset = 0;
 		switch (this.currentImage) {
-			case this.skier_left:
-				xOffset = -4;
-				break;
-			case this.skier_left_down:
-				xOffset = -2;
-				break;
-			case this.skier_down_left:
-				xOffset = -1;
-				break;
-			case this.skier_right_down:
-				xOffset = -5;
-				break;
-			case this.skier_right:
-				xOffset = -4;
-				break;
-			case this.skier_sit:
-				xOffset = -8;
-				break;
-			case this.skier_jump_down:
-				xOffset = -6;
-				break;
-			case this.skier_falling:
-				xOffset = -9;
-				break;
-			case this.skier_jump_left:
-				xOffset = -7;
-				break;
-			case this.skier_jump_right:
-				xOffset = -6;
-				break;
+		case this.skier_left:
+			xOffset = -4;
+			break;
+		case this.skier_left_down:
+			xOffset = -2;
+			break;
+		case this.skier_down_left:
+			xOffset = -1;
+			break;
+		case this.skier_right_down:
+			xOffset = -5;
+			break;
+		case this.skier_right:
+			xOffset = -4;
+			break;
+		case this.skier_sit:
+			xOffset = -8;
+			break;
+		case this.skier_jump_down:
+			xOffset = -6;
+			break;
+		case this.skier_falling:
+			xOffset = -9;
+			break;
+		case this.skier_jump_left:
+			xOffset = -7;
+			break;
+		case this.skier_jump_right:
+			xOffset = -6;
+			break;
 		}
 		ctx.drawImage(this.currentImage, this.x + xOffset, this.y - this.jumpOffset);
 	}

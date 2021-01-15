@@ -11,11 +11,11 @@ new InputHandler(canvas, game);
 new WindowHandler(canvas, game);
 
 let updateRate = 500;
-let dt, now, last = game.timestamp(), step = 1 / updateRate;
+let dt, now, last = game.util.timestamp(), step = 1 / updateRate;
 
 function frame() {
 
-	now = game.timestamp();
+	now = game.util.timestamp();
 	dt = Math.min(1, (now - last) / 1000);
 
 	while (dt > step) {

@@ -6,31 +6,22 @@ export default class Lift {
 		this.liftX = 100;
 		this.liftChairSpacing = 500;
 		this.liftTowerSpacing = 1000;
-		this.loadLiftImages();
+		this.loadImages();
 		this.init();
 	}
 
 	init() {
 		this.liftTowers = [[this.liftX, 0, false]];
 		this.liftChairsDown = [[this.liftX - 18, 0]];
-		this.liftChairsUp = [[this.liftX + 24, 0, this.game.randomInt(0, 2)]];
+		this.liftChairsUp = [[this.liftX + 24, 0, this.game.util.randomInt(0, 2)]];
 	}
 
-	loadLiftImages() {
-		this.lift_tower = new Image();
-		this.lift_tower.src = '/img/lift_tower.png';
-
-		this.lift_tower_top = new Image();
-		this.lift_tower_top.src = '/img/lift_tower_top.png';
-
-		this.lift_chair_up1 = new Image();
-		this.lift_chair_up1.src = '/img/lift_chair_up1.png';
-
-		this.lift_chair_up2 = new Image();
-		this.lift_chair_up2.src = '/img/lift_chair_up2.png';
-
-		this.lift_chair_down = new Image();
-		this.lift_chair_down.src = '/img/lift_chair_down.png';
+	loadImages() {
+		this.lift_tower = this.game.util.loadImage('/img/lift_tower.png');
+		this.lift_tower_top = this.game.util.loadImage('/img/lift_tower_top.png');
+		this.lift_chair_up1 = this.game.util.loadImage('/img/lift_chair_up1.png');
+		this.lift_chair_up2 = this.game.util.loadImage('/img/lift_chair_up2.png');
+		this.lift_chair_down = this.game.util.loadImage('/img/lift_chair_down.png');
 	}
 
 	update(step) {
@@ -54,7 +45,7 @@ export default class Lift {
 
 		// if the skier hits a lift tower, set isCrashed to true
 		for (let i = 0; i < this.liftTowers.length; i++) {
-			if (this.game.isCollidingWithSkier(this.liftTowers[i][0] + 10, this.liftTowers[i][1] + 50, 11, 11) && this.game.skier.jumpOffset < 61) {
+			if (this.game.isGameObjectCollidingWithSkier({ x: this.liftTowers[i][0], y: this.liftTowers[i][1], hbXOffset: 10, hbYOffset: 50, hbWidth: 11, hbHeight: 11 }) && this.game.skier.jumpOffset < 62) {
 				if (this.game.collisionsEnabled && !this.liftTowers[i][2]) {
 					this.game.skier.isCrashed = true;
 					this.liftTowers[i][2] = true;
@@ -107,12 +98,12 @@ export default class Lift {
 
 		// if the lowest chair going up is on the game screen, spawn a new chair below it
 		if (lowestChairUp[1] < this.game.gameHeight * 2 / 3 && lowestChairUp[1] > -this.game.gameHeight / 3 - this.lift_chair_up1.height) {
-			this.liftChairsUp.unshift([lowestChairUp[0], lowestChairUp[1] + this.liftChairSpacing, this.game.randomInt(0, 2)]);
+			this.liftChairsUp.unshift([lowestChairUp[0], lowestChairUp[1] + this.liftChairSpacing, this.game.util.randomInt(0, 2)]);
 		}
 
 		// if the highest chair going up is on the game screen, spawn a new chair above it
 		if (highestChairUp[1] < this.game.gameHeight * 2 / 3 && highestChairUp[1] > -this.game.gameHeight / 3 - this.lift_chair_up1.height) {
-			this.liftChairsUp.push([highestChairUp[0], highestChairUp[1] - this.liftChairSpacing, this.game.randomInt(0, 2)]);
+			this.liftChairsUp.push([highestChairUp[0], highestChairUp[1] - this.liftChairSpacing, this.game.util.randomInt(0, 2)]);
 		}
 		// if the highest chair going up is off-screen upwards and is not the only remaining chair, delete it
 		else if (highestChairUp[1] < -this.game.gameHeight / 3 - this.lift_chair_up1.height - this.liftChairSpacing && this.liftChairsUp.length > 1) {
