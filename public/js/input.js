@@ -6,13 +6,38 @@ export default class InputHandler {
 			game.mousePos.y = event.clientY - ((window.innerHeight - canvas.height) / 2);
 		});
 
-		canvas.addEventListener('click', () => {
+		canvas.addEventListener('mousedown', (event) => {
 			if (!game.isPaused) {
-				if (!game.skier.isJumping && !game.skier.isCrashed) {
-					game.skier.isJumping = true;
-					game.skier.jumpV = game.skier.jumpVInit;
-				} else if (game.skier.isCrashed && game.skier.isStopped) {
-					game.skier.isCrashed = false;
+				if (event.button == 0) {
+					if (!game.skier.isCrashed) {
+						if (game.skier.isJumping) {
+							game.skier.rotateJumpStage();
+						}
+					}
+				} else if (event.button == 2 && !game.skier.trick1Disabled) {
+					if (game.skier.isJumping && !game.skier.isCrashed) {
+						game.skier.isDoingTrick1 = true;
+						game.skier.trick1Disabled = true;
+						game.skier.trick1StartTime = game.util.timestamp();
+					}
+				}
+			}
+		});
+
+		canvas.addEventListener('mouseup', (event) => {
+			if (!game.isPaused) {
+				if (event.button == 0) {
+					if (!game.skier.isCrashed) {
+						if (!game.skier.isJumping) {
+							game.skier.isJumping = true;
+							game.skier.jumpV = game.skier.jumpVInit;
+						}
+					} else if (game.skier.isStopped) {
+						game.skier.isCrashed = false;
+					}
+				} else if (event.button == 2) {
+					game.skier.isDoingTrick1 = false;
+					
 				}
 			}
 		});

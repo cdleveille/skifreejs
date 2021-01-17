@@ -4,6 +4,9 @@ import InputHandler from './input.js';
 import WindowHandler from './window.js';
 
 let canvas = document.getElementById('gameScreen');
+canvas.oncontextmenu = function (e) {
+	e.preventDefault();
+};
 let ctx = canvas.getContext('2d');
 
 let game = new Game();

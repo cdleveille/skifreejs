@@ -43,13 +43,24 @@ export default class Lift {
 			this.liftChairsUp[i][1] -= (this.game.skier.yv + this.liftSpeed) * step;
 		}
 
-		// if the skier hits a lift tower, set isCrashed to true
+		
 		for (let i = 0; i < this.liftTowers.length; i++) {
+			// if the skier hits a lift tower, set isCrashed to true
 			if (this.game.isGameObjectCollidingWithSkier({ x: this.liftTowers[i][0], y: this.liftTowers[i][1], hbXOffset: 10, hbYOffset: 50, hbWidth: 11, hbHeight: 11 }) && this.game.skier.jumpOffset < 62) {
 				if (this.game.collisionsEnabled && !this.liftTowers[i][2]) {
 					this.game.skier.isCrashed = true;
 					this.liftTowers[i][2] = true;
 					this.game.style -= 32;
+				}
+			}
+
+			// if an other skier hits a lift tower, set isCrashed to true
+			for (let j = 0; j < this.game.otherSkiers.length; j++) {
+				let otherSkier = this.game.otherSkiers[j];
+				if (!otherSkier.isCrashed && this.game.isGameObjectCollidingWithOtherSkier(otherSkier, { x: this.liftTowers[i][0], y: this.liftTowers[i][1], hbXOffset: 10, hbYOffset: 50, hbWidth: 11, hbHeight: 11 })) {
+					if (this.game.collisionsEnabled) {
+						this.game.crashOtherSkierOnCollision(otherSkier);
+					}
 				}
 			}
 		}
