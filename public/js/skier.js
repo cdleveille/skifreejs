@@ -40,6 +40,7 @@ export default class Skier {
 		this.completedBackflip = false;
 		this.isDoingTrick1 = false;
 		this.trick1StartTime = null;
+		this.trick1EndTime = null;
 		this.trick1Disabled = false;
 	}
 
@@ -179,13 +180,28 @@ export default class Skier {
 			this.jumpV -= this.jumpGravity;
 
 			if (this.jumpOffset <= 0) {
+
+				// crash the skier if in mid-backflip
 				if (this.jumpStage != 1 || this.isDoingTrick1) {
 					this.isCrashed = true;
 					this.game.style -= 32;
 				}
-				if (this.completedBackflip) {
-					this.game.style += 50;
+
+				// award style points for landing jumps and doing tricks
+				if (!this.isCrashed) {
+					this.game.style += this.game.stylePointsToAwardOnLanding;
+
+					if (this.completedBackflip) {
+						this.game.style += 50;
+					}
+
+					if (this.trick1StartTime != null && this.trick1EndTime != null) {
+						let duration = this.trick1EndTime - this.trick1StartTime;
+						let points = Math.floor(duration / 80.0 + 5);
+						this.game.style += points;
+					}
 				}
+
 				this.jumpOffset = 0;
 				this.isJumping = false;
 				this.isDoingTrick1 = false;

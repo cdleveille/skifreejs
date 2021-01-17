@@ -37,7 +37,7 @@ export default class InputHandler {
 					}
 				} else if (event.button == 2) {
 					game.skier.isDoingTrick1 = false;
-					
+					game.skier.trick1EndTime = game.util.timestamp();
 				}
 			}
 		});

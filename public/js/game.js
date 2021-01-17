@@ -41,6 +41,7 @@ export default class Game {
 		this.gameHeight = window.innerHeight;
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
+		this.stylePointsToAwardOnLanding = 0;
 		this.calculateGameObjectCounts();
 
 		// spawn game objects on and around the game screen for start of game
@@ -463,7 +464,7 @@ export default class Game {
 			let jumpV = this.game.skier.yv * this.game.jumpVMult + this.game.jumpVBase;
 			this.game.skier.jumpV = jumpV;
 			this.game.skier.isJumping = true;
-			this.game.style += jumpV * 10;
+			this.game.stylePointsToAwardOnLanding = jumpV * 10;
 		}
 	}
 
