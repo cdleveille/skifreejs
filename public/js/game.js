@@ -335,6 +335,10 @@ export default class Game {
 						}
 					}
 				}
+			// recycle the other skier's position if they have are crashed and have been passed
+			} else if (this.hasGameObjectBeenPassed(otherSkier)) {
+				this.recycleGameObjectPosition(otherSkier);
+				otherSkier.isCrashed = false;
 			}
 
 			// if the other skier hits the skier, crash them both
