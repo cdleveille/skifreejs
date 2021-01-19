@@ -323,6 +323,7 @@ export default class Game {
 						break;
 					}
 					otherSkier.timestamp = now;
+					otherSkier.yv = 0.1;
 				}
 
 				// if the other skier hits another other skier, crash them both
@@ -344,7 +345,7 @@ export default class Game {
 			// if the other skier hits the skier, crash them both
 			if (!otherSkier.hasCollided && this.isGameObjectCollidingWithSkier(otherSkier) && this.skier.jumpOffset < 29) {
 				this.skier.isCrashed = true;
-				this.style -= 32;
+				this.style = 0;
 				otherSkier.hasCollided = true;
 				this.crashOtherSkierOnCollision(otherSkier);
 			}
@@ -445,7 +446,7 @@ export default class Game {
 	// make the skier crash
 	crashOnCollision() {
 		this.game.skier.isCrashed = true;
-		this.game.style -= 32;
+		this.game.style = 0;
 		if (typeof this.isOnFire !== undefined) {
 			if (this.game.skier.isJumping) {
 				this.isOnFire = true;
@@ -468,7 +469,7 @@ export default class Game {
 			let jumpV = this.game.skier.yv * this.game.jumpVMult + this.game.jumpVBase;
 			this.game.skier.jumpV = jumpV;
 			this.game.skier.isJumping = true;
-			this.game.stylePointsToAwardOnLanding = jumpV * 10;
+			this.game.stylePointsToAwardOnLanding = jumpV * 5;
 		}
 	}
 
