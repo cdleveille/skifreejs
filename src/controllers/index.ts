@@ -5,6 +5,7 @@ import IResponse from '../types/IResponse';
 import { IUser } from '../models/User';
 import T from '../types/IGeneric';
 import { Errors } from '../types/Constants';
+import auth from '../middleware/appRestriction';
 
 app.post('/api/register', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
 	const { username, password, score } = <IUser>req.body;
@@ -40,6 +41,18 @@ app.post('/api/login', async (req: Request, res: Response, next: NextFunction): 
 				username: user.username,
 				score: user.score
 			}
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
+});
+
+app.post('/api/test', auth, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+	try {
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: 'request successful'
 		} as IResponse);
 	} catch (error) {
 		next(error);
