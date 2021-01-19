@@ -75,4 +75,19 @@ export default class Util {
 			this.lastLogTime = null;
 		}
 	}
+
+	// generic rest method for outbound requests
+	fetch (method, uri) {
+		method = method.trim().toUpperCase();
+		return new Promise((resolve, reject) => {
+			$.ajax({
+				method: method,
+				url: uri,
+				beforeSend: () => console.log(`performing ${method} on ${uri}`),
+				success: data => resolve(data),
+				error: e => reject(e),
+				complete: () => console.log('request complete')
+			});
+		});
+	}
 }
