@@ -12,7 +12,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(cwd(), './public/'));
 
 // serve static
-app.get('/', (req: Request, res: Response): void => {
+app.get('/', async (req: Request, res: Response): Promise<void> => {
 	return res.status(200).render('ski.ejs', {
 		shouldCache: config.SHOULD_CACHE
 	});
