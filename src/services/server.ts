@@ -16,14 +16,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(compression());
 /* eslint-disable quotes */
 app.use(
-	helmet({
-		contentSecurityPolicy: {
-			directives: {
-				defaultSrc: ["'self'"],
-				scriptSrc: ["'self'", "https://code.jquery.com"],
-				styleSrc: ["'self'", "fonts.googleapis.com", "'unsafe-inline'"],
-				fontSrc: ["'self'", "fonts.gstatic.com"]
-			}
+	helmet.contentSecurityPolicy({
+		directives: {
+			"default-src": ["'self'"],
+			"object-src": ["'none'"],
+			"script-src": ["'self'", "code.jquery.com", "cdnjs.cloudflare.com"],
+			"style-src": ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
+			"font-src": ["'self'", "'unsafe-inline'", "fonts.googleapis.com", "fonts.gstatic.com"]
 		},
 	})
 );
