@@ -271,7 +271,7 @@ export default class Skier {
 				} else {
 					this.currentImage = this.skier_trick1_right;
 				}
-			} else if (((mouseToSkierAngle > 0 && mouseToSkierAngle < 190 && mouseToSkierAngle != 90) || mouseToSkierAngle == -90) && !this.isStopped) {
+			} else if (((mouseToSkierAngle > 0 && mouseToSkierAngle < 180 && mouseToSkierAngle != 90) || mouseToSkierAngle == -90) && !this.isStopped) {
 				this.currentImage = this.skier_trick2;
 				this.isDoingTrick2 = true;
 			} else {

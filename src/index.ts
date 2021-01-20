@@ -14,7 +14,7 @@ app.set('views', path.join(cwd(), './public/'));
 // serve static
 app.get('/', async (req: Request, res: Response): Promise<void> => {
 	return res.status(200).render('ski.ejs', {
-		shouldCache: config.SHOULD_CACHE
+		attachSW: config.ATTACH_SW
 	});
 });
 

@@ -351,7 +351,14 @@ export default class Game {
 				otherSkier.hasCollided = true;
 				this.crashOtherSkierOnCollision(otherSkier);
 			}
+
+			// if the other skier (crashed or not) is far enough away, recyle its position
+			if (otherSkier.y < -2000 || otherSkier.x > 3000 || otherSkier.x < -3000) {
+				this.recycleGameObjectPosition(otherSkier);
+				otherSkier.isCrashed = false;
+			}
 	
+			// update position
 			otherSkier.x -= this.skier.xv * step - otherSkier.xv;
 			otherSkier.y -= this.skier.yv * step - otherSkier.yv;
 		}
@@ -456,6 +463,7 @@ export default class Game {
 		}
 	}
 
+	// make the other skier crash
 	crashOtherSkierOnCollision(otherSkier) {
 		if (!otherSkier.isCrashed) {
 			otherSkier.isCrashed = true;

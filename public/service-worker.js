@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 self.addEventListener('install', function (event) {
+	self.skipWaiting();
 	event.waitUntil(
 		caches.open('v1').then(function (cache) {
 			return cache.addAll([
@@ -8,11 +9,9 @@ self.addEventListener('install', function (event) {
 				'./js/lift.js',
 				'./js/ski.js',
 				'./js/skier.js',
-				'./js/sw.js',
 				'./js/util.js',
 				'./js/window.js',
 				'./ski.ejs',
-				'./service-worker.js',
 				'./font/ModernDOS8x16.ttf',
 				'./icons/ski.png',
 				'./img/boarder_bro.png',
@@ -77,27 +76,15 @@ self.addEventListener('install', function (event) {
 	);
 });
 
-self.addEventListener('fetch', function (event) {
-	event.respondWith(fetch(event.request).then(function (response) {
-
-		if (response !== undefined) {
-			// response may be used only once
-			// we need to save clone to put one copy in cache
-			// and serve second one
-			let responseClone = response.clone();
-
-			caches.open('v1').then(function (cache) {
-				cache.put(event.request, responseClone);
-			});
-			return response;
-		} else {
-			return caches.match(event.request).then(function (response) {
-				// caches.match() always resolves
-				// but in case of success response will have value
-				return response;
-			}).catch(function () {
-				return caches.match('/sw-test/gallery/myLittleVader.jpg');
-			});
+self.addEventListener('fetch', (event) => {
+	event.respondWith(async function() {
+		try {
+			const cache = await caches.open('v1');
+			const networkResponse = await fetch(event.request);
+			event.waitUntil(cache.put(event.request, networkResponse.clone()));
+			return networkResponse;
+		} catch (err) {
+			return caches.match(event.request);
 		}
-	}));
+	}());
 });
