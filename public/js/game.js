@@ -44,8 +44,6 @@ export default class Game {
 		this.stylePointsToAwardOnLanding = 0;
 		this.calculateGameObjectCounts();
 
-		this.util.fetch('GET', 'https://jsonplaceholder.typicode.com/todos/1').then(r => console.log(r));
-
 		// spawn game objects on and around the game screen for start of game
 		this.treesSmall = this.initGameObjectsAtStart('tree_small', this.treeSmallCount);
 		this.treesLarge = this.initGameObjectsAtStart('tree_large', this.treeLargeCount);
