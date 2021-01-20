@@ -14,6 +14,19 @@ app.set('json spaces', 2);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(compression());
+/* eslint-disable quotes */
+app.use(
+	helmet({
+		contentSecurityPolicy: {
+			directives: {
+				defaultSrc: ["'self'"],
+				scriptSrc: ["'self'", "https://code.jquery.com"],
+				styleSrc: ["'self'", "fonts.googleapis.com", "'unsafe-inline'"],
+				fontSrc: ["'self'", "fonts.gstatic.com"]
+			}
+		},
+	})
+);
 
 if (config.ENV === Env.dev) {
 	app.use(responseTime());
