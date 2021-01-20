@@ -17,7 +17,6 @@ let updateRate = 500;
 let dt, now, last = game.util.timestamp(), step = 1 / updateRate;
 
 function frame() {
-
 	now = game.util.timestamp();
 	dt = Math.min(1, (now - last) / 1000);
 

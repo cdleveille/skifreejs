@@ -1,9 +1,12 @@
 /* eslint-disable no-undef */
 export default class Util {
-	// load a single image from the specified source file
-	loadImage(src) {
+	// load a single image from the specified url
+	loadImage(url) {
 		let img = new Image();
-		img.src = src;
+		img.src = url;
+		img.onload = function() {
+			img.isLoaded = true;
+		};
 		return img;
 	}
 

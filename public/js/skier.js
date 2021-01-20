@@ -17,8 +17,6 @@ export default class Skier {
 			width: 10,
 			height: 2
 		};
-		this.loadImages();
-		this.init();
 	}
 
 	init() {
@@ -45,7 +43,7 @@ export default class Skier {
 		this.isDoingTrick2 = false;
 	}
 
-	loadImages() {
+	loadAssets() {
 		this.skier_left = this.game.util.loadImage('/img/skier_left.png');
 		this.skier_left_down = this.game.util.loadImage('/img/skier_left_down.png');
 		this.skier_down_left = this.game.util.loadImage('/img/skier_down_left.png');
@@ -65,6 +63,11 @@ export default class Skier {
 		this.skier_trick1_left = this.game.util.loadImage('/img/skier_trick1_left.png');
 		this.skier_trick1_right = this.game.util.loadImage('/img/skier_trick1_right.png');
 		this.skier_trick2 = this.game.util.loadImage('/img/skier_trick2.png');
+
+		// create array of skier images
+		this.images = [this.skier_left, this.skier_left_down, this.skier_down_left, this.skier_down, this.skier_down_right, this.skier_right_down, this.skier_right, 
+			this.skier_jump_down, this.skier_jump_left, this.skier_jump_right, this.skier_falling, this.skier_sit, this.skier_skate_left, this.skier_skate_right, 
+			this.skier_upside_down1, this.skier_upside_down2, this.skier_trick1_left, this.skier_trick1_right, this.skier_trick2];
 	}
 
 	update(mouseAndVelocityInfo) {
@@ -223,11 +226,6 @@ export default class Skier {
 				this.yv = 0;
 			}
 		}
-
-		// add coordinate(s) to skier trail
-		if (!this.isStopped && !this.isJumping) {
-			this.game.skierTrail.push([2, 24]);
-		}
 	}
 
 	// decelerate the skier until he is stopped
@@ -271,7 +269,7 @@ export default class Skier {
 				} else {
 					this.currentImage = this.skier_trick1_right;
 				}
-			} else if (((mouseToSkierAngle > 0 && mouseToSkierAngle < 180 && mouseToSkierAngle != 90) || mouseToSkierAngle == -90) && !this.isStopped) {
+			} else if (((mouseToSkierAngle > 20 && mouseToSkierAngle < 160 && mouseToSkierAngle != 90) || mouseToSkierAngle == -90) && !this.isStopped) {
 				this.currentImage = this.skier_trick2;
 				this.isDoingTrick2 = true;
 			} else {

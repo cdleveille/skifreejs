@@ -6,8 +6,7 @@ export default class Lift {
 		this.liftX = 100;
 		this.liftChairSpacing = 500;
 		this.liftTowerSpacing = 1000;
-		this.loadImages();
-		this.init();
+		this.loadAssets();
 	}
 
 	init() {
@@ -16,12 +15,15 @@ export default class Lift {
 		this.liftChairsUp = [{ x: this.liftX + 24, y: 0, passengers: this.game.util.randomInt(1, 3) }];
 	}
 
-	loadImages() {
+	loadAssets() {
 		this.lift_tower = this.game.util.loadImage('/img/lift_tower.png');
 		this.lift_tower_top = this.game.util.loadImage('/img/lift_tower_top.png');
 		this.lift_chair_up1 = this.game.util.loadImage('/img/lift_chair_up1.png');
 		this.lift_chair_up2 = this.game.util.loadImage('/img/lift_chair_up2.png');
 		this.lift_chair_down = this.game.util.loadImage('/img/lift_chair_down.png');
+
+		// create array of lift images
+		this.images = [this.lift_tower, this.lift_tower_top, this.lift_chair_up1, this.lift_chair_up2, this.lift_chair_down];
 	}
 
 	update(step) {
