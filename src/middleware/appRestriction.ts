@@ -9,9 +9,9 @@ export default (req: Request, res: Response, next: NextFunction) => {
 		throw Error(Errors.notAuthorized);
 	else if (appcode !== config.APPCODE || apptoken !== config.APPTOKEN)
 		throw Error(Errors.notAuthorized);
-	else if (req.get('host') != config.ORIGIN_DOMAIN) {
-		throw Error(Errors.notAuthorized);
-	}
+	//else if (req.get('host') != config.ORIGIN_DOMAIN) {
+	//	throw Error(Errors.notAuthorized);
+	//}
 	else {
 		next();
 	}
