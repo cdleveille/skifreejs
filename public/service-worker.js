@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 self.addEventListener('install', function (event) {
+	self.skipWaiting();
 	event.waitUntil(
 		caches.open('v1').then(function (cache) {
 			return cache.addAll([
@@ -8,11 +9,9 @@ self.addEventListener('install', function (event) {
 				'./js/lift.js',
 				'./js/ski.js',
 				'./js/skier.js',
-				'./js/sw.js',
 				'./js/util.js',
 				'./js/window.js',
 				'./ski.ejs',
-				'./service-worker.js',
 				'./font/ModernDOS8x16.ttf',
 				'./icons/ski.png',
 				'./img/boarder_bro.png',
@@ -79,16 +78,13 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener('fetch', (event) => {
 	event.respondWith(async function() {
-		const cache = await caches.open('v1');
-		const cachedResponse = await cache.match(event.request);
-		const networkResponsePromise = fetch(event.request);
-
-		event.waitUntil(async function() {
-			const networkResponse = await networkResponsePromise;
-			await cache.put(event.request, networkResponse.clone());
-		}());
-
-		// returned the cached response if we have one, otherwise return the network response
-		return cachedResponse || networkResponsePromise;
+		try {
+			const cache = await caches.open('v1');
+			const networkResponse = await fetch(event.request);
+			event.waitUntil(cache.put(event.request, networkResponse.clone()));
+			return networkResponse;
+		} catch (err) {
+			return caches.match(event.request);
+		}
 	}());
 });
