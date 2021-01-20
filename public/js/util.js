@@ -77,16 +77,15 @@ export default class Util {
 	}
 
 	// generic rest method for outbound requests
-	fetch (method, uri) {
-		method = method.trim().toUpperCase();
+	request (method, uri, headers) {
 		return new Promise((resolve, reject) => {
-			$.ajax({
-				method: method,
-				url: uri,
-				beforeSend: () => console.log(`performing ${method} on ${uri}`),
-				success: data => resolve(data),
-				error: e => reject(e),
-				complete: () => console.log('request complete')
+			fetch(uri, {
+				method: method || 'GET',
+				headers: headers
+			}).then(r => r.json()).then(data => {
+				return resolve(data);
+			}).catch(e => {
+				return reject(e);
 			});
 		});
 	}
