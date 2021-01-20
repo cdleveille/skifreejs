@@ -1,0 +1,2 @@
+build/*.js
+public/js/*.min.js
