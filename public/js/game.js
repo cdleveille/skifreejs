@@ -119,8 +119,8 @@ export default class Game {
 		let y = this.util.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
 
 		// if coordinate would be onscreen, spawn it nearby offscreen instead
-		if (x > -this.gameWidth / 2 - 50 && x < this.gameWidth / 2 &&
-			y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3) {
+		if (x > -this.gameWidth / 2 - 80 && x < this.gameWidth / 2 &&
+			y > -this.gameHeight / 3 - 80 && y < this.gameHeight * 2 / 3) {
 			switch (this.util.randomInt(0, 5)) {
 			case 0:
 				x -= (this.gameWidth + 50);
@@ -351,7 +351,7 @@ export default class Game {
 			}
 
 			// if the other skier (crashed or not) is far enough away, recyle its position
-			if (otherSkier.y < -2000 || otherSkier.x > 3000 || otherSkier.x < -3000) {
+			if (otherSkier.y < -2000 || otherSkier.y > 5000 || otherSkier.x > 3000 || otherSkier.x < -3000) {
 				this.recycleGameObjectPosition(otherSkier);
 				otherSkier.isCrashed = false;
 			}
@@ -691,5 +691,11 @@ export default class Game {
 		ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', this.gameWidth - 136, 22);
 		ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', this.gameWidth - 136, 34);
 		ctx.fillText('Style:       ' + Math.floor(this.style), this.gameWidth - 136, 46);
+
+		// draw game paused text
+		if (this.isPaused) {
+			ctx.font = '14px ModernDOS';
+			ctx.fillText('GAME PAUSED', this.gameWidth / 2 - 25, 25);
+		}
 	}
 }
