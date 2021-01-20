@@ -10,7 +10,7 @@ export const enum Environment {
 	prod = 'production'
 }
 
-export const enum ShouldCache {
+export const enum AttachSW {
 	true = 'true',
 	false = 'false'
 }

@@ -77,27 +77,18 @@ self.addEventListener('install', function (event) {
 	);
 });
 
-self.addEventListener('fetch', function (event) {
-	event.respondWith(fetch(event.request).then(function (response) {
+self.addEventListener('fetch', (event) => {
+	event.respondWith(async function() {
+		const cache = await caches.open('v1');
+		const cachedResponse = await cache.match(event.request);
+		const networkResponsePromise = fetch(event.request);
 
-		if (response !== undefined) {
-			// response may be used only once
-			// we need to save clone to put one copy in cache
-			// and serve second one
-			let responseClone = response.clone();
+		event.waitUntil(async function() {
+			const networkResponse = await networkResponsePromise;
+			await cache.put(event.request, networkResponse.clone());
+		}());
 
-			caches.open('v1').then(function (cache) {
-				cache.put(event.request, responseClone);
-			});
-			return response;
-		} else {
-			return caches.match(event.request).then(function (response) {
-				// caches.match() always resolves
-				// but in case of success response will have value
-				return response;
-			}).catch(function () {
-				return caches.match('/sw-test/gallery/myLittleVader.jpg');
-			});
-		}
-	}));
+		// returned the cached response if we have one, otherwise return the network response
+		return cachedResponse || networkResponsePromise;
+	}());
 });
