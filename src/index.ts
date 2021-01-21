@@ -25,6 +25,7 @@ interface IPayload {
 
 io.on('connection', (socket: any) => {
 	logger.info('connected');
+	console.log('connected');
 	socket.on('new_score', (payload: IPayload) => {
 		logger.info(payload);
 	});
