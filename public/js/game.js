@@ -41,8 +41,8 @@ export default class Game {
 		this.timestampFire = this.startTime;
 		this.timestampPaused = this.startTime;
 		this.lastLogTime = null;
-		this.gameWidth = screen.width;
-		this.gameHeight = screen.height;
+		this.gameWidth = Math.max(screen.width, window.innerWidth);
+		this.gameHeight = Math.max(screen.height, window.innerHeight);
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
@@ -684,12 +684,10 @@ export default class Game {
 		// draw hud (140x52 black border 1px)
 		let rightEdgeX = this.gameWidth > window.innerWidth ? this.gameWidth - (Math.floor((this.gameWidth - window.innerWidth) / 2.0)) : this.gameWidth;
 		let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2.0)) : 0;
-
 		ctx.fillStyle = '#000000';
-		ctx.fillRect(rightEdgeX - 140, topEdgeY, 140, 52); // innerWidth 1920
+		ctx.fillRect(rightEdgeX - 140, topEdgeY, 140, 52);
 		ctx.fillStyle = '#FFFFFF';
 		ctx.fillRect(rightEdgeX - 139, topEdgeY + 1, 138, 50);
-
 		ctx.font = '14px ModernDOS';
 		ctx.fillStyle = '#000000';
 		ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), rightEdgeX - 136, topEdgeY + 11);

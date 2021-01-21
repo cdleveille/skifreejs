@@ -2,7 +2,7 @@
 export default class WindowHandler {
 	constructor(canvas, game) {
 		function resizeCanvas() {
-			return [screen.width, screen.height];
+			return [Math.max(screen.width, window.innerWidth), Math.max(screen.height, window.innerHeight)];
 		}
 
 		window.addEventListener('resize', function () {
