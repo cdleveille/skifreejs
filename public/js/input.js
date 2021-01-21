@@ -86,6 +86,7 @@ export default class InputHandler {
 			});
 		} else {
 			canvas.addEventListener('touchstart', (event) => {
+				event.preventDefault();
 				if (!game.isPaused) {
 					game.touchStartTime = game.util.timestamp();
 					let touch = event.touches[0];
@@ -98,6 +99,7 @@ export default class InputHandler {
 			});
 
 			canvas.addEventListener('touchmove', (event) => {
+				event.preventDefault();
 				if (!game.isPaused) {
 					let touch = event.touches[0];
 					game.mousePos.x = touch.clientX - ((window.innerWidth - canvas.width) / 2);
@@ -105,7 +107,8 @@ export default class InputHandler {
 				}
 			});
 
-			canvas.addEventListener('touchend', () => {
+			canvas.addEventListener('touchend', (event) => {
+				event.preventDefault();
 				if (!game.isPaused) {
 					if (game.util.timestamp() - game.touchStartTime < 200) {
 						if (!game.skier.isCrashed) {
