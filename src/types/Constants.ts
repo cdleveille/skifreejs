@@ -9,8 +9,3 @@ export const enum Environment {
 	stg = 'staging',
 	prod = 'production'
 }
-
-export const enum AttachSW {
-	true = 'true',
-	false = 'false'
-}
