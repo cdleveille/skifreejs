@@ -9,6 +9,7 @@ self.addEventListener('install', function (event) {
 				'./js/lift.js',
 				'./js/ski.js',
 				'./js/skier.js',
+				'./js/socket.js',
 				'./js/util.js',
 				'./js/window.js',
 				'./ski.ejs',
