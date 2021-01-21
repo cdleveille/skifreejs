@@ -21,6 +21,11 @@ app.use(
 	helmet.contentSecurityPolicy({
 		directives: {
 			"default-src": ["'self'"],
+			//'connect-src': [
+			//	"'self'", "blob:",
+			//	'wss:',
+			//	'websocket.domain',
+			//],
 			"object-src": ["'none'"],
 			"script-src": ["'self'", "'unsafe-inline'", "code.jquery.com", "cdnjs.cloudflare.com"],
 			"style-src": ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
