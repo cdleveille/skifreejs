@@ -5,6 +5,7 @@
 	"display": "standalone",
 	"background_color": "#fff",
 	"theme_color": "#317EFB",
+	"content_security_policy": "script-src 'self' https://*.jquery.com; object-src 'self'",
 	"description": "Fan remake of the classic game from Windows Entertainment Pack 3",
 	"icons": [{
 		"src": "./icons/ski.png",
