@@ -1,1 +1,1 @@
-var socket = io();
+var socket = io.connect({ 'reconnectionDelay': 1000, 'reconnectionAttempts': 10 });
