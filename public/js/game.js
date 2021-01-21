@@ -23,6 +23,7 @@ export default class Game {
 		this.resCoefficient = 50 / 562860.0;
 		this.collisionsEnabled = true;
 		this.doImageLoadCheck = true;
+		this.gamepad = null;
 		this.loadAssets();
 		this.init();
 	}

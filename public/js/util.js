@@ -95,23 +95,8 @@ export default class Util {
 
 	// determine whether the user is playing on a desktop or mobile device
 	isOnMobile() {
-		let isMobile = {
-			Android: function() {
-				return navigator.userAgent.match(/Android/i);
-			},
-			BlackBerry: function() {
-				return navigator.userAgent.match(/BlackBerry/i);
-			},
-			iOS: function() {
-				return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-			},
-			Opera: function() {
-				return navigator.userAgent.match(/Opera Mini/i);
-			},
-			Windows: function() {
-				return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
-			}
-		};
-		return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+		let isMobile = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/BlackBerry/i) ||
+			navigator.userAgent.match(/iPhone|iPad|iPod/i) || navigator.userAgent.match(/Opera Mini/i);
+		return isMobile == null ? false : isMobile;
 	}
 }

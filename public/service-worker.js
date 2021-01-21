@@ -5,7 +5,8 @@ self.addEventListener('install', function (event) {
 		caches.open('v1').then(function (cache) {
 			return cache.addAll([
 				'./js/game.js',
-				'./js/input.js',
+				'./js/inputMobile.js',
+				'./js/inputPC.js',
 				'./js/lift.js',
 				'./js/ski.js',
 				'./js/skier.js',
