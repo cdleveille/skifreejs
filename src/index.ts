@@ -6,6 +6,7 @@ import app from './controllers/index';
 import { cwd } from 'process';
 import log from './services/logger';
 import errorHandler from './middleware/errorHandler';
+import logger from './services/logger';
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
@@ -23,8 +24,9 @@ interface IPayload {
 }
 
 io.on('connection', (socket: any) => {
+	logger.info('connected');
 	socket.on('new_score', (payload: IPayload) => {
-		console.log(payload);
+		logger.info(payload);
 	});
 });
 
