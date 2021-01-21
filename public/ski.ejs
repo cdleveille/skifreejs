@@ -6,7 +6,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="author" content="Chris Leveille">
-		<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+		<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval';">
 		<meta name="Description" content="Fan remake of the classic game from Windows Entertainment Pack 3">
 		<link rel="manifest" href="./manifest.json">
 		<link rel="apple-touch-icon" href="./img/ski.png">
@@ -48,9 +48,7 @@
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
 		<script src="./socket.io/socket.io.js"></script>
-		<script>
-			const socket = io();
-		</script>
+		<script src="./js/socket.js"></script>
 		<script src="./js/ski.js" type="module"></script>
 	</body>
 </html>
