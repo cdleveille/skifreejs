@@ -41,8 +41,8 @@ export default class Game {
 		this.timestampFire = this.startTime;
 		this.timestampPaused = this.startTime;
 		this.lastLogTime = null;
-		this.gameWidth = window.innerWidth;
-		this.gameHeight = window.innerHeight;
+		this.gameWidth = screen.width;
+		this.gameHeight = screen.height;
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
@@ -682,13 +682,17 @@ export default class Game {
 		this.lift.drawTowerTops(ctx);
 
 		// draw hud (140x52 black border 1px)
+		let rightEdgeX = this.gameWidth > window.innerWidth ? this.gameWidth - (Math.floor((this.gameWidth - window.innerWidth) / 2.0)) : this.gameWidth;
+		let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2.0)) : 0;
+
 		ctx.fillStyle = '#000000';
-		ctx.fillRect(this.gameWidth - 140, 0, 140, 52);
+		ctx.fillRect(rightEdgeX - 140, topEdgeY, 140, 52); // innerWidth 1920
 		ctx.fillStyle = '#FFFFFF';
-		ctx.fillRect(this.gameWidth - 139, 0, 139, 51);
+		ctx.fillRect(rightEdgeX - 139, topEdgeY + 1, 138, 50);
+
 		ctx.font = '14px ModernDOS';
 		ctx.fillStyle = '#000000';
-		ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), this.gameWidth - 136, 10);
+		ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), rightEdgeX - 136, topEdgeY + 11);
 		let leadingSpace = '     ';
 		let dist = Math.ceil(this.yDist / 28.7514);
 		if (dist > 999999) {
@@ -702,9 +706,9 @@ export default class Game {
 		} else if (dist > 99) {
 			leadingSpace = '    ';
 		}
-		ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', this.gameWidth - 136, 22);
-		ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', this.gameWidth - 136, 34);
-		ctx.fillText('Style:       ' + Math.floor(this.style), this.gameWidth - 136, 46);
+		ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', rightEdgeX - 136, topEdgeY + 23);
+		ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', rightEdgeX - 136, topEdgeY + 35);
+		ctx.fillText('Style:       ' + Math.floor(this.style), rightEdgeX - 136, topEdgeY + 47);
 
 		// draw game paused text if paused
 		if (this.isPaused) {
@@ -715,7 +719,7 @@ export default class Game {
 			}
 			if (this.drawIsPaused) {
 				ctx.font = '14px ModernDOS';
-				ctx.fillText('GAME PAUSED', this.gameWidth / 2 - 25, 25);
+				ctx.fillText('GAME PAUSED', this.gameWidth / 2 - 25, topEdgeY + 25);
 			}
 			
 		}
