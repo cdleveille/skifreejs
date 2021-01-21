@@ -213,6 +213,13 @@ export default class Skier {
 				this.trick1Disabled = false;
 				this.jumpStage = 1;
 			}
+		} else {
+			this.game.stylePointsToAwardOnLanding = 0;
+			this.backflipsCompleted = 0;
+			this.jumpOffset = 0;
+			this.isDoingTrick1 = false;
+			this.trick1Disabled = false;
+			this.jumpStage = 1;
 		}
 
 		if (this.isJumping && this.isCrashed) {

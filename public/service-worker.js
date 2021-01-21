@@ -30,12 +30,10 @@ self.addEventListener('install', function (event) {
 				'./img/lift_tower_lower.png',
 				'./img/lift_tower_top.png',
 				'./img/lift_tower.png',
-				'./img/lodge.png',
 				'./img/other_skier_crash.png',
 				'./img/other_skier1.png',
 				'./img/other_skier2.png',
 				'./img/other_skier3.png',
-				'./img/rail.png',
 				'./img/rock.png',
 				'./img/ski.png',
 				'./img/skier_down_left.png',
@@ -68,7 +66,6 @@ self.addEventListener('install', function (event) {
 				'./img/tree_bare.png',
 				'./img/tree_large.png',
 				'./img/tree_small.png',
-				'./img/tree2.png',
 				'./img/yeti1.png',
 				'./img/yeti2.png',
 			]);
@@ -81,7 +78,9 @@ self.addEventListener('fetch', (event) => {
 		try {
 			const cache = await caches.open('v1');
 			const networkResponse = await fetch(event.request);
-			event.waitUntil(cache.put(event.request, networkResponse.clone()));
+			if (event.request.method !== 'POST') {
+				event.waitUntil(cache.put(event.request, networkResponse.clone()));
+			}
 			return networkResponse;
 		} catch (err) {
 			return caches.match(event.request);

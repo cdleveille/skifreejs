@@ -71,7 +71,6 @@ export default class Game {
 		this.tree_bare = this.util.loadImage('/img/tree_bare.png');
 		this.tree_bare_fire1 = this.util.loadImage('/img/tree_bare_fire1.png');
 		this.tree_bare_fire2 = this.util.loadImage('/img/tree_bare_fire2.png');
-		this.lodge = this.util.loadImage('/img/lodge.png');
 		this.bump_small = this.util.loadImage('/img/bump_small.png');
 		this.bump_large = this.util.loadImage('/img/bump_large.png');
 		this.bump_group = this.util.loadImage('/img/bump_group.png');
@@ -84,7 +83,7 @@ export default class Game {
 		this.otherSkierCrash = this.util.loadImage('/img/other_skier_crash.png');
 
 		// create array of game images
-		this.images = [this.tree_small, this.tree_large, this.tree_bare, this.tree_bare_fire1, this.tree_bare_fire2, this.lodge, this.bump_small, this.bump_large, 
+		this.images = [this.tree_small, this.tree_large, this.tree_bare, this.tree_bare_fire1, this.tree_bare_fire2, this.bump_small, this.bump_large, 
 			this.bump_group, this.rock, this.stump, this.jump , this.otherSkier1, this.otherSkier2, this.otherSkier3, this.otherSkierCrash];
 		this.images.concat(this.skier.images, this.lift.images);
 	}

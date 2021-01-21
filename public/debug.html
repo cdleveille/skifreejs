@@ -1,5 +1,4 @@
 <!--This file is included to allow local debugging of the client-side javascript in the public folder, as the .ejs file doesn't seem to work for that-->
-
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -12,6 +11,7 @@
 		<link rel="manifest" href="./manifest.json">
 		<link rel="apple-touch-icon" href="./img/ski.png">
 		<meta name="theme-color" content="#317EFB"/>
+		<script src="./js/sw.js"></script>
 		<style>
 			#gameScreen {
 				position: absolute;
@@ -23,13 +23,16 @@
 			}
 
 			html, body {
-				background-color: #444444;
+				background-color: #FFFFFF;
 				width: 100%;
 				height: 100%;
 				margin: 0px;
 				border: 0;
 				overflow: hidden;
 				display: block;
+				-webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
+				-webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
+				-webkit-user-select: none;
 			}
 
 			@font-face {
