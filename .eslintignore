@@ -1,2 +1,3 @@
 build/
 public/js/socket.js
+public.min/

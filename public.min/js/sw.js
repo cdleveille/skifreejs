@@ -1,0 +1,1 @@
+navigator.serviceWorker.controller?console.log("Active service worker found."):navigator.serviceWorker.register("../service-worker.js").then(function(){console.log("New service worker registered.")});

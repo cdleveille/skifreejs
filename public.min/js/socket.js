@@ -1,0 +1,1 @@
+var socket=io.connect({reconnectionDelay:1e3,reconnectionAttempts:10});
