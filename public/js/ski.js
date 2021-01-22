@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 import Game from './game.js';
-import InputHandlerPC from './inputPC.js';
-import InputHandlerMobile from './inputMobile.js';
+import InputHandler from './input.js';
 import WindowHandler from './window.js';
 
 let canvas = document.getElementById('gameScreen');
@@ -11,12 +10,7 @@ canvas.oncontextmenu = function (e) {
 let ctx = canvas.getContext('2d');
 
 let game = new Game();
-if (game.util.isOnMobile()) {
-	new InputHandlerMobile(canvas, game);
-} else {
-	new InputHandlerPC(canvas, game);
-}
-
+new InputHandler(canvas, game);
 new WindowHandler(canvas, game);
 
 let updateRate = 500;

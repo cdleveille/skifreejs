@@ -1,12 +1,13 @@
 /* eslint-disable no-undef */
 export default class Util {
-	// load a single image from the specified url
-	loadImage(url) {
+	// load a single image from the specified url and add it to the images array in its owner class
+	loadImage(url, owner) {
 		let img = new Image();
 		img.src = url;
 		img.onload = function() {
 			img.isLoaded = true;
 		};
+		owner.images.push(img);
 		return img;
 	}
 

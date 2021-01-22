@@ -5,8 +5,7 @@ self.addEventListener('install', function (event) {
 		caches.open('v1').then(function (cache) {
 			return cache.addAll([
 				'./js/game.js',
-				'./js/inputMobile.js',
-				'./js/inputPC.js',
+				'./js/input.js',
 				'./js/lift.js',
 				'./js/ski.js',
 				'./js/skier.js',
@@ -58,8 +57,8 @@ self.addEventListener('install', function (event) {
 				'./img/skier_trick2.png',
 				'./img/skier_upside_down1.png',
 				'./img/skier_upside_down2.png',
-				'./img/snowboarder1.png',
-				'./img/snowboarder2.png',
+				'./img/snowboarder_left.png',
+				'./img/snowboarder_right.png',
 				'./img/start_left.png',
 				'./img/start_right.png',
 				'./img/stump.png',

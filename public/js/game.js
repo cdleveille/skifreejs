@@ -18,12 +18,13 @@ export default class Game {
 		this.stumpDensity = 0.05;
 		this.jumpDensity = 0.05;
 		this.otherSkierDensity = 0.05;
+		this.snowboarderDensity = 0.05;
 		this.jumpVBase = 0.7;
 		this.jumpVMult = 0.0022;
 		this.resCoefficient = 50 / 562860.0;
 		this.collisionsEnabled = true;
 		this.doImageLoadCheck = true;
-		this.gamepad = null;
+		this.images = [];
 		this.loadAssets();
 		this.init();
 	}
@@ -60,32 +61,33 @@ export default class Game {
 		this.jumps = this.initGameObjectsAtStart('jump', this.jumpCount);
 		this.stumps = this.initGameObjectsAtStart('stump', this.stumpCount);
 		this.otherSkiers = this.initGameObjectsAtStart('other_skier', this.otherSkierCount);
+		this.snowboards = this.initGameObjectsAtStart('snowboarder', this.snowboarderCount);
 	}
 
 	// load game assets
 	loadAssets() {
+		this.loadFont();
 		this.skier.loadAssets();
 		this.lift.loadAssets();
-		this.loadFont();
-		this.tree_small = this.util.loadImage('/img/tree_small.png');
-		this.tree_large = this.util.loadImage('/img/tree_large.png');
-		this.tree_bare = this.util.loadImage('/img/tree_bare.png');
-		this.tree_bare_fire1 = this.util.loadImage('/img/tree_bare_fire1.png');
-		this.tree_bare_fire2 = this.util.loadImage('/img/tree_bare_fire2.png');
-		this.bump_small = this.util.loadImage('/img/bump_small.png');
-		this.bump_large = this.util.loadImage('/img/bump_large.png');
-		this.bump_group = this.util.loadImage('/img/bump_group.png');
-		this.rock = this.util.loadImage('/img/rock.png');
-		this.stump = this.util.loadImage('/img/stump.png');
-		this.jump = this.util.loadImage('/img/jump.png');
-		this.otherSkier1 = this.util.loadImage('/img/other_skier1.png');
-		this.otherSkier2 = this.util.loadImage('/img/other_skier2.png');
-		this.otherSkier3 = this.util.loadImage('/img/other_skier3.png');
-		this.otherSkierCrash = this.util.loadImage('/img/other_skier_crash.png');
 
-		// create array of game images
-		this.images = [this.tree_small, this.tree_large, this.tree_bare, this.tree_bare_fire1, this.tree_bare_fire2, this.bump_small, this.bump_large, 
-			this.bump_group, this.rock, this.stump, this.jump , this.otherSkier1, this.otherSkier2, this.otherSkier3, this.otherSkierCrash];
+		this.tree_small = this.util.loadImage('/img/tree_small.png', this);
+		this.tree_large = this.util.loadImage('/img/tree_large.png', this);
+		this.tree_bare = this.util.loadImage('/img/tree_bare.png', this);
+		this.tree_bare_fire1 = this.util.loadImage('/img/tree_bare_fire1.png', this);
+		this.tree_bare_fire2 = this.util.loadImage('/img/tree_bare_fire2.png', this);
+		this.bump_small = this.util.loadImage('/img/bump_small.png', this);
+		this.bump_large = this.util.loadImage('/img/bump_large.png', this);
+		this.bump_group = this.util.loadImage('/img/bump_group.png', this);
+		this.rock = this.util.loadImage('/img/rock.png', this);
+		this.stump = this.util.loadImage('/img/stump.png', this);
+		this.jump = this.util.loadImage('/img/jump.png', this);
+		this.otherSkier1 = this.util.loadImage('/img/other_skier1.png', this);
+		this.otherSkier2 = this.util.loadImage('/img/other_skier2.png', this);
+		this.otherSkier3 = this.util.loadImage('/img/other_skier3.png', this);
+		this.otherSkierCrash = this.util.loadImage('/img/other_skier_crash.png', this);
+		this.snowboarder_left = this.util.loadImage('/img/snowboarder_left.png', this);
+		this.snowboarder_right = this.util.loadImage('/img/snowboarder_right.png', this);
+
 		this.images.concat(this.skier.images, this.lift.images);
 	}
 
@@ -549,6 +551,7 @@ export default class Game {
 		return [mouseAngle, [mouseDiffXVector, mouseDiffYVector], [xvVector, yvVector]];
 	}
 
+	// check to see if all images have been loaded and are ready to render
 	confirmImagesAreAllLoaded() {
 		for (let i = 0; i < this.images.length; i++) {
 			let image = this.images[i];
