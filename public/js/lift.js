@@ -47,6 +47,16 @@ export default class Lift {
 				}
 			}
 
+			// if a snowboarder hits a lift tower, set isCrashed to true
+			for (let j = 0; j < this.game.snowboarders.length; j++) {
+				let snowboarder = this.game.snowboarders[j];
+				if (!snowboarder.isCrashed && this.game.isGameObjectCollidingWithOtherSkier(snowboarder, { x: tower.x, y: tower.y, hbXOffset: 10, hbYOffset: 50, hbWidth: 11, hbHeight: 11 })) {
+					if (this.game.collisionsEnabled) {
+						this.game.crashSnowboarderOnCollision(snowboarder);
+					}
+				}
+			}
+
 			tower.x -= this.game.skier.xv * step;
 			tower.y -= this.game.skier.yv * step;
 		}

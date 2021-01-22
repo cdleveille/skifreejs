@@ -1,13 +1,13 @@
 /* eslint-disable no-undef */
 export default class Util {
 	// load a single image from the specified url and add it to the images array in its owner class
-	loadImage(url, owner) {
+	loadImage(url, ownerClass) {
 		let img = new Image();
 		img.src = url;
 		img.onload = function() {
 			img.isLoaded = true;
 		};
-		owner.images.push(img);
+		ownerClass.images.push(img);
 		return img;
 	}
 
@@ -70,7 +70,7 @@ export default class Util {
 
 	// log every half-second
 	log(toLog) {
-		if (this.lastLogTime == null) {
+		if (typeof this.lastLogTime === 'undefined' || this.lastLogTime == null) {
 			this.lastLogTime = this.timestamp();
 		}
 

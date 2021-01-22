@@ -59,6 +59,7 @@ self.addEventListener('install', function (event) {
 				'./img/skier_upside_down2.png',
 				'./img/snowboarder_left.png',
 				'./img/snowboarder_right.png',
+				'./img/snowboarder_crash.png',
 				'./img/start_left.png',
 				'./img/start_right.png',
 				'./img/stump.png',
