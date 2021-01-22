@@ -1,0 +1,1 @@
+export default class WindowHandler{constructor(e,i){function t(){return[Math.max(screen.width,window.innerWidth),Math.max(screen.height,window.innerHeight)]}window.addEventListener("resize",function(){[e.width,e.height]=t(),i.resize(e.width,e.height)}),[e.width,e.height]=t(),i.resize(e.width,e.height)}}

@@ -8,12 +8,14 @@ import errorHandler from './middleware/errorHandler';
 import logger from './services/logger';
 import { INewScore } from './types/ISocket';
 
+const isCompiled = <boolean>path.extname(__filename).includes('js');
+
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-app.use(express.static(path.join(cwd(), './public/')));
+app.use(express.static(path.join(cwd(), (isCompiled ? './public.min/' : './public/'))));
 app.set('view engine', 'ejs');
-app.set('views', path.join(cwd(), './public/'));
+app.set('views', path.join(cwd(), (isCompiled ? './public.min/' : './public/')));
 
 // serve static
 app.get('/', async (req: Request, res: Response): Promise<void> => res.status(200).render('ski.ejs'));
@@ -31,7 +33,7 @@ io.on('connection', (socket: any) => {
 app.use(errorHandler);
 
 const start = async (): Promise<void> => {
-	app.listen(config.PORT, () => {
+	http.listen(config.PORT, () => {
 		log.info(`server started http://localhost:${config.PORT}`);
 	});
 };
