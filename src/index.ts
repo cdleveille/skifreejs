@@ -1,4 +1,3 @@
-//import cluster from 'cluster';
 import config from './helpers/config';
 import path from 'path';
 import express, { Request, Response } from 'express';
@@ -7,6 +6,8 @@ import { cwd } from 'process';
 import log from './services/logger';
 import errorHandler from './middleware/errorHandler';
 import logger from './services/logger';
+import { INewScore } from './types/ISocket';
+
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
@@ -18,15 +19,10 @@ app.set('views', path.join(cwd(), './public/'));
 app.get('/', async (req: Request, res: Response): Promise<void> => res.status(200).render('ski.ejs'));
 
 // new websocket connection
-interface IPayload {
-	username: string,
-	score: number
-}
-
 io.on('connection', (socket: any) => {
-	logger.info('socket.io: connected');
-	console.log('socket.io: connected');
-	socket.on('new_score', (payload: IPayload) => {
+	logger.info(socket.id);
+	socket.on('new_score', (payload: INewScore) => {
+		// maybe run some checks here
 		logger.info(payload);
 	});
 });
@@ -35,17 +31,9 @@ io.on('connection', (socket: any) => {
 app.use(errorHandler);
 
 const start = async (): Promise<void> => {
-	http.listen(config.PORT, () => {
+	app.listen(config.PORT, () => {
 		log.info(`server started http://localhost:${config.PORT}`);
 	});
 };
 
 start();
-//if (cluster.isMaster) {
-//	for (let i = 0; i < config.CORES; i++) {
-//		cluster.fork();
-//	}
-//}
-//else {
-//	start();
-//}
