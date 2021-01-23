@@ -11,7 +11,8 @@ const config = {
 	CORES: <number>os.cpus().length,
 	APPCODE: <string>process.env.APPCODE || undefined,
 	APPTOKEN: <string>process.env.APPTOKEN || undefined,
-	ORIGIN_DOMAIN: <string>process.env.ORIGIN_DOMAIN || undefined
+	ORIGIN_DOMAIN: <string>process.env.ORIGIN_DOMAIN || undefined,
+	IS_COMPILED: <boolean>(process.env.NODE_ENV == Env.dev ? false : true)
 };
 
 export default config;
