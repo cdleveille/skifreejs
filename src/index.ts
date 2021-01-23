@@ -9,9 +9,9 @@ import errorHandler from './middleware/errorHandler';
 const http = require('http').Server(app);
 export const io = require('socket.io')(http);
 
-app.use(express.static(path.join(cwd(), (config.IS_COMPILED ? './public.min/' : './public/'))));
+app.use(express.static(path.join(cwd(), './public/')));
 app.set('view engine', 'ejs');
-app.set('views', path.join(cwd(), (config.IS_COMPILED ? './public.min/' : './public/')));
+app.set('views', path.join(cwd(), './public/'));
 
 // serve static
 app.get('/', async (req: Request, res: Response): Promise<void> => {
