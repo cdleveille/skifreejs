@@ -61,7 +61,8 @@ export default class Game {
 		this.stumps = this.initGameObjectsAtStart('stump', this.stumpCount);
 		this.otherSkiers = this.initGameObjectsAtStart('other_skier', this.otherSkierCount);
 		this.snowboarders = this.initGameObjectsAtStart('snowboarder', this.snowboarderCount);
-		//this.snowboarders = [this.spawnNewGameObject('snowboarder', -100, -200)];
+
+		this.clearSpawnArea();
 	}
 
 	// load game assets
@@ -103,6 +104,26 @@ export default class Game {
 		});
 	}
 
+	// clear any collidable game objects from the skier spawn area
+	clearSpawnArea() {
+		let dist = 100;
+		let collidables = [this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.stumps, this.jumps, this.otherSkiers, this.snowboarders];
+		for (let i = 0; i < collidables.length; i++) {
+			let gameObjects = collidables[i];
+			for (let j = 0; j < gameObjects.length; j++) {
+				let object = gameObjects[j];
+				if (object.x > -dist && object.x < dist && object.y > -dist && object.y < dist) {
+					let distToMove = 2 * dist - (Math.abs(object.y - dist));
+					if (typeof object.isCrashed !== 'undefined') {
+						object.y += distToMove;
+					} else {
+						object.y -= distToMove;
+					}
+				}
+			}
+		}
+	}
+
 	// spawn the specified number of the specified type of game object on and around the screen at start of game
 	initGameObjectsAtStart(type, count) {
 		let gameObjects = [];
@@ -123,7 +144,7 @@ export default class Game {
 
 	// get an x/y coordinate pair for a location nearby offscreen
 	getRandomCoordinateOffScreen(canSpawnAbove) {
-		let upperBound = canSpawnAbove ? -this.gameHeight * 2 / 3 : -this.gameHeight / 3;
+		let upperBound = canSpawnAbove ? -this.gameHeight * 4 / 3 : -this.gameHeight / 3;
 	
 		let x = this.util.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
 		let y = this.util.randomInt(upperBound, this.gameHeight * 5 / 3);
@@ -359,17 +380,7 @@ export default class Game {
 		}
 	}
 
-	// recycle the position of a list of game objects
-	recycleGameObjects(gameObjects) {
-		for (let i = 0; i < gameObjects.length; i++) {
-			let object = gameObjects[i];
-			if (this.hasGameObjectBeenPassed(object)) {
-				this.recycleGameObjectPosition(object);
-			}
-		}
-	}
-
-	// update the x/y coordinate of the given game object to a random offscreen coordinate downhill
+	// update the x/y coordinate of the given game object to a random offscreen coordinate
 	recycleGameObjectPosition(gameObject, canSpawnAbove) {
 		let xy = this.getRandomCoordinateOffScreen(canSpawnAbove);
 		gameObject.x = xy.x;
@@ -485,10 +496,18 @@ export default class Game {
 						}
 					}
 				}
-			// recycle the snowboarder's position if they are crashed and have been passed
-			} else if (this.hasGameObjectBeenPassed(snowboarder)) {
-				this.recycleGameObjectPosition(snowboarder);
-				snowboarder.isCrashed = false;
+			} else {
+				// recover from crash after 1 sec
+				if (this.util.timestamp() - snowboarder.crashTimestamp >= 1000) {
+					snowboarder.y += 30;
+					snowboarder.isCrashed = false;
+				}
+
+				// recycle the snowboarder's position if they are crashed and have been passed
+				if (this.hasGameObjectBeenPassed(snowboarder)) {
+					this.recycleGameObjectPosition(snowboarder, true);
+					snowboarder.isCrashed = false;
+				}
 			}
 
 			// if the snowboarder hits the skier, crash them both
@@ -501,7 +520,7 @@ export default class Game {
 
 			// if the snowboarder (crashed or not) is far enough away, recyle its position
 			if (snowboarder.y < -2000 || snowboarder.y > 5000 || snowboarder.x > 3000 || snowboarder.x < -3000) {
-				this.recycleGameObjectPosition(snowboarder);
+				this.recycleGameObjectPosition(snowboarder, true);
 				snowboarder.isCrashed = false;
 			}
 
@@ -552,6 +571,7 @@ export default class Game {
 	crashSnowboarderOnCollision(snowboarder) {
 		if (!snowboarder.isCrashed) {
 			snowboarder.isCrashed = true;
+			snowboarder.crashTimestamp = this.util.timestamp();
 			snowboarder.xv = 0;
 			snowboarder.yv = 0;
 			snowboarder.img = this.snowboarder_crash;

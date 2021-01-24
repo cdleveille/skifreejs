@@ -41,7 +41,7 @@ export default class InputHandler {
 				}
 			});
 
-			let left = 65, right = 68, p = 80, r = 82;
+			let left = 65, right = 68, f2 = 113, space = 32;
 
 			document.addEventListener('keydown', (event) => {
 				switch (event.keyCode) {
@@ -66,7 +66,7 @@ export default class InputHandler {
 				case right:
 					game.skier.isSkatingRight = false;
 					break;
-				case p:
+				case space:
 					if (game.isPaused) {
 						game.startTime += (game.util.timestamp() - game.timePausedAt);
 						game.isPaused = false;
@@ -76,7 +76,7 @@ export default class InputHandler {
 						game.isPaused = true;
 					}
 					break;
-				case r:
+				case f2:
 					game.init();
 					break;
 				}

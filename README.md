@@ -26,8 +26,8 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
     - Right click (hold): trick 1
     - Move mouse above skier: trick 2
 - General:
-    - P: pause
-    - R: restart
+    - Spacebar: pause
+    - F2: restart
 
 ### Mobile Controls:
 - While Skiing:
