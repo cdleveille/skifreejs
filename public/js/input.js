@@ -88,8 +88,22 @@ export default class InputHandler {
 				if (!game.isPaused) {
 					game.touchStartTime = game.util.timestamp();
 					let touch = event.touches[0];
-					game.mousePos.x = touch.clientX - ((window.innerWidth - canvas.width) / 2);
-					game.mousePos.y = touch.clientY - ((window.innerHeight - canvas.height) / 2);
+					let touchX = touch.clientX - ((window.innerWidth - canvas.width) / 2);
+					let touchY = touch.clientY - ((window.innerHeight - canvas.height) / 2);
+					game.lastTouchLoc = { x: touchX, y: touchY };
+					if (touchY >= game.skier.y + 30) {
+						game.mousePos.x = touchX;
+						game.mousePos.y = touchY;
+						if (game.skier.isJumping && !game.skier.trick1Disabled && !game.skier.isCrashed) {
+							game.skier.isDoingTrick1 = true;
+							game.skier.trick1Disabled = true;
+							game.skier.trick1StartTime = game.util.timestamp();
+						}
+					} else {
+						if (game.skier.isJumping ) {
+							game.skier.rotateJumpStage();
+						}
+					}
 					if (game.skier.isCrashed) {
 						game.skier.isCrashed = false;
 					}
@@ -100,23 +114,30 @@ export default class InputHandler {
 				event.preventDefault();
 				if (!game.isPaused) {
 					let touch = event.touches[0];
-					game.mousePos.x = touch.clientX - ((window.innerWidth - canvas.width) / 2);
-					game.mousePos.y = touch.clientY - ((window.innerHeight - canvas.height) / 2);
+					let touchX = touch.clientX - ((window.innerWidth - canvas.width) / 2);
+					let touchY = touch.clientY - ((window.innerHeight - canvas.height) / 2);
+					game.lastTouchLoc = { x: touchX, y: touchY };
+					if (touchY >= game.skier.y + 30) {
+						game.mousePos.x = touchX;
+						game.mousePos.y = touchY;
+					}
 				}
 			});
 
 			canvas.addEventListener('touchend', (event) => {
 				event.preventDefault();
 				if (!game.isPaused) {
-					if (game.util.timestamp() - game.touchStartTime < 200) {
+					if (game.util.timestamp() - game.touchStartTime < 200 && game.lastTouchLoc.y < game.skier.y + 30) {
 						if (!game.skier.isCrashed) {
 							if (!game.skier.isJumping) {
 								game.skier.isJumping = true;
 								game.skier.jumpV = game.skier.jumpVInit;
-							} else {
-								game.skier.rotateJumpStage();
 							}
 						}
+					}
+					if (game.skier.isDoingTrick1) {
+						game.skier.isDoingTrick1 = false;
+						game.skier.trick1EndTime = game.util.timestamp();
 					}
 				}
 			});

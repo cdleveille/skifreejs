@@ -31,9 +31,10 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
 
 ### Mobile Controls:
 - While Skiing:
-    - Touch screen and hold/drag: steer skier
-    - Tap screen: jump
+    - Touch screen below skier (tap/drag): steer skier
+    - Touch screen above skier (tap): jump
 - While Crashed:
-    - Touch screen: stand up
+    - Touch screen anywhere: stand up
 - While Jumping:
-    - Tap screen (repeat): backflip
+    - Touch screen above skier (tap): backflip
+    - Touch screen below skier (hold): trick 1
