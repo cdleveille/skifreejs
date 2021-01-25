@@ -1,4 +1,5 @@
 import config from './helpers/config';
+import connect from './services/db';
 import path from 'path';
 import express, { Request, Response } from 'express';
 import app from './controllers/index';
@@ -40,6 +41,12 @@ io.on('connection', (socket: any) => {
 app.use(errorHandler);
 
 const start = async (): Promise<void> => {
+	try {
+		await connect();
+	} catch (e) {
+		logger.error(e);
+		throw Error(e);
+	}
 	http.listen(config.PORT, () => {
 		log.info(`${config.ENV} server started http://localhost:${config.PORT}`);
 	});

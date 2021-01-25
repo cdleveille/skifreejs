@@ -5,4 +5,35 @@ const enum IGeneric {
 	boolean = 'boolean'
 }
 
+export interface IResponse {
+	ok: boolean,
+	status: number,
+	data: any
+}
+
+export interface IJwtPayload {
+	_id: string,
+	email: string,
+	username: string
+}
+
+export interface IJWT {
+	_id: string,
+	email: string,
+	username: string,
+	score: number,
+	iat: string,
+	exp: string,
+	issued: string,
+	expires: string
+}
+
+export interface IMailOptions {
+	to: string,
+	from?: string,
+	subject: string,
+	text: string
+}
+
+
 export default IGeneric;
