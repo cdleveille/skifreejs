@@ -28,6 +28,8 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
 - General:
     - Spacebar: pause
     - F2: restart
+    - C: hide controls
+    - H: hide entire HUD
 
 ### Mobile Controls:
 - While Skiing:
