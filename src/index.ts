@@ -32,7 +32,7 @@ app.get('*', async (req: Request, res: Response): Promise<Response> => {
 io.on('connection', (socket: any) => {
 	socket.on('new_score', (payload: INewScore) => {
 		// maybe run some checks here
-		logger.info(payload);
+		logger.info({ data: payload, id: socket.id });
 	});
 });
 
