@@ -5,11 +5,17 @@ export default class UserRepository {
 
 	public static async Register(user: IUser): Promise<IUser> {
 		try {
-			const exists: IUser = await User.findOne({ username: user.username });
-			if (exists) throw Error('username taken');
+			const exists: IUser = await User.findOne({
+				$or: [
+					{ username: user.username },
+					{ email: user.email }
+				]
+			});
+			if (exists) throw Error('username or email taken');
 
 			const newUser: IUser = new User();
 			newUser.username = user.username;
+			newUser.email = user.email;
 			newUser.password = await Password.hash(user.password);
 			newUser.score = user.score || 0;
 			newUser.isNew = true;
