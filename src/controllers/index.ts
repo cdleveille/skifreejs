@@ -8,14 +8,14 @@ import { Errors } from '../types/Constants';
 import auth from '../middleware/appRestriction';
 
 app.post('/api/register', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
-	const { username, password, score } = <IUser>req.body;
+	const { username, password, score }: IUser = req.body;
 	try {
 		if (username == undefined || score == undefined || password == undefined)
 			throw Error(Errors.invalidScoreRequest);
 		if (typeof username !== T.string || typeof score !== T.number || typeof password !== T.string)
 			throw Error(Errors.invalidScoreRequest);
 
-		const user = await User.Register(req.body);
+		const user: IUser = await User.Register(req.body);
 
 		return res.status(200).send({
 			ok: true,
@@ -32,7 +32,7 @@ app.post('/api/register', async (req: Request, res: Response, next: NextFunction
 
 app.post('/api/login', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
 	try {
-		const user = await User.Login(req.body);
+		const user: IUser = await User.Login(req.body);
 
 		return res.status(200).send({
 			ok: true,
