@@ -20,6 +20,20 @@
 				-moz-transform: translateX(-50%) translateY(-50%);
 				-webkit-transform: translateX(-50%) translateY(-50%);
 				transform: translateX(-50%) translateY(-50%);
+				z-index: 1;
+			}
+
+			#userProfile {
+				background: transparent;
+				border: none !important;
+				font-size: 0;
+				outline: none;
+				width: 48px;
+				height: 48px;
+				cursor: pointer;
+				border-radius: 50%;
+				position: absolute;
+				z-index: 2;
 			}
 
 			html, body {
@@ -47,6 +61,7 @@
 	<body>
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
+		<button id="userProfile"></button>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="./js/socket.js" type="module"></script>
 		<script src="./js/ski.js" type="module"></script>

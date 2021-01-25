@@ -6,7 +6,13 @@ export default class WindowHandler {
 		}
 
 		window.addEventListener('resize', function () {
-			[canvas.width, canvas.height] = resizeCanvas();
+			let [x, y] = resizeCanvas();
+			canvas.style.width = x + 'px';
+			canvas.style.height = y + 'px';
+
+			let scale = window.devicePixelRatio;
+			[canvas.width, canvas.height] = [x * scale, y * scale];
+			
 			game.resize(canvas.width, canvas.height);
 		});
 

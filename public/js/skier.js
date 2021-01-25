@@ -2,7 +2,7 @@
 export default class Skier {
 	constructor(game) {
 		this.game = game;
-		this.maxSpeed = this.game.util.isOnMobile() ? 400 : 600;
+		this.maxSpeed = this.game.util.isOnMobile() ? 400 : 600 * (1.0 / window.devicePixelRatio);
 		this.enforceMaxSpeed = true;
 		this.skateV = 225;
 		this.accelX = 2;

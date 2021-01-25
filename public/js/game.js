@@ -1,11 +1,13 @@
 /* eslint-disable no-undef */
 import Lift from './lift.js';
 import Skier from './skier.js';
+import User from './user.js';
 import Util from './util.js';
 
 export default class Game {
 	constructor() {
 		this.util = new Util();
+		this.user = new User(this);
 		this.skier = new Skier(this);
 		this.lift = new Lift(this);
 		this.treeSmallDensity = 0.6;
@@ -24,6 +26,8 @@ export default class Game {
 		this.resCoefficient = 50 / 562860.0;
 		this.collisionsEnabled = true;
 		this.doImageLoadCheck = true;
+		this.hideHUD = false;
+		this.hideControls = false;
 		this.images = [];
 		this.loadAssets();
 		this.init();
@@ -31,6 +35,9 @@ export default class Game {
 
 	// initialize game settings and generate game objects for start of game
 	init() {
+		this.gameWidth = Math.max(screen.width, window.innerWidth);
+		this.gameHeight = Math.max(screen.height, window.innerHeight);
+		this.user.init();
 		this.skier.init();
 		this.lift.init();
 		this.isPaused = false;
@@ -42,8 +49,6 @@ export default class Game {
 		this.currentTime = this.startTime;
 		this.timestampFire = this.startTime;
 		this.timestampPaused = this.startTime;
-		this.gameWidth = Math.max(screen.width, window.innerWidth);
-		this.gameHeight = Math.max(screen.height, window.innerHeight);
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
@@ -88,9 +93,10 @@ export default class Game {
 		this.snowboarder_right = this.util.loadImage('/img/snowboarder_right.png', this);
 		this.snowboarder_crash = this.util.loadImage('/img/snowboarder_crash.png', this);
 
+		this.user.loadAssets();
 		this.skier.loadAssets();
 		this.lift.loadAssets();
-		this.images = this.images.concat(this.skier.images, this.lift.images);
+		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images);
 	}
 
 	// load the font family used for the in-game hud
@@ -212,6 +218,8 @@ export default class Game {
 
 		this.skier.x = this.gameWidth / 2;
 		this.skier.y = this.gameHeight / 3;
+
+		this.user.setButtonPosition();
 
 		this.adaptGameObjectCountToScreenSize();
 	}
@@ -797,45 +805,57 @@ export default class Game {
 		this.lift.drawTowersBelowPlayer(ctx);
 		this.lift.drawTowerTops(ctx);
 
-		// draw hud (140x52 black border 1px)
-		let rightEdgeX = this.gameWidth > window.innerWidth ? this.gameWidth - (Math.floor((this.gameWidth - window.innerWidth) / 2.0)) : this.gameWidth;
-		let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2.0)) : 0;
-		ctx.fillStyle = '#000000';
-		ctx.fillRect(rightEdgeX - 140, topEdgeY, 140, 52);
-		ctx.fillStyle = '#FFFFFF';
-		ctx.fillRect(rightEdgeX - 139, topEdgeY + 1, 138, 50);
-		ctx.font = '14px ModernDOS';
-		ctx.fillStyle = '#000000';
-		ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), rightEdgeX - 136, topEdgeY + 11);
-		let leadingSpace = '     ';
-		let dist = Math.ceil(this.yDist / 28.7514);
-		if (dist > 999999) {
-			leadingSpace = '';
-		} else if (dist > 99999) {
-			leadingSpace = ' ';
-		} else if (dist > 9999) {
-			leadingSpace = '  ';
-		} else if (dist > 999) {
-			leadingSpace = '   ';
-		} else if (dist > 99) {
-			leadingSpace = '    ';
-		}
-		ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', rightEdgeX - 136, topEdgeY + 23);
-		ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', rightEdgeX - 136, topEdgeY + 35);
-		ctx.fillText('Style:       ' + Math.floor(this.style), rightEdgeX - 136, topEdgeY + 47);
+		if (!this.hideHUD) {
+			// draw hud (140x52 black border 1px)
+			let rightEdgeX = this.gameWidth > window.innerWidth ? this.gameWidth - (Math.floor((this.gameWidth - window.innerWidth) / 2.0)) : this.gameWidth;
+			let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2.0)) : 0;
+			ctx.fillStyle = '#000000';
+			ctx.fillRect(rightEdgeX - 140, topEdgeY, 140, 52);
+			ctx.fillStyle = '#FFFFFF';
+			ctx.fillRect(rightEdgeX - 139, topEdgeY + 1, 138, 50);
+			ctx.font = '14px ModernDOS';
+			ctx.fillStyle = '#000000';
+			ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), rightEdgeX - 136, topEdgeY + 11);
+			let leadingSpace = '     ';
+			let dist = Math.ceil(this.yDist / 28.7514);
+			if (dist > 999999) {
+				leadingSpace = '';
+			} else if (dist > 99999) {
+				leadingSpace = ' ';
+			} else if (dist > 9999) {
+				leadingSpace = '  ';
+			} else if (dist > 999) {
+				leadingSpace = '   ';
+			} else if (dist > 99) {
+				leadingSpace = '    ';
+			}
+			ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', rightEdgeX - 136, topEdgeY + 23);
+			ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', rightEdgeX - 136, topEdgeY + 35);
+			ctx.fillText('Style:       ' + Math.floor(this.style), rightEdgeX - 136, topEdgeY + 47);
 
-		// draw game paused text if paused
-		if (this.isPaused) {
-			let now = this.util.timestamp();
-			if (now - this.timestampPaused > 500) {
-				this.drawIsPaused = !this.drawIsPaused;
-				this.timestampPaused = now;
-			}
-			if (this.drawIsPaused) {
-				ctx.font = '14px ModernDOS';
-				ctx.fillText('GAME PAUSED', this.gameWidth / 2 - 25, topEdgeY + 25);
-			}
+			// draw game paused text if paused
+			if (this.isPaused) {
+				let now = this.util.timestamp();
+				if (now - this.timestampPaused > 500) {
+					this.drawIsPaused = !this.drawIsPaused;
+					this.timestampPaused = now;
+				}
+				if (this.drawIsPaused) {
+					ctx.font = '14px ModernDOS';
+					ctx.fillText('GAME PAUSED', this.gameWidth / 2 - 25, topEdgeY + 25);
+				}
 			
+			}
+
+			// draw controls hud
+			if (!this.hideControls && !this.util.isOnMobile()) {
+				ctx.fillStyle = '#000000';
+				ctx.fillText('SPACE: Pause', rightEdgeX - 115, topEdgeY + 65);
+				ctx.fillText('F2: Restart', rightEdgeX - 112, topEdgeY + 77);
+			}
+
+			// draw user profile button
+			this.user.draw(ctx);
 		}
 	}
 }

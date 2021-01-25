@@ -41,7 +41,7 @@ export default class InputHandler {
 				}
 			});
 
-			let left = 65, right = 68, f2 = 113, space = 32;
+			let left = 65, right = 68, f2 = 113, space = 32, c = 67, h = 72;
 
 			document.addEventListener('keydown', (event) => {
 				switch (event.keyCode) {
@@ -78,6 +78,13 @@ export default class InputHandler {
 					break;
 				case f2:
 					game.init();
+					break;
+				case c:
+					game.hideControls = !game.hideControls;
+					break;
+				case h:
+					game.hideHUD = !game.hideHUD;
+					document.getElementById('userProfile').style.visibility = document.getElementById('userProfile').style.visibility == 'hidden' ? 'visible' : 'hidden';
 					break;
 				}
 			});
