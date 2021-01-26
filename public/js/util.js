@@ -81,11 +81,12 @@ export default class Util {
 	}
 
 	// generic rest method for outbound requests
-	request (method, uri, headers) {
+	request (method, uri, headers, body) {
 		return new Promise((resolve, reject) => {
 			fetch(uri, {
 				method: method || 'GET',
-				headers: headers
+				headers: headers,
+				body: body
 			}).then(r => r.json()).then(data => {
 				return resolve(data);
 			}).catch(e => {
