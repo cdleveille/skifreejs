@@ -3,7 +3,8 @@ export default class User {
 	constructor(game) {
 		this.game = game;
 		this.images = [];
-		this.isLoggedIn = false;
+		this.score = 0;
+		this.validateLoginToken();
 
 		this.profileButton = document.getElementById('user-profile');
 		this.profileButton.owner = this;
@@ -54,17 +55,13 @@ export default class User {
 					password: this.signInPassword.value
 				};
 				// post request to login api
-				this.game.util.request('POST', '/api/login', headers, body).then(data => {
-					console.log(data);
-					if (data.data == 'Error: Error: username not found') {
-						messages.push('Username not found');
-					}
-					if (data.data == 'Error: Error: incorrect password') {
-						messages.push('Incorrect password');
-					}
-					this.signInError.innerText = messages.join('\n');
-
-					if (data.status == 200) {
+				this.game.util.request('POST', '/api/login', headers, body).then(res => {
+					console.log(res);
+					if (!res.ok) {
+						messages.push(res.data.replace(/error: /gi, ''));
+						this.signInError.innerText = messages.join('\n');
+					} else {
+						window.sessionStorage.setItem('loginToken', res.data.token);
 						this.isLoggedIn = true;
 						this.hideSignInForm();
 						this.username = this.signInUsername.value;
@@ -79,15 +76,15 @@ export default class User {
 			let messages = [];
 
 			if (!this.game.util.isAlphaNumeric(this.registerUsername.value)) {
-				messages.push('Username must be alphanumeric only');
+				messages.push('username must be alphanumeric only');
 			}
 
 			if (this.registerUsername.value.length < 3) {
-				messages.push('Username must be at least 3 characters');
+				messages.push('username must be at least 3 characters');
 			}
 
 			if (this.registerPassword.value.length < 8) {
-				messages.push('Password must be at least 8 characters');
+				messages.push('password must be at least 8 characters');
 			}
 
 			// show any validation errors
@@ -103,15 +100,13 @@ export default class User {
 					password: this.registerPassword.value
 				};
 				// post request to register api
-				this.game.util.request('POST', '/api/register', headers, body).then(data => {
-					console.log(data);
-					if (data.data == 'Error: Error: username or email taken') {
-						messages.push('Username or email taken');
-					}
-
-					this.registerError.innerText = messages.join('\n');
-
-					if (data.status == 200) {
+				this.game.util.request('POST', '/api/register', headers, body).then(res => {
+					console.log(res);
+					if (!res.ok) {
+						messages.push(res.data.replace(/error: /gi, ''));
+						this.registerError.innerText = messages.join('\n');
+					} else {
+						window.sessionStorage.setItem('loginToken', res.data.token);
 						this.isLoggedIn = true;
 						this.hideRegisterForm();
 						this.username = this.registerUsername.value;
@@ -124,6 +119,31 @@ export default class User {
 
 	init() {
 		this.setProfileButtonPosition();
+	}
+
+	validateLoginToken() {
+		let loginToken = window.sessionStorage.getItem('loginToken');
+
+		if (loginToken) {
+			let headers = {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${loginToken}`
+			};
+			let body = {};
+			this.game.util.request('POST', '/api/validate', headers, body).then(res => {
+				if (!res.ok) {
+					console.log(res);
+				} else {
+					console.log(res);
+					this.isLoggedIn = true;
+					this.username = res.data.username;
+					this.loggedInUsername.innerText = this.username;
+					this.score = res.data.score;
+				}
+			}).catch(err => console.log(err));
+		} else {
+			this.isLoggedIn = false;
+		}
 	}
 
 	loadAssets() {
@@ -186,6 +206,7 @@ export default class User {
 	}
 
 	signOutButtonClickHandler() {
+		window.sessionStorage.removeItem('loginToken');
 		this.owner.loggedInUsername.innerText = '';
 		this.owner.username = null;
 		this.owner.isLoggedIn = false;

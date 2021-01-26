@@ -21,7 +21,8 @@ app.post('/api/register', async (req: Request, res: Response, next: NextFunction
 		const token: string = await Jwt.SignUser({
 			_id: user._id,
 			email: user.email,
-			username: user.username
+			username: user.username,
+			score: user.score
 		} as IJwtPayload);
 
 		return res.status(200).send({
@@ -43,7 +44,8 @@ app.post('/api/login', async (req: Request, res: Response, next: NextFunction): 
 		const token: string = await Jwt.SignUser({
 			_id: user._id,
 			email: user.email,
-			username: user.username
+			username: user.username,
+			score: user.score
 		} as IJwtPayload);
 
 		return res.status(200).send({

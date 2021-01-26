@@ -37,7 +37,8 @@ export default class Jwt {
 		const token: string = await Jwt.Sign({
 			_id: user._id,
 			email: user.email,
-			username: user.username
+			username: user.username,
+			score: user.score
 		} as IJwtPayload);
 		return token;
 	}

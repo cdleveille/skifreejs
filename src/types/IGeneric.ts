@@ -14,7 +14,8 @@ export interface IResponse {
 export interface IJwtPayload {
 	_id: string,
 	email: string,
-	username: string
+	username: string,
+	score: number
 }
 
 export interface IJWT {
