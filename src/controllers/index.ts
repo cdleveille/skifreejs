@@ -9,11 +9,11 @@ import { Errors } from '../types/Constants';
 import Jwt from '../helpers/jwt';
 
 app.post('/api/register', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
-	const { username, email, password, score }: IUser = req.body;
+	const { username, email, password }: IUser = req.body;
 	try {
-		if (username == undefined || email == undefined || score == undefined || password == undefined)
+		if (username == undefined || email == undefined || password == undefined)
 			throw Error(Errors.invalidScoreRequest);
-		if (typeof username !== T.string || typeof email !== T.string || typeof score !== T.number || typeof password !== T.string)
+		if (typeof username !== T.string || typeof email !== T.string || typeof password !== T.string)
 			throw Error(Errors.invalidScoreRequest);
 
 		const user: IUser = await User.Register(req.body);
