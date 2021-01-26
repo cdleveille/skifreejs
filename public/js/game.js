@@ -27,7 +27,7 @@ export default class Game {
 		this.collisionsEnabled = true;
 		this.doImageLoadCheck = true;
 		this.hideHUD = false;
-		this.hideControls = false;
+		this.hideControls = true;
 		this.images = [];
 		this.loadAssets();
 		this.init();
@@ -64,7 +64,7 @@ export default class Game {
 		this.rocks = this.initGameObjectsAtStart('rock', this.rockCount);
 		this.jumps = this.initGameObjectsAtStart('jump', this.jumpCount);
 		this.stumps = this.initGameObjectsAtStart('stump', this.stumpCount);
-		this.otherSkiers = this.initGameObjectsAtStart('other_skier', this.otherSkierCount);
+		this.otherSkiers =  this.initGameObjectsAtStart('other_skier', this.otherSkierCount);
 		this.snowboarders = this.initGameObjectsAtStart('snowboarder', this.snowboarderCount);
 
 		this.clearSpawnArea();
@@ -809,13 +809,14 @@ export default class Game {
 			// draw hud (140x52 black border 1px)
 			let rightEdgeX = this.gameWidth > window.innerWidth ? this.gameWidth - (Math.floor((this.gameWidth - window.innerWidth) / 2.0)) : this.gameWidth;
 			let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2.0)) : 0;
+			let cornerOffset = 2;
 			ctx.fillStyle = '#000000';
-			ctx.fillRect(rightEdgeX - 140, topEdgeY, 140, 52);
+			ctx.fillRect(rightEdgeX - 140 - cornerOffset, topEdgeY + cornerOffset, 140, 52);
 			ctx.fillStyle = '#FFFFFF';
-			ctx.fillRect(rightEdgeX - 139, topEdgeY + 1, 138, 50);
+			ctx.fillRect(rightEdgeX - 139 - cornerOffset, topEdgeY + 1 + cornerOffset, 138, 50);
 			ctx.font = '14px ModernDOS';
 			ctx.fillStyle = '#000000';
-			ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), rightEdgeX - 136, topEdgeY + 11);
+			ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), rightEdgeX - 136 - cornerOffset, topEdgeY + 11 + cornerOffset);
 			let leadingSpace = '     ';
 			let dist = Math.ceil(this.yDist / 28.7514);
 			if (dist > 999999) {
@@ -829,9 +830,9 @@ export default class Game {
 			} else if (dist > 99) {
 				leadingSpace = '    ';
 			}
-			ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', rightEdgeX - 136, topEdgeY + 23);
-			ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', rightEdgeX - 136, topEdgeY + 35);
-			ctx.fillText('Style:       ' + Math.floor(this.style), rightEdgeX - 136, topEdgeY + 47);
+			ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', rightEdgeX - 136 - cornerOffset, topEdgeY + 23 + cornerOffset);
+			ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', rightEdgeX - 136 - cornerOffset, topEdgeY + 35 + cornerOffset);
+			ctx.fillText('Style:       ' + Math.floor(this.style), rightEdgeX - 136 - cornerOffset, topEdgeY + 47 + cornerOffset);
 
 			// draw game paused text if paused
 			if (this.isPaused) {
@@ -850,8 +851,8 @@ export default class Game {
 			// draw controls hud
 			if (!this.hideControls && !this.util.isOnMobile()) {
 				ctx.fillStyle = '#000000';
-				ctx.fillText('SPACE: Pause', rightEdgeX - 115, topEdgeY + 65);
-				ctx.fillText('F2: Restart', rightEdgeX - 112, topEdgeY + 77);
+				ctx.fillText('SPACE: Pause', rightEdgeX - 115, topEdgeY + 66);
+				ctx.fillText('F2: Restart', rightEdgeX - 112, topEdgeY + 78);
 			}
 
 			// draw user profile button

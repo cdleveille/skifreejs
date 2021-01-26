@@ -44,17 +44,19 @@ export default class InputHandler {
 			let left = 65, right = 68, f2 = 113, space = 32, c = 67, h = 72;
 
 			document.addEventListener('keydown', (event) => {
-				switch (event.keyCode) {
-				case left:
-					if (game.skier.isStopped) {
-						game.skier.isSkatingLeft = true;
+				if (!this.isTextInputActive()) {
+					switch (event.keyCode) {
+					case left:
+						if (game.skier.isStopped) {
+							game.skier.isSkatingLeft = true;
+						}
+						break;
+					case right:
+						if (game.skier.isStopped) {
+							game.skier.isSkatingRight = true;
+						}
+						break;
 					}
-					break;
-				case right:
-					if (game.skier.isStopped) {
-						game.skier.isSkatingRight = true;
-					}
-					break;
 				}
 			});
 
@@ -67,24 +69,30 @@ export default class InputHandler {
 					game.skier.isSkatingRight = false;
 					break;
 				case space:
-					if (game.isPaused) {
-						game.startTime += (game.util.timestamp() - game.timePausedAt);
-						game.isPaused = false;
-					} else {
-						game.drawIsPaused = false; // will be flipped to true immediately in game.draw()
-						game.timePausedAt = game.util.timestamp();
-						game.isPaused = true;
+					if (!this.isTextInputActive()) {
+						if (game.isPaused) {
+							game.startTime += (game.util.timestamp() - game.timePausedAt);
+							game.isPaused = false;
+						} else {
+							game.drawIsPaused = false; // will be flipped to true immediately in game.draw()
+							game.timePausedAt = game.util.timestamp();
+							game.isPaused = true;
+						}
 					}
 					break;
 				case f2:
 					game.init();
 					break;
 				case c:
-					game.hideControls = !game.hideControls;
+					if (!this.isTextInputActive()) {
+						game.hideControls = !game.hideControls;
+					}
 					break;
 				case h:
-					game.hideHUD = !game.hideHUD;
-					document.getElementById('userProfile').style.visibility = document.getElementById('userProfile').style.visibility == 'hidden' ? 'visible' : 'hidden';
+					if (!this.isTextInputActive()) {
+						game.hideHUD = !game.hideHUD;
+						document.getElementById('user-section').style.display = document.getElementById('user-section').style.display == 'none' ? 'block' : 'none';
+					}
 					break;
 				}
 			});
@@ -149,5 +157,11 @@ export default class InputHandler {
 				}
 			});
 		}
+	}
+
+	isTextInputActive() {
+		return document.getElementById('sign-in-username') === document.activeElement || document.getElementById('sign-in-password') === document.activeElement ||
+			document.getElementById('register-username') === document.activeElement || document.getElementById('register-password') === document.activeElement ||
+			document.getElementById('register-email') === document.activeElement;
 	}
 }

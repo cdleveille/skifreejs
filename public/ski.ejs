@@ -23,21 +23,81 @@
 				z-index: 1;
 			}
 
-			#userProfile {
+			#user-section {
+				display: block;
+			}
+
+			#user-profile {
 				background: transparent;
 				border: none !important;
 				font-size: 0;
 				outline: none;
-				width: 48px;
-				height: 48px;
+				width: 45px;
+				height: 45px;
 				cursor: pointer;
-				border-radius: 50%;
 				position: absolute;
 				z-index: 2;
 			}
 
+			#sign-in-or-register {
+				position: absolute;
+				top: 4px;
+				left: 48px;
+				z-index: 2;
+				display: none;
+			}
+
+			#sign-in-form-fields {
+				position: absolute;
+				top: 4px;
+				left: 48px;
+				z-index: 2;
+				display: none;
+			}
+
+			#register-form-fields {
+				position: absolute;
+				top: 4px;
+				left: 48px;
+				z-index: 2;
+				display: none;
+			}
+
+			.text-input {
+				width: 200px;
+				margin: 2px;
+				border: 1px solid black;
+				font-family: 'ModernDOS';
+			}
+
+			.button {
+				width: 70px;
+				margin: 2px;
+				border: 1px solid black;
+				text-align: center;
+				text-decoration: none;
+				font-family: 'ModernDOS';
+				cursor: pointer;
+				border-radius: 0%;
+				transition-duration: 0.4s;
+			}
+
+			.button:hover {
+				background-color: #888888;
+				color: white;
+			}
+
+			.form-error {
+				position: relative;
+				top: 2px;
+				left: 2px;
+				z-index: 2;
+				color: red;
+				display: block;
+			}
+
 			html, body {
-				background-color: #FFFFFF;
+				background-color: white;
 				width: 100%;
 				height: 100%;
 				margin: 0px;
@@ -61,9 +121,46 @@
 	<body>
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
-		<button id="userProfile"></button>
+		<div id="user-section">
+			<button id="user-profile"></button>
+			<div id="sign-in-or-register">
+				<div>
+					<button id="sign-in-btn" class="button" type="button">Sign In</button>
+				</div>
+				<div>
+					<button id="register-btn" class="button" type="button">Register</button>
+				</div>
+			</div>
+			<div id="sign-in-form-fields">
+				<form id="sign-in-form" action="/" method="GET" spellcheck="false">
+					<div>
+						<input id="sign-in-username" class="text-input" name="sign-in-username" placeholder="username" type="text" required>
+					</div>
+					<div>
+						<input id="sign-in-password" class="text-input" name="sign-in-password" placeholder="password" type="password" required>
+					</div>
+					<div id="sign-in-error" class="form-error"></div>
+					<button type="submit" style="display: none;"></button>
+				</form>
+			</div>
+			<div id="register-form-fields">
+				<form id="register-form" action="/" method="GET" spellcheck="false">
+					<div>
+						<input id="register-email" class="text-input" name="register-email" placeholder="email" type="email" required>
+					</div>
+					<div>
+						<input id="register-username" class="text-input" name="register-username" placeholder="username" type="text" required>
+					</div>
+					<div>
+						<input id="register-password" class="text-input" name="register-password" placeholder="password" type="password" required>
+					</div>
+					<div id="register-error" class="form-error"></div>
+					<button type="submit" style="display: none;"></button>
+				</form>
+			</div>
+		</div>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="./js/socket.js" type="module"></script>
-		<script src="./js/ski.js" type="module"></script>
+		<script defer src="./js/ski.js" type="module"></script>
 	</body>
 </html>
