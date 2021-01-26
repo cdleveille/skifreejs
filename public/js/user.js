@@ -16,7 +16,7 @@ export default class User {
 		this.signInButton.onclick = this.signInButton.owner.signInButtonClickHandler;
 
 		this.signInForm = document.getElementById('sign-in-form');
-		this.signInFormFields = document.getElementById('sign-in-form-fields');
+		this.signInFormSection = document.getElementById('sign-in-form-section');
 		this.signInUsername = document.getElementById('sign-in-username');
 		this.signInPassword = document.getElementById('sign-in-password');
 		this.signInError = document.getElementById('sign-in-error');
@@ -26,32 +26,98 @@ export default class User {
 		this.registerButton.onclick = this.registerButton.owner.registerButtonClickHandler;
 
 		this.registerForm = document.getElementById('register-form');
-		this.registerFormFields = document.getElementById('register-form-fields');
+		this.registerFormSection = document.getElementById('register-form-section');
 		this.registerEmail = document.getElementById('register-email');
 		this.registerUsername = document.getElementById('register-username');
 		this.registerPassword = document.getElementById('register-password');
 		this.registerError = document.getElementById('register-error');
-		this.registerScore = document.getElementById('register-score');
+
+		this.loggedInInfoSection = document.getElementById('logged-in-info-section');
+		this.loggedInUsername = document.getElementById('logged-in-username');
+		this.signOutButton = document.getElementById('sign-out-btn');
+		this.signOutButton.owner = this;
+		this.signOutButton.onclick = this.signOutButton.owner.signOutButtonClickHandler;
 
 		this.signInForm.addEventListener('submit', (e) => {
+			e.preventDefault();
 			let messages = [];
-			messages.push('Coming soon!');
 
+			// show any validation errors
 			if (messages.length > 0) {
 				this.signInError.innerText = messages.join('\n');
-				e.preventDefault();
+			} else {
+				let headers = {
+					'Content-Type': 'application/json'
+				};
+				let body = {
+					username: this.signInUsername.value,
+					password: this.signInPassword.value
+				};
+				// post request to login api
+				this.game.util.request('POST', '/api/login', headers, body).then(data => {
+					console.log(data);
+					if (data.data == 'Error: Error: username not found') {
+						messages.push('Username not found');
+					}
+					if (data.data == 'Error: Error: incorrect password') {
+						messages.push('Incorrect password');
+					}
+					this.signInError.innerText = messages.join('\n');
+
+					if (data.status == 200) {
+						this.isLoggedIn = true;
+						this.hideSignInForm();
+						this.username = this.signInUsername.value;
+						this.loggedInUsername.innerText = this.username;
+					}
+				}).catch(err => console.log(err));
 			}
 		});
 
 		this.registerForm.addEventListener('submit', (e) => {
+			e.preventDefault();
 			let messages = [];
-			//messages.push('Coming soon!');
 
-			this.registerScore.value = Math.floor(this.game.style);
+			if (!this.game.util.isAlphaNumeric(this.registerUsername.value)) {
+				messages.push('Username must be alphanumeric only');
+			}
 
+			if (this.registerUsername.value.length < 3) {
+				messages.push('Username must be at least 3 characters');
+			}
+
+			if (this.registerPassword.value.length < 8) {
+				messages.push('Password must be at least 8 characters');
+			}
+
+			// show any validation errors
 			if (messages.length > 0) {
 				this.registerError.innerText = messages.join('\n');
-				e.preventDefault();
+			} else {
+				let headers = {
+					'Content-Type': 'application/json'
+				};
+				let body = {
+					email: this.registerEmail.value,
+					username: this.registerUsername.value,
+					password: this.registerPassword.value
+				};
+				// post request to register api
+				this.game.util.request('POST', '/api/register', headers, body).then(data => {
+					console.log(data);
+					if (data.data == 'Error: Error: username or email taken') {
+						messages.push('Username or email taken');
+					}
+
+					this.registerError.innerText = messages.join('\n');
+
+					if (data.status == 200) {
+						this.isLoggedIn = true;
+						this.hideRegisterForm();
+						this.username = this.registerUsername.value;
+						this.loggedInUsername.innerText = this.username;
+					}
+				}).catch(err => console.log(err));
 			}
 		});
 	}
@@ -76,33 +142,35 @@ export default class User {
 	}
 
 	userProfileButtonClickHandler() {
-		if (!this.isLoggedIn) {
+		if (!this.owner.isLoggedIn) {
 			if (this.owner.signInOrRegister.style.display == 'block') {
 				this.owner.hideSignInOrRegister();
 			} else {
 				this.owner.showSignInOrRegister();
 			}
 
-			if (this.owner.signInFormFields.style.display == 'block') {
+			if (this.owner.signInFormSection.style.display == 'block') {
 				this.owner.hideSignInForm();
 				this.owner.hideSignInOrRegister();
 			}
 
-			if (this.owner.signInFormFields.style.display == 'block') {
-				this.owner.hideSignInForm();
-				this.owner.hideSignInOrRegister();
-			}
-
-			if (this.owner.registerFormFields.style.display == 'block') {
+			if (this.owner.registerFormSection.style.display == 'block') {
 				this.owner.hideRegisterForm();
 				this.owner.hideSignInOrRegister();
 			}
+		} else {
+			if (this.owner.loggedInInfoSection.style.display == 'block') {
+				this.owner.hideLoggedInInfo();
+			} else {
+				this.owner.showLoggedInInfo();
+			}
+			
 		}
 	}
 
 	signInButtonClickHandler() {
 		this.owner.signInOrRegister.style.display = 'none';
-		this.owner.signInFormFields.style.display = 'block';
+		this.owner.signInFormSection.style.display = 'block';
 		this.owner.signInUsername.value = '';
 		this.owner.signInPassword.value = '';
 		this.owner.signInError.innerText = '';
@@ -110,27 +178,34 @@ export default class User {
 
 	registerButtonClickHandler() {
 		this.owner.signInOrRegister.style.display = 'none';
-		this.owner.registerFormFields.style.display = 'block';
+		this.owner.registerFormSection.style.display = 'block';
 		this.owner.registerEmail.value = '';
 		this.owner.registerUsername.value = '';
 		this.owner.registerPassword.value = '';
 		this.owner.registerError.innerText = '';
 	}
 
+	signOutButtonClickHandler() {
+		this.owner.loggedInUsername.innerText = '';
+		this.owner.username = null;
+		this.owner.isLoggedIn = false;
+		this.owner.hideLoggedInInfo();
+	}
+
 	showSignInForm() {
-		this.signInFormFields.style.display = 'block';
+		this.signInFormSection.style.display = 'block';
 	}
 
 	hideSignInForm() {
-		this.signInFormFields.style.display = 'none';
+		this.signInFormSection.style.display = 'none';
 	}
 
 	showRegisterForm() {
-		this.registerFormFields.style.display = 'block';
+		this.registerFormSection.style.display = 'block';
 	}
 
 	hideRegisterForm() {
-		this.registerFormFields.style.display = 'none';
+		this.registerFormSection.style.display = 'none';
 	}
 
 	showSignInOrRegister() {
@@ -139,6 +214,14 @@ export default class User {
 
 	hideSignInOrRegister() {
 		this.signInOrRegister.style.display = 'none';
+	}
+
+	showLoggedInInfo() {
+		this.loggedInInfoSection.style.display = 'block';
+	}
+
+	hideLoggedInInfo() {
+		this.loggedInInfoSection.style.display = 'none';
 	}
 
 	draw(ctx) {

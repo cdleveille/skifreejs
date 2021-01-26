@@ -39,30 +39,6 @@
 				z-index: 2;
 			}
 
-			#sign-in-or-register {
-				position: absolute;
-				top: 4px;
-				left: 48px;
-				z-index: 2;
-				display: none;
-			}
-
-			#sign-in-form-fields {
-				position: absolute;
-				top: 4px;
-				left: 48px;
-				z-index: 2;
-				display: none;
-			}
-
-			#register-form-fields {
-				position: absolute;
-				top: 4px;
-				left: 48px;
-				z-index: 2;
-				display: none;
-			}
-
 			.text-input {
 				width: 200px;
 				margin: 2px;
@@ -96,6 +72,14 @@
 				display: block;
 			}
 
+			.user-panel {
+				position: absolute;
+				top: 0px;
+				left: 48px;
+				z-index: 2;
+				display: none;
+			}
+
 			html, body {
 				background-color: white;
 				width: 100%;
@@ -123,7 +107,7 @@
 		<canvas id="gameScreen" width="0" height="0"></canvas>
 		<div id="user-section">
 			<button id="user-profile"></button>
-			<div id="sign-in-or-register">
+			<div id="sign-in-or-register" class="user-panel">
 				<div>
 					<button id="sign-in-btn" class="button" type="button">Sign In</button>
 				</div>
@@ -131,8 +115,8 @@
 					<button id="register-btn" class="button" type="button">Register</button>
 				</div>
 			</div>
-			<div id="sign-in-form-fields">
-				<form id="sign-in-form" action="/" method="post" target="iframe" spellcheck="false">
+			<div id="sign-in-form-section" class="user-panel">
+				<form id="sign-in-form" spellcheck="false">
 					<div>
 						<input id="sign-in-username" class="text-input" name="sign-in-username" placeholder="username" type="text" required>
 					</div>
@@ -143,8 +127,8 @@
 					<button type="submit" style="display: none;"></button>
 				</form>
 			</div>
-			<div id="register-form-fields">
-				<form id="register-form" action="/api/register" method="post" spellcheck="false">
+			<div id="register-form-section" class="user-panel">
+				<form id="register-form" spellcheck="false">
 					<div>
 						<input id="register-email" class="text-input" name="email" placeholder="email" type="email" required>
 					</div>
@@ -155,11 +139,16 @@
 						<input id="register-password" class="text-input" name="password" placeholder="password" type="password" required>
 					</div>
 					<div id="register-error" class="form-error"></div>
-					<input type="submit" value="register">
+					<input type="submit" style="display: none;">
 				</form>
 			</div>
+			<div id="logged-in-info-section" class="user-panel">
+				<div id="logged-in-username" style="margin: 2px;"></div>
+				<div>
+					<button id="sign-out-btn" class="button" type="button">Sign Out</button>
+				</div>
+			</div>
 		</div>
-		<iframe name="iframe" style="display:none;"></iframe>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="./js/socket.js" type="module"></script>
 		<script src="./js/ski.js" type="module"></script>

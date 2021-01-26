@@ -86,7 +86,7 @@ export default class Util {
 			fetch(uri, {
 				method: method || 'GET',
 				headers: headers,
-				body: body
+				body: JSON.stringify(body)
 			}).then(r => r.json()).then(data => {
 				return resolve(data);
 			}).catch(e => {
@@ -100,5 +100,19 @@ export default class Util {
 		let isMobile = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/BlackBerry/i) ||
 			navigator.userAgent.match(/iPhone|iPad|iPod/i) || navigator.userAgent.match(/Opera Mini/i);
 		return isMobile == null ? false : isMobile;
+	}
+
+	// determine whether the given string consists of only alphanumeric characters
+	isAlphaNumeric(str) {
+		let code, i, len;
+		for (i = 0, len = str.length; i < len; i++) {
+			code = str.charCodeAt(i);
+			if (!(code > 47 && code < 58) && // numeric (0-9)
+					!(code > 64 && code < 91) && // upper alpha (A-Z)
+					!(code > 96 && code < 123)) { // lower alpha (a-z)
+				return false;
+			}
+		}
+		return true;
 	}
 }
