@@ -219,7 +219,7 @@ export default class Game {
 		this.skier.x = this.gameWidth / 2;
 		this.skier.y = this.gameHeight / 3;
 
-		this.user.setButtonPosition();
+		this.user.setProfileButtonPosition();
 
 		this.adaptGameObjectCountToScreenSize();
 	}

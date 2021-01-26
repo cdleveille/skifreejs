@@ -31,30 +31,33 @@ export default class User {
 		this.registerUsername = document.getElementById('register-username');
 		this.registerPassword = document.getElementById('register-password');
 		this.registerError = document.getElementById('register-error');
+		this.registerScore = document.getElementById('register-score');
 
 		this.signInForm.addEventListener('submit', (e) => {
 			let messages = [];
 			messages.push('Coming soon!');
 
 			if (messages.length > 0) {
-				e.preventDefault();
 				this.signInError.innerText = messages.join('\n');
+				e.preventDefault();
 			}
 		});
 
 		this.registerForm.addEventListener('submit', (e) => {
 			let messages = [];
-			messages.push('Coming soon!');
+			//messages.push('Coming soon!');
+
+			this.registerScore.value = Math.floor(this.game.style);
 
 			if (messages.length > 0) {
-				e.preventDefault();
 				this.registerError.innerText = messages.join('\n');
+				e.preventDefault();
 			}
 		});
 	}
 
 	init() {
-		this.setButtonPosition();
+		this.setProfileButtonPosition();
 	}
 
 	loadAssets() {
@@ -62,7 +65,7 @@ export default class User {
 		this.logged_out = this.game.util.loadImage('/img/logged_out.png', this);
 	}
 
-	setButtonPosition() {
+	setProfileButtonPosition() {
 		let leftEdgeX = this.game.gameWidth > window.innerWidth ? (Math.floor((this.game.gameWidth - window.innerWidth) / 2.0)) : 0;
 		let topEdgeY = this.game.gameHeight > window.innerHeight ? (Math.floor((this.game.gameHeight - window.innerHeight) / 2.0)) : 0;
 		let cornerOffset = 2;

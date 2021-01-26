@@ -132,7 +132,7 @@
 				</div>
 			</div>
 			<div id="sign-in-form-fields">
-				<form id="sign-in-form" action="/" method="GET" spellcheck="false">
+				<form id="sign-in-form" action="/" method="post" target="iframe" spellcheck="false">
 					<div>
 						<input id="sign-in-username" class="text-input" name="sign-in-username" placeholder="username" type="text" required>
 					</div>
@@ -144,23 +144,25 @@
 				</form>
 			</div>
 			<div id="register-form-fields">
-				<form id="register-form" action="/" method="GET" spellcheck="false">
+				<form id="register-form" action="/api/register" method="post" target="iframe" spellcheck="false">
 					<div>
-						<input id="register-email" class="text-input" name="register-email" placeholder="email" type="email" required>
+						<input id="register-email" class="text-input" name="email" placeholder="email" type="email" required>
 					</div>
 					<div>
-						<input id="register-username" class="text-input" name="register-username" placeholder="username" type="text" required>
+						<input id="register-username" class="text-input" name="username" placeholder="username" type="text" required>
 					</div>
 					<div>
-						<input id="register-password" class="text-input" name="register-password" placeholder="password" type="password" required>
+						<input id="register-password" class="text-input" name="password" placeholder="password" type="password" required>
 					</div>
+					<input id="register-score" type="hidden" name="score" value=0>
 					<div id="register-error" class="form-error"></div>
 					<button type="submit" style="display: none;"></button>
 				</form>
 			</div>
 		</div>
+		<iframe name="iframe" style="display:none;"></iframe>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="./js/socket.js" type="module"></script>
-		<script defer src="./js/ski.js" type="module"></script>
+		<script src="./js/ski.js" type="module"></script>
 	</body>
 </html>
