@@ -110,22 +110,23 @@ export default class InputHandler {
 						if (touchY > game.skier.y) {
 							game.mousePos.x = touchX;
 							game.mousePos.y = touchY;
-							if (game.skier.isJumping && !game.skier.trick1Disabled && !game.skier.isCrashed) {
-								game.skier.isDoingTrick1 = true;
-								game.skier.trick1Disabled = true;
-								game.skier.trick1StartTime = game.util.timestamp();
-							}
-							// touch start above skier
-						} else {
 							if (game.skier.isJumping ) {
 								game.skier.rotateJumpStage();
-							} else if (!game.skier.isCrashed) {
-								game.skier.isJumping = true;
-								game.skier.jumpV = game.skier.jumpVInit;
+							} else if (game.skier.isCrashed) {
+								game.skier.isCrashed = false;
 							}
-						}
-						if (game.skier.isCrashed) {
-							game.skier.isCrashed = false;
+						// touch start above skier
+						} else {
+							if (!game.skier.isCrashed) {
+								if (!game.skier.isJumping) {
+									game.skier.isJumping = true;
+									game.skier.jumpV = game.skier.jumpVInit;
+								} else if (!game.skier.trick1Disabled) {
+									game.skier.isDoingTrick1 = true;
+									game.skier.trick1Disabled = true;
+									game.skier.trick1StartTime = game.util.timestamp();
+								}
+							}
 						}
 					}
 				}
