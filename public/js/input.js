@@ -101,30 +101,32 @@ export default class InputHandler {
 			canvas.addEventListener('touchstart', (event) => {
 				event.preventDefault();
 				if (!game.isPaused) {
-					let touch = event.touches[0];
-					let touchX = touch.clientX - ((window.innerWidth - canvas.width) / 2);
-					let touchY = touch.clientY - ((window.innerHeight - canvas.height) / 2);
+					for (let i = 0; i < event.touches.length; i++) {
+						let touch = event.touches[i];
+						let touchX = touch.clientX - ((window.innerWidth - canvas.width) / 2);
+						let touchY = touch.clientY - ((window.innerHeight - canvas.height) / 2);
 
-					// touch start below skier
-					if (touchY > game.skier.y) {
-						game.mousePos.x = touchX;
-						game.mousePos.y = touchY;
-						if (game.skier.isJumping && !game.skier.trick1Disabled && !game.skier.isCrashed) {
-							game.skier.isDoingTrick1 = true;
-							game.skier.trick1Disabled = true;
-							game.skier.trick1StartTime = game.util.timestamp();
+						// touch start below skier
+						if (touchY > game.skier.y) {
+							game.mousePos.x = touchX;
+							game.mousePos.y = touchY;
+							if (game.skier.isJumping && !game.skier.trick1Disabled && !game.skier.isCrashed) {
+								game.skier.isDoingTrick1 = true;
+								game.skier.trick1Disabled = true;
+								game.skier.trick1StartTime = game.util.timestamp();
+							}
+							// touch start above skier
+						} else {
+							if (game.skier.isJumping ) {
+								game.skier.rotateJumpStage();
+							} else if (!game.skier.isCrashed) {
+								game.skier.isJumping = true;
+								game.skier.jumpV = game.skier.jumpVInit;
+							}
 						}
-					// touch start above skier
-					} else {
-						if (game.skier.isJumping ) {
-							game.skier.rotateJumpStage();
-						} else if (!game.skier.isCrashed) {
-							game.skier.isJumping = true;
-							game.skier.jumpV = game.skier.jumpVInit;
+						if (game.skier.isCrashed) {
+							game.skier.isCrashed = false;
 						}
-					}
-					if (game.skier.isCrashed) {
-						game.skier.isCrashed = false;
 					}
 				}
 			});
