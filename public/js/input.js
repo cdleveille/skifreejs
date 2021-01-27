@@ -142,7 +142,7 @@ export default class InputHandler {
 			canvas.addEventListener('touchend', (event) => {
 				event.preventDefault();
 				if (!game.isPaused) {
-					if (game.util.timestamp() - game.touchStartTime < 200 && (game.lastTouchAboveSkierY || 0) < game.skier.y) {
+					if (game.util.timestamp() - game.touchStartTime < 200 && game.lastTouchAboveSkierY < game.skier.y) {
 						if (!game.skier.isCrashed) {
 							if (!game.skier.isJumping) {
 								game.skier.isJumping = true;
