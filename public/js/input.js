@@ -105,7 +105,7 @@ export default class InputHandler {
 					let touch = event.touches[0];
 					let touchX = touch.clientX - ((window.innerWidth - canvas.width) / 2);
 					let touchY = touch.clientY - ((window.innerHeight - canvas.height) / 2);
-					if (touchY >= game.skier.y + 30) {
+					if (touchY >= game.skier.y) {
 						game.mousePos.x = touchX;
 						game.mousePos.y = touchY;
 						if (game.skier.isJumping && !game.skier.trick1Disabled && !game.skier.isCrashed) {
@@ -132,7 +132,7 @@ export default class InputHandler {
 					let touchX = touch.clientX - ((window.innerWidth - canvas.width) / 2);
 					let touchY = touch.clientY - ((window.innerHeight - canvas.height) / 2);
 					
-					if (touchY >= game.skier.y + 30) {
+					if (touchY >= game.skier.y) {
 						game.mousePos.x = touchX;
 						game.mousePos.y = touchY;
 					}
@@ -142,7 +142,7 @@ export default class InputHandler {
 			canvas.addEventListener('touchend', (event) => {
 				event.preventDefault();
 				if (!game.isPaused) {
-					if (game.util.timestamp() - game.touchStartTime < 200 && game.lastTouchAboveSkierY < game.skier.y + 30) {
+					if (game.util.timestamp() - game.touchStartTime < 200 && (game.lastTouchAboveSkierY || 0) < game.skier.y) {
 						if (!game.skier.isCrashed) {
 							if (!game.skier.isJumping) {
 								game.skier.isJumping = true;
