@@ -52,7 +52,6 @@ export default class Game {
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
-		this.lastTouchAboveSkierY = 0;
 		this.calculateGameObjectCounts();
 
 		// spawn game objects on and around the game screen for start of game

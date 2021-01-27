@@ -101,11 +101,12 @@ export default class InputHandler {
 			canvas.addEventListener('touchstart', (event) => {
 				event.preventDefault();
 				if (!game.isPaused) {
-					game.touchStartTime = game.util.timestamp();
 					let touch = event.touches[0];
 					let touchX = touch.clientX - ((window.innerWidth - canvas.width) / 2);
 					let touchY = touch.clientY - ((window.innerHeight - canvas.height) / 2);
-					if (touchY >= game.skier.y) {
+
+					// touch start below skier
+					if (touchY > game.skier.y) {
 						game.mousePos.x = touchX;
 						game.mousePos.y = touchY;
 						if (game.skier.isJumping && !game.skier.trick1Disabled && !game.skier.isCrashed) {
@@ -113,10 +114,13 @@ export default class InputHandler {
 							game.skier.trick1Disabled = true;
 							game.skier.trick1StartTime = game.util.timestamp();
 						}
+					// touch start above skier
 					} else {
-						game.lastTouchAboveSkierY = touchY;
 						if (game.skier.isJumping ) {
 							game.skier.rotateJumpStage();
+						} else if (!game.skier.isCrashed) {
+							game.skier.isJumping = true;
+							game.skier.jumpV = game.skier.jumpVInit;
 						}
 					}
 					if (game.skier.isCrashed) {
@@ -132,7 +136,8 @@ export default class InputHandler {
 					let touchX = touch.clientX - ((window.innerWidth - canvas.width) / 2);
 					let touchY = touch.clientY - ((window.innerHeight - canvas.height) / 2);
 					
-					if (touchY >= game.skier.y) {
+					// touch move below skier
+					if (touchY > game.skier.y) {
 						game.mousePos.x = touchX;
 						game.mousePos.y = touchY;
 					}
@@ -142,14 +147,6 @@ export default class InputHandler {
 			canvas.addEventListener('touchend', (event) => {
 				event.preventDefault();
 				if (!game.isPaused) {
-					if (game.util.timestamp() - game.touchStartTime < 200 && game.lastTouchAboveSkierY < game.skier.y) {
-						if (!game.skier.isCrashed) {
-							if (!game.skier.isJumping) {
-								game.skier.isJumping = true;
-								game.skier.jumpV = game.skier.jumpVInit;
-							}
-						}
-					}
 					if (game.skier.isDoingTrick1) {
 						game.skier.isDoingTrick1 = false;
 						game.skier.trick1EndTime = game.util.timestamp();
