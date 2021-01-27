@@ -10,6 +10,9 @@ canvas.oncontextmenu = function (e) {
 let ctx = canvas.getContext('2d');
 
 let game = new Game();
+if (game.util.isOnMobile()) {
+	screen.orientation.lock('portrait');
+}
 new InputHandler(canvas, game);
 new WindowHandler(canvas, game);
 
