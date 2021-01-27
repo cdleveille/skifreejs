@@ -5,7 +5,7 @@
 		<title>skifreejs</title>
 		<link rel="icon" href="./img/ski.png">
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta name="author" content="Chris Leveille">
 		<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval';">
 		<meta name="Description" content="Fan remake of the classic game from Windows Entertainment Pack 3">
@@ -21,10 +21,74 @@
 				-moz-transform: translateX(-50%) translateY(-50%);
 				-webkit-transform: translateX(-50%) translateY(-50%);
 				transform: translateX(-50%) translateY(-50%);
+				z-index: 1;
+				touch-action: manipulation;
+			}
+
+			#user-section {
+				display: block;
+				touch-action: manipulation;
+			}
+
+			#user-profile {
+				background: transparent;
+				border: none !important;
+				font-size: 0;
+				outline: none;
+				width: 45px;
+				height: 45px;
+				cursor: pointer;
+				position: absolute;
+				z-index: 2;
+				touch-action: manipulation;
+			}
+
+			.text-input {
+				width: 200px;
+				margin: 2px;
+				border: 1px solid black;
+				font-family: 'ModernDOS';
+				touch-action: manipulation;
+			}
+
+			.button {
+				width: 70px;
+				margin: 2px;
+				background-color: #FFFFFF;
+				border: 1px solid black;
+				text-align: center;
+				text-decoration: none;
+				font-family: 'ModernDOS';
+				cursor: pointer;
+				border-radius: 0%;
+				transition-duration: 0.4s;
+				touch-action: manipulation;
+			}
+
+			.button:hover {
+				background-color: #888888;
+				color: white;
+			}
+
+			.form-error {
+				position: relative;
+				top: 2px;
+				left: 2px;
+				z-index: 2;
+				color: red;
+				display: block;
+			}
+
+			.user-panel {
+				position: absolute;
+				top: 0px;
+				left: 48px;
+				z-index: 2;
+				display: none;
 			}
 
 			html, body {
-				background-color: #FFFFFF;
+				background-color: white;
 				width: 100%;
 				height: 100%;
 				margin: 0px;
@@ -48,8 +112,53 @@
 	<body>
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
-		<script src="./websocket-client"></script>
-		<script src="./js/socket.js"></script>
-		<script src="./js/ski.js" type="module"></script>
+		<div id="user-section">
+			<button id="user-profile"></button>
+			<div id="sign-in-or-register" class="user-panel">
+				<div>
+					<button id="sign-in-btn" class="button" type="button">Sign In</button>
+				</div>
+				<div>
+					<button id="register-btn" class="button" type="button">Register</button>
+				</div>
+			</div>
+			<div id="sign-in-form-section" class="user-panel">
+				<form id="sign-in-form" spellcheck="false">
+					<div>
+						<input id="sign-in-username" class="text-input" name="sign-in-username" placeholder="username" type="text" required>
+					</div>
+					<div>
+						<input id="sign-in-password" class="text-input" name="sign-in-password" placeholder="password" type="password" required>
+					</div>
+					<button type="submit" class="button">Sign In</button>
+					<div id="sign-in-error" class="form-error"></div>
+				</form>
+			</div>
+			<div id="register-form-section" class="user-panel">
+				<form id="register-form" spellcheck="false">
+					<div>
+						<input id="register-email" class="text-input" name="email" placeholder="email" type="email" required>
+					</div>
+					<div>
+						<input id="register-username" class="text-input" name="username" placeholder="username" type="text" required>
+					</div>
+					<div>
+						<input id="register-password" class="text-input" name="password" placeholder="password" type="password" required>
+					</div>
+					<button type="submit" class="button">Register</button>
+					<div id="register-error" class="form-error"></div>
+				</form>
+			</div>
+			<div id="logged-in-info-section" class="user-panel">
+				<div id="logged-in-username" style="margin: 2px;"></div>
+				<div id="high-score" style="margin: 2px;"></div>
+				<div>
+					<button id="sign-out-btn" class="button" type="button">Sign Out</button>
+				</div>
+			</div>
+		</div>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="./js/socket.js" type="module"></script>
+		<script defer src="./js/ski.js" type="module"></script>
 	</body>
 </html>

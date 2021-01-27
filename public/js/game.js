@@ -23,7 +23,7 @@ export default class Game {
 		this.snowboarderDensity = 0.05;
 		this.jumpVBase = 0.7;
 		this.jumpVMult = 0.0022;
-		this.resCoefficient = 50 / 562860.0;
+		this.resCoefficient = 1 / 25000.0;
 		this.collisionsEnabled = true;
 		this.doImageLoadCheck = true;
 		this.hideHUD = false;
@@ -66,6 +66,8 @@ export default class Game {
 		this.stumps = this.initGameObjectsAtStart('stump', this.stumpCount);
 		this.otherSkiers =  this.initGameObjectsAtStart('other_skier', this.otherSkierCount);
 		this.snowboarders = this.initGameObjectsAtStart('snowboarder', this.snowboarderCount);
+
+		console.log(this.treesSmall.length);
 
 		this.clearSpawnArea();
 	}
@@ -134,8 +136,8 @@ export default class Game {
 	initGameObjectsAtStart(type, count) {
 		let gameObjects = [];
 		for (let n = 0; n < count; n++) {
-			let x = this.util.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
-			let y = this.util.randomInt(-this.gameHeight / 3, this.gameHeight * 5 / 3);
+			let x = this.util.randomInt(-window.innerWidth * 3 / 2, window.innerWidth * 3 / 2);
+			let y = this.util.randomInt(-window.innerHeight * 1 / 3, window.innerHeight * 5 / 3);
 
 			gameObjects.push(this.spawnNewGameObject(type, x, y));
 		}
@@ -150,32 +152,34 @@ export default class Game {
 
 	// get an x/y coordinate pair for a location nearby offscreen
 	getRandomCoordinateOffScreen(canSpawnAbove) {
-		let upperBound = canSpawnAbove ? -this.gameHeight * 4 / 3 : -this.gameHeight / 3;
+		let width = window.innerWidth;
+		let height = window.innerHeight;
+		let upperBound = canSpawnAbove ? -height * 4 / 3 : -height / 3;
 	
-		let x = this.util.randomInt(-this.gameWidth * 3 / 2, this.gameWidth * 3 / 2);
-		let y = this.util.randomInt(upperBound, this.gameHeight * 5 / 3);
+		let x = this.util.randomInt(-width * 3 / 2, width * 3 / 2);
+		let y = this.util.randomInt(upperBound, height * 5 / 3);
 		let space = 80;
 
 		// if coordinate would be onscreen, spawn it nearby offscreen instead
-		if (x > -this.gameWidth / 2 - space && x < this.gameWidth / 2 &&
-			y > -this.gameHeight / 3 - space && y < this.gameHeight * 2 / 3) {
+		if (x > -width / 2 - space && x < width / 2 &&
+			y > -height / 3 - space && y < height * 2 / 3) {
 			switch (this.util.randomInt(0, 5)) {
 			case 0:
-				x -= (this.gameWidth + space);
+				x -= (width + space);
 				break;
 			case 1:
-				x -= (this.gameWidth + space);
-				y += (this.gameHeight + space);
+				x -= (width + space);
+				y += (height + space);
 				break;
 			case 2:
-				y += (this.gameHeight + space);
+				y += (height + space);
 				break;
 			case 3:
-				x += (this.gameWidth + space);
-				y += (this.gameHeight + space);
+				x += (width + space);
+				y += (height + space);
 				break;
 			default:
-				x += (this.gameWidth + space);
+				x += (width + space);
 			}
 		}
 		return {x: x, y: y};
@@ -226,7 +230,7 @@ export default class Game {
 
 	// determine the target number of game objects of each type proportional to total game screen area
 	calculateGameObjectCounts() {
-		let area = this.gameWidth * this.gameHeight;
+		let area = window.innerWidth * window.innerHeight;
 		this.treeSmallCount = Math.floor(area * this.resCoefficient * this.treeSmallDensity);
 		this.treeLargeCount = Math.floor(area * this.resCoefficient * this.treeLargeDensity);
 		this.treeBareCount = Math.floor(area * this.resCoefficient * this.treeBareDensity);
@@ -259,6 +263,8 @@ export default class Game {
 	// trim or add new game objects until desired count matches actual
 	correctGameObjectCount(gameObjects, desiredCount, type) {
 		let diff = Math.abs(gameObjects.length - desiredCount);
+		let width = window.innerWidth;
+		let height = window.innerHeight;
 
 		// trim excess offscreen objects
 		if (gameObjects.length > desiredCount) {
@@ -268,8 +274,8 @@ export default class Game {
 				let y = gameObjects[i].y;
 
 				// remove the object if it is offscreen
-				if (!(x > -this.gameWidth / 2 && x < this.gameWidth / 2 &&
-					y > -this.gameHeight / 3 && y < this.gameHeight * 2 / 3)) {
+				if (!(x > -width / 2 && x < width / 2 &&
+					y > -height / 3 && y < height * 2 / 3)) {
 					gameObjects.splice(i, 1);
 					trimmedCount++;
 				}
@@ -382,7 +388,7 @@ export default class Game {
 			this.skierTrail[i].y -= this.skier.yv * step;
 
 			// delete offscreen skier trail
-			if (this.skierTrail[i].y < -this.gameHeight / 3 - 50) {
+			if (this.skierTrail[i].y < -window.innerHeight / 3) {
 				this.skierTrail.splice(i, 1);
 			}
 		}
@@ -402,9 +408,9 @@ export default class Game {
 
 	// return true if the given game object is offscreen uphill or is far enough away horizontally
 	hasGameObjectBeenPassed(object) {
-		return object.y < -this.gameHeight / 3 - 50 ||
-				object.x < -this.gameWidth * 3 / 2 ||
-				object.x > this.gameWidth * 3 / 2;
+		return object.y < -window.innerHeight / 3 - 80 ||
+				object.x < -window.innerWidth * 3 / 2 ||
+				object.x > window.innerWidth * 3 / 2;
 	}
 
 	// update image, velocity, and position of the other skiers
