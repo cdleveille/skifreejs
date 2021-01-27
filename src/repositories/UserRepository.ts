@@ -1,9 +1,10 @@
 import User, { IUser } from '../models/User';
 import Password from '../helpers/password';
+import Base from './abstract/UserRepositoryBase';
 
-export default class UserRepository {
+class UserRepository extends Base {
 
-	public static async Register(user: IUser): Promise<IUser> {
+	public async Register(user: IUser): Promise<IUser> {
 		try {
 			const exists: IUser = await User.findOne({
 				$or: [
@@ -26,7 +27,7 @@ export default class UserRepository {
 		}
 	}
 
-	public static async Login(user: IUser): Promise<IUser> {
+	public async Login(user: IUser): Promise<IUser> {
 		try {
 			const query: IUser = await User.findOne({ username: user.username });
 			if (!query) throw Error('username not found');
@@ -40,7 +41,7 @@ export default class UserRepository {
 		}
 	}
 
-	public static async UpdateScore(user: IUser): Promise<IUser> {
+	public async UpdateScore(user: IUser): Promise<IUser> {
 		try {
 			const exists = await User.findOne({ username: user.username });
 			if (!exists) throw Error('username not found');
@@ -56,3 +57,5 @@ export default class UserRepository {
 		}
 	}
 }
+
+export const _User: Base = new UserRepository;

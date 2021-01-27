@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import app from '../services/server';
-import User from '../repositories/UserRepository';
+import { _User } from '../repositories/UserRepository';
 import IResponse from '../types/IResponse';
 import { IUser } from '../models/User';
-import T, { IJwtPayload } from '../types/IGeneric';
+import T, { IJwtPayload } from '../types/Abstract';
 import validate from '../middleware/jwt';
 import { Errors } from '../types/Constants';
 import Jwt from '../helpers/jwt';
@@ -16,7 +16,7 @@ app.post('/api/register', async (req: Request, res: Response, next: NextFunction
 		if (typeof username !== T.string || typeof email !== T.string || typeof password !== T.string)
 			throw Error(Errors.invalidScoreRequest);
 
-		const user: IUser = await User.Register(req.body);
+		const user: IUser = await _User.Register(req.body);
 
 		const token: string = await Jwt.SignUser({
 			_id: user._id,
@@ -39,7 +39,7 @@ app.post('/api/register', async (req: Request, res: Response, next: NextFunction
 
 app.post('/api/login', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
 	try {
-		const user: IUser = await User.Login(req.body);
+		const user: IUser = await _User.Login(req.body);
 
 		const token: string = await Jwt.SignUser({
 			_id: user._id,
