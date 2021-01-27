@@ -454,7 +454,7 @@ export default class Game {
 			// if the other skier hits the skier, crash them both
 			if (!otherSkier.hasCollided && this.isGameObjectCollidingWithSkier(otherSkier) && this.skier.jumpOffset < 29) {
 				this.skier.isCrashed = true;
-				this.style = 0;
+				this.recordAndResetStyle();
 				otherSkier.hasCollided = true;
 				this.crashOtherSkierOnCollision(otherSkier);
 			}
@@ -521,7 +521,7 @@ export default class Game {
 			// if the snowboarder hits the skier, crash them both
 			if (!snowboarder.hasCollided && this.isGameObjectCollidingWithSkier(snowboarder) && this.skier.jumpOffset < 30) {
 				this.skier.isCrashed = true;
-				this.style = 0;
+				this.recordAndResetStyle();
 				snowboarder.hasCollided = true;
 				this.crashSnowboarderOnCollision(snowboarder);
 			}
@@ -599,6 +599,17 @@ export default class Game {
 	// make the skier slow down
 	slowOnCollision() {
 		undefined;
+	}
+
+	// send score to server and then reset back to 0
+	recordAndResetStyle() {
+		let style = Math.floor(this.style);
+		if (this.user.isLoggedIn && style > this.user.highScore) {
+			//socket.emit('new_score', { username: this.user.username, score: style });
+			this.user.highScore = style;
+			this.user.highScoreDisplay.innerText = 'high score: ' + style;
+		}
+		this.style = 0;
 	}
 
 	// return info about the instantaneous skier-to-mouse angle and velocity vectors

@@ -3,7 +3,7 @@ export default class User {
 	constructor(game) {
 		this.game = game;
 		this.images = [];
-		this.score = 0;
+		this.highScore = 0;
 		this.validateLoginToken();
 
 		this.profileButton = document.getElementById('user-profile');
@@ -39,6 +39,8 @@ export default class User {
 		this.signOutButton.owner = this;
 		this.signOutButton.onclick = this.signOutButton.owner.signOutButtonClickHandler;
 
+		this.highScoreDisplay = document.getElementById('high-score');
+
 		this.signInForm.addEventListener('submit', (e) => {
 			e.preventDefault();
 			let messages = [];
@@ -57,15 +59,16 @@ export default class User {
 				// post request to login api
 				this.game.util.request('POST', '/api/login', headers, body).then(res => {
 					console.log(res);
-					if (!res.ok) {
-						messages.push(res.data.replace(/error: /gi, ''));
-						this.signInError.innerText = messages.join('\n');
-					} else {
+					if (res.ok) {
 						window.sessionStorage.setItem('loginToken', res.data.token);
 						this.isLoggedIn = true;
 						this.hideSignInForm();
-						this.username = this.signInUsername.value;
-						this.loggedInUsername.innerText = this.username;
+						this.loggedInUsername.innerText = this.signInUsername.value;
+						this.highScore = res.data.score;
+						this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
+					} else {
+						messages.push(res.data.replace(/error: /gi, ''));
+						this.signInError.innerText = messages.join('\n');
 					}
 				}).catch(err => console.log(err));
 			}
@@ -81,6 +84,8 @@ export default class User {
 
 			if (this.registerUsername.value.length < 3) {
 				messages.push('username must be at least 3 characters');
+			} else if (this.registerUsername.value.length > 16) {
+				messages.push('username must be no more than 16 characters');
 			}
 
 			if (this.registerPassword.value.length < 8) {
@@ -102,15 +107,16 @@ export default class User {
 				// post request to register api
 				this.game.util.request('POST', '/api/register', headers, body).then(res => {
 					console.log(res);
-					if (!res.ok) {
-						messages.push(res.data.replace(/error: /gi, ''));
-						this.registerError.innerText = messages.join('\n');
-					} else {
+					if (res.ok) {
 						window.sessionStorage.setItem('loginToken', res.data.token);
 						this.isLoggedIn = true;
 						this.hideRegisterForm();
-						this.username = this.registerUsername.value;
-						this.loggedInUsername.innerText = this.username;
+						this.loggedInUsername.innerText = this.registerUsername.value;
+						this.highScore = 0;
+						this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
+					} else {
+						messages.push(res.data.replace(/error: /gi, ''));
+						this.registerError.innerText = messages.join('\n');
 					}
 				}).catch(err => console.log(err));
 			}
@@ -131,14 +137,12 @@ export default class User {
 			};
 			let body = {};
 			this.game.util.request('POST', '/api/validate', headers, body).then(res => {
-				if (!res.ok) {
-					console.log(res);
-				} else {
-					console.log(res);
+				console.log(res);
+				if (res.ok) {
 					this.isLoggedIn = true;
-					this.username = res.data.username;
-					this.loggedInUsername.innerText = this.username;
-					this.score = res.data.score;
+					this.loggedInUsername.innerText = res.data.username;
+					this.highScore = res.data.score;
+					this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
 				}
 			}).catch(err => console.log(err));
 		} else {
@@ -208,7 +212,6 @@ export default class User {
 	signOutButtonClickHandler() {
 		window.sessionStorage.removeItem('loginToken');
 		this.owner.loggedInUsername.innerText = '';
-		this.owner.username = null;
 		this.owner.isLoggedIn = false;
 		this.owner.hideLoggedInInfo();
 	}

@@ -52,7 +52,8 @@ app.post('/api/login', async (req: Request, res: Response, next: NextFunction): 
 			ok: true,
 			status: 200,
 			data: {
-				token: token
+				token: token,
+				score: user.score
 			}
 		} as IResponse);
 	} catch (error) {

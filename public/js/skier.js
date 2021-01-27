@@ -187,7 +187,7 @@ export default class Skier {
 				// crash the skier if in the middle of a trick
 				if (this.jumpStage != 1 || this.isDoingTrick1 || this.isDoingTrick2) {
 					this.isCrashed = true;
-					this.game.style = 0;
+					this.game.recordAndResetStyle();
 					this.trick1StartTime = null;
 					this.trick1EndTime = null;
 					this.trick2Times = 0;

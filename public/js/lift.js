@@ -33,7 +33,7 @@ export default class Lift {
 				if (this.game.collisionsEnabled && !tower.hasCollided) {
 					this.game.skier.isCrashed = true;
 					tower.hasCollided = true;
-					this.game.style = 0;
+					this.game.recordAndResetStyle();
 				}
 			}
 

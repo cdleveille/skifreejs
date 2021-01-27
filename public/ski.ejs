@@ -21,10 +21,12 @@
 				-webkit-transform: translateX(-50%) translateY(-50%);
 				transform: translateX(-50%) translateY(-50%);
 				z-index: 1;
+				touch-action: manipulation;
 			}
 
 			#user-section {
 				display: block;
+				touch-action: manipulation;
 			}
 
 			#user-profile {
@@ -37,6 +39,7 @@
 				cursor: pointer;
 				position: absolute;
 				z-index: 2;
+				touch-action: manipulation;
 			}
 
 			.text-input {
@@ -44,6 +47,7 @@
 				margin: 2px;
 				border: 1px solid black;
 				font-family: 'ModernDOS';
+				touch-action: manipulation;
 			}
 
 			.button {
@@ -56,6 +60,7 @@
 				cursor: pointer;
 				border-radius: 0%;
 				transition-duration: 0.4s;
+				touch-action: manipulation;
 			}
 
 			.button:hover {
@@ -123,8 +128,8 @@
 					<div>
 						<input id="sign-in-password" class="text-input" name="sign-in-password" placeholder="password" type="password" required>
 					</div>
+					<button type="submit" class="button">Sign In</button>
 					<div id="sign-in-error" class="form-error"></div>
-					<button type="submit" style="display: none;"></button>
 				</form>
 			</div>
 			<div id="register-form-section" class="user-panel">
@@ -138,12 +143,13 @@
 					<div>
 						<input id="register-password" class="text-input" name="password" placeholder="password" type="password" required>
 					</div>
+					<button type="submit" class="button">Register</button>
 					<div id="register-error" class="form-error"></div>
-					<input type="submit" style="display: none;">
 				</form>
 			</div>
 			<div id="logged-in-info-section" class="user-panel">
 				<div id="logged-in-username" style="margin: 2px;"></div>
+				<div id="high-score" style="margin: 2px;"></div>
 				<div>
 					<button id="sign-out-btn" class="button" type="button">Sign Out</button>
 				</div>
