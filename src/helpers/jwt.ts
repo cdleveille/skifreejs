@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dateFormat from 'dateformat';
 import config from './config';
-import { IJWT, IJwtPayload } from '../types/IGeneric';
+import { IJWT, IJwtPayload } from '../types/Abstract';
 
 export default class Jwt {
 
