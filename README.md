@@ -14,7 +14,7 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
 
 ### PC Controls:
 - While Skiing:
-    - Move mouse: steer skier
+    - Move mouse: steer
     - Left click: jump
 - While Stopped:
     - A: skate left
@@ -22,7 +22,7 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
 - While Crashed:
     - Left click: stand up
 - While Jumping:
-    - Left click (repeat): backflip
+    - Left click: advance backflip stage
     - Right click (hold): trick 1
     - Move mouse above skier: trick 2
 - General:
@@ -33,10 +33,10 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
 
 ### Mobile Controls:
 - While Skiing:
-    - Touch screen below skier (tap/drag): steer skier
-    - Touch screen above skier (tap): jump
+    - Touch below skier: steer
+    - Touch above skier: jump
 - While Crashed:
-    - Touch screen anywhere: stand up
+    - Touch below skier: stand up
 - While Jumping:
-    - Touch screen above skier (tap): backflip
-    - Touch screen below skier (hold): trick 1
+    - Touch above skier (hold): trick 1
+    - Touch below skier: advance backflip stage
