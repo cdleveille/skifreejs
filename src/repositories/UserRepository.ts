@@ -47,6 +47,10 @@ class UserRepository extends Base {
 			const exists = await User.findOne({ username: user.username, _id: user._id });
 			if (!exists) throw Error('user not found');
 
+			if (user.score <= exists.score) {
+				return exists;
+			}
+
 			exists.score = user.score;
 			exists.isNew = false;
 			return await exists.save();
