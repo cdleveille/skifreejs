@@ -1,5 +1,6 @@
 import User, { IUser } from '../models/User';
 import Password from '../helpers/password';
+import { INewScore } from '../types/ISocket';
 import Base from './abstract/UserRepositoryBase';
 
 class UserRepository extends Base {
@@ -41,13 +42,10 @@ class UserRepository extends Base {
 		}
 	}
 
-	public async UpdateScore(user: IUser): Promise<IUser> {
+	public async UpdateScore(user: INewScore): Promise<IUser> {
 		try {
-			const exists = await User.findOne({ username: user.username });
-			if (!exists) throw Error('username not found');
-
-			const pass = await Password.compare(user.password, exists.password);
-			if (!pass) throw Error('incorrect password');
+			const exists = await User.findOne({ username: user.username, _id: user._id });
+			if (!exists) throw Error('user not found');
 
 			exists.score = user.score;
 			exists.isNew = false;
