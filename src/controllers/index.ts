@@ -3,7 +3,7 @@ import app from '../services/server';
 import { _User } from '../repositories/UserRepository';
 import IResponse from '../types/IResponse';
 import { IUser } from '../models/User';
-import T, { IJwtPayload } from '../types/Abstract';
+import T, { IJwtPayload, ILeaderBoard } from '../types/Abstract';
 import validate from '../middleware/jwt';
 import { Errors } from '../types/Constants';
 import Jwt from '../helpers/jwt';
@@ -67,6 +67,21 @@ app.post('/api/validate', validate, async (req: Request, res: Response): Promise
 		status: 200,
 		data: res.locals.jwt
 	} as IResponse);
+});
+
+app.get('/api/leaderboard/:limit', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+	const limit: number = parseInt(req.params.limit);
+	try {
+		const leaderboard: ILeaderBoard = await _User.LeaderBoard(limit);
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: leaderboard
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
 });
 
 export default app;
