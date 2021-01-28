@@ -12,7 +12,7 @@ export default class Game {
 		this.user = new User(this);
 		this.skier = new Skier(this);
 		this.lift = new Lift(this);
-		this.resCoefficient = 1 / 25000;
+		this.resCoefficient = 1 / 18000;
 		this.objectFreq = {
 			treeSmallFreq: [24, 'tree_small'],
 			treeLargeFreq: [12, 'tree_large'],
@@ -132,7 +132,7 @@ export default class Game {
 	calculateGameObjectCount() {
 		let area = window.innerWidth * window.innerHeight;
 		this.gameObjectCount = Math.floor(area * this.resCoefficient);
-		//console.log('game object count: ' + this.gameObjectCount);
+		console.log('game object count: ' + this.gameObjectCount);
 	}
 
 	// create array to manage the weighted frequencies of the different game object types
@@ -183,11 +183,11 @@ export default class Game {
 	}
 
 	getRandomCoordinateOnScreen() {
-		let space = 80, width = window.innerWidth, height = window.innerHeight;
+		let space = 80, width = window.innerWidth, height = this.gameHeight;
 		let searching = true, attempts = 0, maxAttempts = 10, xy;
 
 		while (searching && attempts < maxAttempts) {
-			xy = { x: this.util.randomInt(-width / 2 - space, width / 2), y: this.util.randomInt(-height / 3 - space, height * 2 / 3) };
+			xy = getCoordinateHelper(this.util.randomInt);
 			if (!this.isLocationOccupiedByGameObject(xy, this.util.getDistanceBetweenPoints)) {
 				searching = false;
 				break;
@@ -196,30 +196,42 @@ export default class Game {
 			}
 		}
 		return xy;
+
+		function getCoordinateHelper(randomIntFunc) {
+			return { x: randomIntFunc(-width * 3 / 4, width * 3 / 4), y: randomIntFunc(-height / 3 - space, height) };
+		}
 	}
 
 	// get an x/y coordinate pair for a location nearby offscreen
 	getRandomCoordinateOffScreen() {
 		let space = 80, width = window.innerWidth, height = this.gameHeight;
+		let searching = true, attempts = 0, maxAttempts = 10, xy;
 
-		let xy = { x: this.util.randomInt(-width / 2 - space, width / 2), y: this.util.randomInt(-height / 3 - space, height * 2 / 3) };
-
-		// if coordinate would be onscreen, spawn it nearby offscreen instead
-		if (xy.x > -width / 2 - space && xy.x < width / 2 &&
-			xy.y > -height / 3 - space && xy.y < height * 2 / 3) {
-			switch (this.util.randomInt(0, 3)) {
-			case 0:
-				xy.x = -width / 2 - space;
+		while (searching && attempts < maxAttempts) {
+			xy = getCoordinateHelper(this.util.randomInt);
+			if (!this.isLocationOccupiedByGameObject(xy, this.util.getDistanceBetweenPoints)) {
+				searching = false;
 				break;
-			case 1:
-				xy.x = width / 2;
-				break;
-			default:
-				xy.y = height * 2 / 3;
-				break;
+			} else {
+				attempts++;
 			}
 		}
+
 		return xy;
+
+		function getCoordinateHelper(randomIntFunc) {
+			switch (randomIntFunc(0, 3)) {
+			case 0:
+				// offscreen left
+				return { x: randomIntFunc(-width * 3 / 4, -width / 2 - space), y: randomIntFunc(-height / 3 - space, height * 2 / 3) };
+			case 1:
+				// offscreen right
+				return { x: randomIntFunc(width / 2, width * 3 / 4), y: randomIntFunc(-height / 3 - space, height * 2 / 3) };
+			default:
+				// offscreen down
+				return { x: randomIntFunc(-width * 3 / 4, width * 3 / 4), y: randomIntFunc(height * 2 / 3, height) };
+			}
+		}
 	}
 
 	// spawn a new game object of specified type at the specified coordinates
@@ -387,9 +399,10 @@ export default class Game {
 
 	// return true if the given game object is offscreen uphill or is far enough away horizontally
 	hasGameObjectBeenPassed(object) {
-		return object.y < -window.innerHeight / 3 - 80 ||
-				object.x < -window.innerWidth / 2 - 80 ||
-				object.x > window.innerWidth / 2;
+		let space = 80, width = window.innerWidth, height = window.innerHeight;
+		return object.y < -height / 3 - space
+			|| object.x < -width * 3 / 4
+			|| object.x > width * 3 / 4;
 	}
 
 	// update image, velocity, and position of the other skiers
