@@ -1,13 +1,18 @@
+import path from 'path';
+import { cwd } from 'process';
+import express, { Request, Response } from 'express';
+
 import config from './helpers/config';
 import connect from './services/db';
-import path from 'path';
-import express, { Request, Response } from 'express';
 import app from './controllers/index';
-import { cwd } from 'process';
 import logger from './services/logger';
-import { INewScore } from './types/ISocket';
 import log from './services/logger';
+import { _User } from './repositories/UserRepository';
 import errorHandler from './middleware/errorHandler';
+import { INewScore } from './types/ISocket';
+import { IJwtPayload, IResponse } from './types/Abstract';
+import { IUser } from './models/User';
+import Jwt from './helpers/jwt';
 
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -31,9 +36,23 @@ app.get('*', async (req: Request, res: Response): Promise<Response> => {
 
 // new websocket connection
 io.on('connection', (socket: any) => {
-	socket.on('new_score', (payload: INewScore) => {
+	socket.on('new_score', async (payload: INewScore) => {
 		// maybe run some checks here
-		logger.info({ data: payload, id: socket.id });
+		try {
+			const newScore: IUser = await _User.UpdateScore(payload);
+
+			const token: string = await Jwt.SignUser({
+				_id: newScore._id,
+				email: newScore.email,
+				username: newScore.username,
+				score: newScore.score
+			} as IJwtPayload);
+			// there should be a handler here on the client
+			// which does something with their new high score
+			await socket.emit('updated_score', { ok: true, status: 200, data: token } as IResponse);
+		} catch (error) {
+			await socket.emit('updated_score', { ok: false, status: 403, data: error } as IResponse);
+		}
 	});
 });
 
