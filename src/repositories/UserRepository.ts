@@ -2,6 +2,7 @@ import User, { IUser } from '../models/User';
 import Password from '../helpers/password';
 import { INewScore } from '../types/ISocket';
 import Base from './abstract/UserRepositoryBase';
+import { ILeaderBoard } from '../types/Abstract';
 
 class UserRepository extends Base {
 
@@ -54,6 +55,20 @@ class UserRepository extends Base {
 			exists.score = user.score;
 			exists.isNew = false;
 			return await exists.save();
+		} catch (e) {
+			throw Error(e);
+		}
+	}
+
+	public async LeaderBoard(limit: number): Promise<ILeaderBoard> {
+		try {
+			let lim: number;
+			if (limit > 10 || !limit || limit == undefined) {
+				lim = 10;
+			}
+			else lim = limit;
+
+			return await User.find({}, { username: 1, score: 1, _id: 0 }).sort({ score: -1 }).limit(lim);
 		} catch (e) {
 			throw Error(e);
 		}

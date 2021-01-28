@@ -29,3 +29,7 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/api/validate
 Authorization: Bearer token
+
+###
+GET http://localhost:3000/api/leaderboard/2
+

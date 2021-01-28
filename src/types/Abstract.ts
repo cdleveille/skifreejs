@@ -1,8 +1,15 @@
 /* eslint-disable no-unused-vars */
+import { IUser } from '../models/User';
+
 const enum IGeneric {
 	string = 'string',
 	number = 'number',
 	boolean = 'boolean'
+}
+
+
+export interface ILeaderBoard {
+	[index: number]: IUser
 }
 
 export interface IResponse {
