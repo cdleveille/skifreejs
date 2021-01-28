@@ -36,6 +36,11 @@ export default class Util {
 			rect1.y + rect1.height > rect2.y);
 	}
 
+	// return the direct distance between the two specified coordinate points
+	getDistanceBetweenPoints(x1, y1, x2, y2) {
+		return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+	}
+
 	// get the current time (high precision)
 	timestamp() {
 		return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();

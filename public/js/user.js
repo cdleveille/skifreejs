@@ -3,9 +3,51 @@ export default class User {
 	constructor(game) {
 		this.game = game;
 		this.images = [];
-		this.highScore = 0;
 		this.validateLoginToken();
+		this.getHTMLElements();
+		this.createFormSubmitEventListeners();
+		this.setProfileButtonPosition();
+	}
 
+	loadAssets() {
+		this.logged_in = this.game.util.loadImage('/img/logged_in.png', this);
+		this.logged_out = this.game.util.loadImage('/img/logged_out.png', this);
+	}
+
+	setProfileButtonPosition() {
+		let leftEdgeX = this.game.gameWidth > window.innerWidth ? (Math.floor((this.game.gameWidth - window.innerWidth) / 2.0)) : 0;
+		let topEdgeY = this.game.gameHeight > window.innerHeight ? (Math.floor((this.game.gameHeight - window.innerHeight) / 2.0)) : 0;
+		let cornerOffset = 2;
+		this.x = leftEdgeX + cornerOffset;
+		this.y = topEdgeY + cornerOffset;
+		this.profileButton.style.top = cornerOffset + 'px';
+		this.profileButton.style.left = cornerOffset + 'px';
+	}
+
+	validateLoginToken() {
+		let loginToken = window.sessionStorage.getItem('loginToken');
+
+		if (loginToken) {
+			let headers = {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${loginToken}`
+			};
+			let body = {};
+			this.game.util.request('POST', '/api/validate', headers, body).then(res => {
+				console.log(res);
+				if (res.ok) {
+					this.isLoggedIn = true;
+					this.loggedInUsername.innerText = res.data.username;
+					this.highScore = res.data.score;
+					this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
+				}
+			}).catch(err => console.log(err));
+		} else {
+			this.isLoggedIn = false;
+		}
+	}
+
+	getHTMLElements() {
 		this.profileButton = document.getElementById('user-profile');
 		this.profileButton.owner = this;
 		this.profileButton.onclick = this.profileButton.owner.userProfileButtonClickHandler;
@@ -40,7 +82,9 @@ export default class User {
 		this.signOutButton.onclick = this.signOutButton.owner.signOutButtonClickHandler;
 
 		this.highScoreDisplay = document.getElementById('high-score');
+	}
 
+	createFormSubmitEventListeners() {
 		this.signInForm.addEventListener('submit', (e) => {
 			e.preventDefault();
 			let messages = [];
@@ -121,48 +165,6 @@ export default class User {
 				}).catch(err => console.log(err));
 			}
 		});
-	}
-
-	init() {
-		this.setProfileButtonPosition();
-	}
-
-	validateLoginToken() {
-		let loginToken = window.sessionStorage.getItem('loginToken');
-
-		if (loginToken) {
-			let headers = {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${loginToken}`
-			};
-			let body = {};
-			this.game.util.request('POST', '/api/validate', headers, body).then(res => {
-				console.log(res);
-				if (res.ok) {
-					this.isLoggedIn = true;
-					this.loggedInUsername.innerText = res.data.username;
-					this.highScore = res.data.score;
-					this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
-				}
-			}).catch(err => console.log(err));
-		} else {
-			this.isLoggedIn = false;
-		}
-	}
-
-	loadAssets() {
-		this.logged_in = this.game.util.loadImage('/img/logged_in.png', this);
-		this.logged_out = this.game.util.loadImage('/img/logged_out.png', this);
-	}
-
-	setProfileButtonPosition() {
-		let leftEdgeX = this.game.gameWidth > window.innerWidth ? (Math.floor((this.game.gameWidth - window.innerWidth) / 2.0)) : 0;
-		let topEdgeY = this.game.gameHeight > window.innerHeight ? (Math.floor((this.game.gameHeight - window.innerHeight) / 2.0)) : 0;
-		let cornerOffset = 2;
-		this.x = leftEdgeX + cornerOffset;
-		this.y = topEdgeY + cornerOffset;
-		this.profileButton.style.top = cornerOffset + 'px';
-		this.profileButton.style.left = cornerOffset + 'px';
 	}
 
 	userProfileButtonClickHandler() {

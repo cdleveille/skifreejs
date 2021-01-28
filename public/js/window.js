@@ -6,17 +6,17 @@ export default class WindowHandler {
 		}
 
 		window.addEventListener('resize', function () {
-			let [x, y] = resizeCanvas();
-			canvas.style.width = x + 'px';
-			canvas.style.height = y + 'px';
-
+			let [width, height] = resizeCanvas();
 			let scale = window.devicePixelRatio;
-			[canvas.width, canvas.height] = [x * scale, y * scale];
+
+			canvas.style.width = width + 'px';
+			canvas.style.height = height + 'px';
+			[canvas.width, canvas.height] = [width * scale, height * scale];
 			
-			game.resize(canvas.width, canvas.height);
+			game.resizeCanvas(canvas.width, canvas.height);
 		});
 
 		[canvas.width, canvas.height] = resizeCanvas();
-		game.resize(canvas.width, canvas.height);
+		game.resizeCanvas(canvas.width, canvas.height);
 	}
 }

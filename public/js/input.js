@@ -1,6 +1,10 @@
 /* eslint-disable no-undef */
 export default class InputHandler {
 	constructor(canvas, game) {
+		canvas.oncontextmenu = function (e) {
+			e.preventDefault();
+		};
+		
 		if (!game.util.isOnMobile()) {
 			canvas.addEventListener('mousemove', (event) => {
 				game.mousePos.x = event.clientX - ((window.innerWidth - canvas.width) / 2);
@@ -82,6 +86,7 @@ export default class InputHandler {
 					break;
 				case f2:
 					game.init();
+					game.setUpGameObjectsOnScreen();
 					break;
 				case c:
 					if (!this.isTextInputActive()) {

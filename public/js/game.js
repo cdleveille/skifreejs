@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable no-case-declarations */
 import Lift from './lift.js';
 import Skier from './skier.js';
 import User from './user.js';
@@ -10,20 +12,22 @@ export default class Game {
 		this.user = new User(this);
 		this.skier = new Skier(this);
 		this.lift = new Lift(this);
-		this.treeSmallDensity = 0.6;
-		this.treeLargeDensity = 0.3;
-		this.treeBareDensity = 0.1;
-		this.bumpGroupDensity = 0.2;
-		this.bumpSmallDensity = 0.2;
-		this.bumpLargeDensity = 0.2;
-		this.rockDensity = 0.05;
-		this.stumpDensity = 0.05;
-		this.jumpDensity = 0.05;
-		this.otherSkierDensity = 0.05;
-		this.snowboarderDensity = 0.05;
+		this.resCoefficient = 1 / 25000;
+		this.objectFreq = {
+			treeSmallFreq: [24, 'tree_small'],
+			treeLargeFreq: [12, 'tree_large'],
+			treeBareFreq: [12, 'tree_bare'],
+			bumpGroupFreq: [12, 'bump_group'],
+			bumpSmallFreq: [12, 'bump_small'],
+			bumpLargeFreq: [12, 'bump_large'],
+			rockFreq: [4, 'rock'],
+			stumpFreq: [4, 'stump'],
+			jumpFreq: [4, 'jump']
+		};
+		this.otherSkierFreq = 0.00;
+		this.snowboarderFreq = 0.00;
 		this.jumpVBase = 0.7;
 		this.jumpVMult = 0.0022;
-		this.resCoefficient = 1 / 25000.0;
 		this.collisionsEnabled = true;
 		this.doImageLoadCheck = true;
 		this.hideHUD = false;
@@ -37,7 +41,6 @@ export default class Game {
 	init() {
 		this.gameWidth = Math.max(screen.width, window.innerWidth);
 		this.gameHeight = Math.max(screen.height, window.innerHeight);
-		this.user.init();
 		this.skier.init();
 		this.lift.init();
 		this.isPaused = false;
@@ -46,36 +49,15 @@ export default class Game {
 		this.style = 0;
 		this.mousePos = {x: 0, y: 0};
 		this.startTime = this.util.timestamp();
-		this.currentTime = this.startTime;
 		this.timestampFire = this.startTime;
 		this.timestampPaused = this.startTime;
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
-		this.calculateGameObjectCounts();
-
-		// spawn game objects on and around the game screen for start of game
-		this.treesSmall = this.initGameObjectsAtStart('tree_small', this.treeSmallCount);
-		this.treesLarge = this.initGameObjectsAtStart('tree_large', this.treeLargeCount);
-		this.treesBare = this.initGameObjectsAtStart('tree_bare', this.treeBareCount);
-		this.bumpsGroup = this.initGameObjectsAtStart('bump_group', this.bumpGroupCount);
-		this.bumpsSmall = this.initGameObjectsAtStart('bump_small', this.bumpSmallCount);
-		this.bumpsLarge = this.initGameObjectsAtStart('bump_large', this.bumpLargeCount);
-		this.rocks = this.initGameObjectsAtStart('rock', this.rockCount);
-		this.jumps = this.initGameObjectsAtStart('jump', this.jumpCount);
-		this.stumps = this.initGameObjectsAtStart('stump', this.stumpCount);
-		this.otherSkiers =  this.initGameObjectsAtStart('other_skier', this.otherSkierCount);
-		this.snowboarders = this.initGameObjectsAtStart('snowboarder', this.snowboarderCount);
-
-		console.log(this.treesSmall.length);
-
-		this.clearSpawnArea();
 	}
 
 	// load game assets
 	loadAssets() {
-		this.loadFont();
-
 		this.tree_small = this.util.loadImage('/img/tree_small.png', this);
 		this.tree_large = this.util.loadImage('/img/tree_large.png', this);
 		this.tree_bare = this.util.loadImage('/img/tree_bare.png', this);
@@ -95,13 +77,14 @@ export default class Game {
 		this.snowboarder_right = this.util.loadImage('/img/snowboarder_right.png', this);
 		this.snowboarder_crash = this.util.loadImage('/img/snowboarder_crash.png', this);
 
+		this.loadFont();
 		this.user.loadAssets();
 		this.skier.loadAssets();
 		this.lift.loadAssets();
 		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images);
 	}
 
-	// load the font family used for the in-game hud
+	// load the font family used for the game hud
 	loadFont() {
 		this.font = new FontFace('ModernDOS', 'url(../font/ModernDOS8x16.ttf)');
 		this.font.load().then(function (loaded_face) {
@@ -112,111 +95,8 @@ export default class Game {
 		});
 	}
 
-	// clear any collidable game objects from the skier spawn area
-	clearSpawnArea() {
-		let dist = 100;
-		let collidables = [this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.stumps, this.jumps, this.otherSkiers, this.snowboarders];
-		for (let i = 0; i < collidables.length; i++) {
-			let gameObjects = collidables[i];
-			for (let j = 0; j < gameObjects.length; j++) {
-				let object = gameObjects[j];
-				if (object.x > -dist && object.x < dist && object.y > -dist && object.y < dist) {
-					let distToMove = 2 * dist - (Math.abs(object.y - dist));
-					if (typeof object.isCrashed !== 'undefined') {
-						object.y += distToMove;
-					} else {
-						object.y -= distToMove;
-					}
-				}
-			}
-		}
-	}
-
-	// spawn the specified number of the specified type of game object on and around the screen at start of game
-	initGameObjectsAtStart(type, count) {
-		let gameObjects = [];
-		for (let n = 0; n < count; n++) {
-			let x = this.util.randomInt(-window.innerWidth * 3 / 2, window.innerWidth * 3 / 2);
-			let y = this.util.randomInt(-window.innerHeight * 1 / 3, window.innerHeight * 5 / 3);
-
-			gameObjects.push(this.spawnNewGameObject(type, x, y));
-		}
-		return gameObjects;
-	}
-
-	// spawn a new object of the given type in a random location offscreen
-	spawnNewGameObjectOffScreen(type) {
-		let xy = this.getRandomCoordinateOffScreen();
-		return this.spawnNewGameObject(type, xy.x, xy.y);
-	}
-
-	// get an x/y coordinate pair for a location nearby offscreen
-	getRandomCoordinateOffScreen(canSpawnAbove) {
-		let width = window.innerWidth;
-		let height = window.innerHeight;
-		let upperBound = canSpawnAbove ? -height * 4 / 3 : -height / 3;
-	
-		let x = this.util.randomInt(-width * 3 / 2, width * 3 / 2);
-		let y = this.util.randomInt(upperBound, height * 5 / 3);
-		let space = 80;
-
-		// if coordinate would be onscreen, spawn it nearby offscreen instead
-		if (x > -width / 2 - space && x < width / 2 &&
-			y > -height / 3 - space && y < height * 2 / 3) {
-			switch (this.util.randomInt(0, 5)) {
-			case 0:
-				x -= (width + space);
-				break;
-			case 1:
-				x -= (width + space);
-				y += (height + space);
-				break;
-			case 2:
-				y += (height + space);
-				break;
-			case 3:
-				x += (width + space);
-				y += (height + space);
-				break;
-			default:
-				x += (width + space);
-			}
-		}
-		return {x: x, y: y};
-	}
-
-	// spawn a new game object of specified type at the specified coordinates
-	spawnNewGameObject(type, x, y) {
-		switch (type) {
-		case 'bump_group':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 64, hbHeight: 32, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_group };
-		case 'bump_small':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 4, jumpOverHeight: 4, onCollision: this.slowOnCollision, img: this.bump_small };
-		case 'bump_large':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 24, hbHeight: 8, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_large };
-		case 'tree_small':
-			return { game: this, x: x, y: y, hbXOffset: 8, hbYOffset: 22, hbWidth: 14, hbHeight: 10, jumpOverHeight: 32, hasCollided: false, onCollision: this.crashOnCollision, otherSkierCanCrashInto: true, img: this.tree_small, drawThresholdY: -5 };
-		case 'tree_large':
-			return { game: this, x: x, y: y, hbXOffset: 9, hbYOffset: 52, hbWidth: 15, hbHeight: 12, jumpOverHeight: 64, hasCollided: false, onCollision: this.crashOnCollision, otherSkierCanCrashInto: true, img: this.tree_large, drawThresholdY: -37 };
-		case 'tree_bare':
-			return { game: this, x: x, y: y, hbXOffset: 7, hbYOffset: 18, hbWidth: 9, hbHeight: 9, jumpOverHeight: 27, hasCollided: false, onCollision: this.crashOnCollision, otherSkierCanCrashInto: true, img: this.tree_bare, drawThresholdY: 1 , isOnFire: false};
-		case 'rock':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 23, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, otherSkierCanCrashInto: true, img: this.rock };
-		case 'jump':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 32, hbHeight: 8, jumpOverHeight: 8, hasCollided: false, onCollision: this.jumpOnCollision, img: this.jump };
-		case 'stump':
-			return { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, otherSkierCanCrashInto: true, img: this.stump };
-		case 'other_skier':
-			return { x: x, y: y, xv: 0, yv: 0.1, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 13, hbWidth: 11, hbHeight: 11, hasCollided: false, isCrashed: false, timestamp: this.startTime + this.util.randomInt(0, 1000), img: this.otherSkier3 };
-		case 'snowboarder':
-			return { x: x, y: y, xv: -0.25, yv: 0.75, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 16, hbWidth: 13, hbHeight: 9, hasCollided: false, isCrashed: false, timestamp: this.startTime + this.util.randomInt(0, 1000), img: this.snowboarder_left };
-		default:
-			throw('Error! Invalid game object type: ' + type);
-		}
-	}
-
 	// adapt game to the size of the window
-	resize(newWidth, newHeight) {
+	resizeCanvas(newWidth, newHeight) {
 		this.gameWidth = newWidth;
 		this.gameHeight = newHeight;
 
@@ -224,77 +104,180 @@ export default class Game {
 		this.skier.y = this.gameHeight / 3;
 
 		this.user.setProfileButtonPosition();
-
-		this.adaptGameObjectCountToScreenSize();
+		this.setUpGameObjectsOnScreen();
 	}
 
-	// determine the target number of game objects of each type proportional to total game screen area
-	calculateGameObjectCounts() {
+	// initialize game objects on screen at start of game
+	setUpGameObjectsOnScreen() {
+		this.treesSmall = [];
+		this.treesLarge = [];
+		this.treesBare = [];
+		this.bumpsGroup = [];
+		this.bumpsSmall = [];
+		this.bumpsLarge = [];
+		this.rocks = [];
+		this.jumps = [];
+		this.stumps = [];
+		this.otherSkiers = [];
+		this.snowboarders = [];
+
+		this.calculateGameObjectCount();
+		for (let n = 0; n < this.gameObjectCount; n++) {
+			let type = this.getRandomGameObjectType();
+			this.spawnNewGameObjectOnScreen(type);
+		}
+	}
+
+	// determine the total number of game objects proportional to game window area
+	calculateGameObjectCount() {
 		let area = window.innerWidth * window.innerHeight;
-		this.treeSmallCount = Math.floor(area * this.resCoefficient * this.treeSmallDensity);
-		this.treeLargeCount = Math.floor(area * this.resCoefficient * this.treeLargeDensity);
-		this.treeBareCount = Math.floor(area * this.resCoefficient * this.treeBareDensity);
-		this.bumpGroupCount = Math.floor(area * this.resCoefficient * this.bumpGroupDensity);
-		this.bumpSmallCount = Math.floor(area * this.resCoefficient * this.bumpSmallDensity);
-		this.bumpLargeCount = Math.floor(area * this.resCoefficient * this.bumpLargeDensity);
-		this.rockCount = Math.floor(area * this.resCoefficient * this.rockDensity);
-		this.jumpCount = Math.floor(area * this.resCoefficient * this.jumpDensity);
-		this.stumpCount = Math.floor(area * this.resCoefficient * this.stumpDensity);
-		this.otherSkierCount = Math.floor(area * this.resCoefficient * this.otherSkierDensity);
-		this.snowboarderCount = Math.floor(area * this.resCoefficient * this.snowboarderDensity);
+		this.gameObjectCount = Math.floor(area * this.resCoefficient);
+		//console.log('game object count: ' + this.gameObjectCount);
 	}
 
-	// trim or add new game objects proportionally to the size of the window
-	adaptGameObjectCountToScreenSize() {
-		this.calculateGameObjectCounts();
-		this.correctGameObjectCount(this.treesSmall, this.treeSmallCount, 'tree_small');
-		this.correctGameObjectCount(this.treesLarge, this.treeLargeCount, 'tree_large');
-		this.correctGameObjectCount(this.treesBare, this.treeBareCount, 'tree_bare');
-		this.correctGameObjectCount(this.bumpsGroup, this.bumpGroupCount, 'bump_group');
-		this.correctGameObjectCount(this.bumpsSmall, this.bumpSmallCount, 'bump_small');
-		this.correctGameObjectCount(this.bumpsLarge, this.bumpLargeCount, 'bump_large');
-		this.correctGameObjectCount(this.rocks, this.rockCount, 'rock');
-		this.correctGameObjectCount(this.jumps, this.jumpCount, 'jump');
-		this.correctGameObjectCount(this.stumps, this.stumpCount, 'stump');
-		this.correctGameObjectCount(this.otherSkiers, this.otherSkierCount, 'other_skier');
-		this.correctGameObjectCount(this.snowboarders, this.snowboarderCount, 'snowboarder');
-	}
-
-	// trim or add new game objects until desired count matches actual
-	correctGameObjectCount(gameObjects, desiredCount, type) {
-		let diff = Math.abs(gameObjects.length - desiredCount);
-		let width = window.innerWidth;
-		let height = window.innerHeight;
-
-		// trim excess offscreen objects
-		if (gameObjects.length > desiredCount) {
-			for (let i = 0; i < gameObjects.length; i++) {
-				let trimmedCount = 0;
-				let x = gameObjects[i].x;
-				let y = gameObjects[i].y;
-
-				// remove the object if it is offscreen
-				if (!(x > -width / 2 && x < width / 2 &&
-					y > -height / 3 && y < height * 2 / 3)) {
-					gameObjects.splice(i, 1);
-					trimmedCount++;
+	// create array to manage the weighted frequencies of the different game object types
+	createGameObjectFreqArray() {
+		this.objectFreqArray = [];
+		for (let key in this.objectFreq) {
+			if (this.objectFreq.hasOwnProperty(key)) {
+				let count = this.objectFreq[key][0];
+				for (let n = 0; n < count; n++) {
+					this.objectFreqArray.push(this.objectFreq[key][1]);
 				}
-
-				if (trimmedCount >= diff) {
-					break;
-				}
-			}
-		// add new objects offscreen
-		} else if (gameObjects.length < desiredCount) {
-			for (let n = 0; n < diff; n++) {
-				gameObjects.push(this.spawnNewGameObjectOffScreen(type));
 			}
 		}
 	}
 
+	// return a random game object type, weighted based on the frequency value for each type
+	getRandomGameObjectType() {
+		if (!this.objectFreqArray) {
+			this.createGameObjectFreqArray();
+		}
+		let i = this.util.randomInt(0, this.objectFreqArray.length);
+		return this.objectFreqArray[i];
+	}
+
+	spawnNewGameObjectOnScreen(type) {
+		let xy = this.getRandomCoordinateOnScreen();
+		return this.spawnNewGameObject(type, xy.x, xy.y);
+	}
+
+	// determine whether or not a game object is occupying the specified location
+	isLocationOccupiedByGameObject(xy, getDistanceBetweenPointsFunc) {
+		let gameObjectsListsToCheck = [[{ x: 0, y: 0 }], this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.jumps, this.stumps, this.lift.liftTowers];
+		for (let i = 0; i < gameObjectsListsToCheck.length; i++) {
+			let gameObjectList = gameObjectsListsToCheck[i];
+			if (locationOccupiedHelper(gameObjectList)) return true;
+		}
+		return false;
+
+		function locationOccupiedHelper(gameObjectList) {
+			let minSpaceBetween = 80;
+			for (let i = 0; i < gameObjectList.length; i++) {
+				let obj = gameObjectList[i];
+				let dist = getDistanceBetweenPointsFunc(xy.x, xy.y, obj.x, obj.y);
+				if (dist < minSpaceBetween) return true;
+			}
+			return false;
+		}
+	}
+
+	getRandomCoordinateOnScreen() {
+		let space = 80, width = window.innerWidth, height = window.innerHeight;
+		let searching = true, attempts = 0, maxAttempts = 10, xy;
+
+		while (searching && attempts < maxAttempts) {
+			xy = { x: this.util.randomInt(-width / 2 - space, width / 2), y: this.util.randomInt(-height / 3 - space, height * 2 / 3) };
+			if (!this.isLocationOccupiedByGameObject(xy, this.util.getDistanceBetweenPoints)) {
+				searching = false;
+				break;
+			} else {
+				attempts++;
+			}
+		}
+		return xy;
+	}
+
+	// get an x/y coordinate pair for a location nearby offscreen
+	getRandomCoordinateOffScreen() {
+		let space = 80, width = window.innerWidth, height = this.gameHeight;
+
+		let xy = { x: this.util.randomInt(-width / 2 - space, width / 2), y: this.util.randomInt(-height / 3 - space, height * 2 / 3) };
+
+		// if coordinate would be onscreen, spawn it nearby offscreen instead
+		if (xy.x > -width / 2 - space && xy.x < width / 2 &&
+			xy.y > -height / 3 - space && xy.y < height * 2 / 3) {
+			switch (this.util.randomInt(0, 3)) {
+			case 0:
+				xy.x = -width / 2 - space;
+				break;
+			case 1:
+				xy.x = width / 2;
+				break;
+			default:
+				xy.y = height * 2 / 3;
+				break;
+			}
+		}
+		return xy;
+	}
+
+	// spawn a new game object of specified type at the specified coordinates
+	spawnNewGameObject(type, x, y) {
+		let newObj;
+		switch (type) {
+		case 'bump_group':
+			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 64, hbHeight: 32, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_group };
+			this.bumpsGroup.push(newObj);
+			break;
+		case 'bump_small':
+			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 4, jumpOverHeight: 4, onCollision: this.slowOnCollision, img: this.bump_small };
+			this.bumpsSmall.push(newObj);
+			break;
+		case 'bump_large':
+			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 24, hbHeight: 8, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_large };
+			this.bumpsLarge.push(newObj);
+			break;
+		case 'tree_small':
+			newObj = { game: this, x: x, y: y, hbXOffset: 8, hbYOffset: 22, hbWidth: 14, hbHeight: 10, jumpOverHeight: 32, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.tree_small, drawThresholdY: -5 };
+			this.treesSmall.push(newObj);
+			break;
+		case 'tree_large':
+			newObj = { game: this, x: x, y: y, hbXOffset: 9, hbYOffset: 52, hbWidth: 15, hbHeight: 12, jumpOverHeight: 64, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.tree_large, drawThresholdY: -37 };
+			this.treesLarge.push(newObj);
+			break;
+		case 'tree_bare':
+			newObj = { game: this, x: x, y: y, hbXOffset: 7, hbYOffset: 18, hbWidth: 9, hbHeight: 9, jumpOverHeight: 27, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.tree_bare, drawThresholdY: 1 , isOnFire: false};
+			this.treesBare.push(newObj);
+			break;
+		case 'rock':
+			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 23, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.rock };
+			this.rocks.push(newObj);
+			break;
+		case 'jump':
+			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 32, hbHeight: 8, jumpOverHeight: 8, hasCollided: false, onCollision: this.jumpOnCollision, img: this.jump };
+			this.jumps.push(newObj);
+			break;
+		case 'stump':
+			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.stump };
+			this.stumps.push(newObj);
+			break;
+		case 'other_skier':
+			return { x: x, y: y, xv: 0, yv: 0.1, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 13, hbWidth: 11, hbHeight: 11, hasCollided: false, isCrashed: false, timestamp: this.startTime + this.util.randomInt(0, 1000), img: this.otherSkier3 };
+		case 'snowboarder':
+			return { x: x, y: y, xv: -0.25, yv: 0.75, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 16, hbWidth: 13, hbHeight: 9, hasCollided: false, isCrashed: false, timestamp: this.startTime + this.util.randomInt(0, 1000), img: this.snowboarder_left };
+		default:
+			console.log('Invalid game object type: ' + type);
+		}
+		return newObj;
+	}
+
+	
+
 	// update the gamestate
-	update(step) {
-		this.currentTime = this.util.timestamp();
+	update(now, step) {
+		if (this.isPaused) return;
+		this.currentTime = now;
 		this.skier.update(this.getMouseAndVelocityInfo());
 		this.lift.update(step);
 		this.updateOtherSkiers(step);
@@ -315,7 +298,6 @@ export default class Game {
 		this.yDist += this.skier.yv * step;
 
 		// flip the tree-on-fire image back and forth to create flicker effect
-		let now = this.util.timestamp();
 		if (now - this.timestampFire >= 50) {
 			if (this.currentTreeFireImg == this.tree_bare_fire1) {
 				this.currentTreeFireImg = this.tree_bare_fire2;
@@ -333,7 +315,8 @@ export default class Game {
 
 			// recycle the position of uphill offscreen game objects once they are passed
 			if (this.hasGameObjectBeenPassed(object)) {
-				this.recycleGameObjectPosition(gameObjects[i]);
+				this.recycleGameObject(gameObjects, i);
+				
 			}
 			// if the skier hits an object they haven't hit already, mark it as hit and do collision action if applicable
 			else if (this.collisionsEnabled && this.isGameObjectCollidingWithSkier(object) && this.skier.jumpOffset < object.jumpOverHeight) {
@@ -353,7 +336,7 @@ export default class Game {
 			for (let i = 0; i < this.otherSkiers.length; i++) {
 				let otherSkier = this.otherSkiers[i];
 				if (this.collisionsEnabled && !otherSkier.isCrashed && this.isGameObjectCollidingWithOtherSkier(otherSkier, object)) {
-					if (typeof object.otherSkierCanCrashInto !== 'undefined' && object.otherSkierCanCrashInto) {
+					if (typeof object.npcCanCrashInto !== 'undefined' && object.npcCanCrashInto) {
 						this.crashOtherSkierOnCollision(otherSkier);
 					}
 				}
@@ -363,7 +346,7 @@ export default class Game {
 			for (let i = 0; i < this.snowboarders.length; i++) {
 				let snowboarder = this.snowboarders[i];
 				if (this.collisionsEnabled && !snowboarder.isCrashed && this.isGameObjectCollidingWithOtherSkier(snowboarder, object)) {
-					if (typeof object.otherSkierCanCrashInto !== 'undefined' && object.otherSkierCanCrashInto) {
+					if (typeof object.npcCanCrashInto !== 'undefined' && object.npcCanCrashInto) {
 						this.crashSnowboarderOnCollision(snowboarder);
 					}
 				}
@@ -394,23 +377,19 @@ export default class Game {
 		}
 	}
 
-	// update the x/y coordinate of the given game object to a random offscreen coordinate
-	recycleGameObjectPosition(gameObject, canSpawnAbove) {
-		let xy = this.getRandomCoordinateOffScreen(canSpawnAbove);
-		gameObject.x = xy.x;
-		gameObject.y = xy.y;
-		if (typeof gameObject.hasCollided !== undefined)
-			gameObject.hasCollided = false;
-		if (typeof gameObject.isOnFire !== undefined) {
-			gameObject.isOnFire = false;
-		}
+	// delete the game object and spawn a new game object of random type off screen
+	recycleGameObject(gameObjects, i) {
+		gameObjects.splice(i, 1);
+		let xy = this.getRandomCoordinateOffScreen();
+		let type = this.getRandomGameObjectType();
+		this.spawnNewGameObject(type, xy.x, xy.y);
 	}
 
 	// return true if the given game object is offscreen uphill or is far enough away horizontally
 	hasGameObjectBeenPassed(object) {
 		return object.y < -window.innerHeight / 3 - 80 ||
-				object.x < -window.innerWidth * 3 / 2 ||
-				object.x > window.innerWidth * 3 / 2;
+				object.x < -window.innerWidth / 2 - 80 ||
+				object.x > window.innerWidth / 2;
 	}
 
 	// update image, velocity, and position of the other skiers
@@ -453,7 +432,6 @@ export default class Game {
 				}
 			// recycle the other skier's position if they are crashed and have been passed
 			} else if (this.hasGameObjectBeenPassed(otherSkier)) {
-				this.recycleGameObjectPosition(otherSkier);
 				otherSkier.isCrashed = false;
 			}
 
@@ -467,7 +445,6 @@ export default class Game {
 
 			// if the other skier (crashed or not) is far enough away, recyle its position
 			if (otherSkier.y < -2000 || otherSkier.y > 5000 || otherSkier.x > 3000 || otherSkier.x < -3000) {
-				this.recycleGameObjectPosition(otherSkier);
 				otherSkier.isCrashed = false;
 			}
 	
@@ -519,7 +496,6 @@ export default class Game {
 
 				// recycle the snowboarder's position if they are crashed and have been passed
 				if (this.hasGameObjectBeenPassed(snowboarder)) {
-					this.recycleGameObjectPosition(snowboarder, true);
 					snowboarder.isCrashed = false;
 				}
 			}
@@ -534,7 +510,6 @@ export default class Game {
 
 			// if the snowboarder (crashed or not) is far enough away, recyle its position
 			if (snowboarder.y < -2000 || snowboarder.y > 5000 || snowboarder.x > 3000 || snowboarder.x < -3000) {
-				this.recycleGameObjectPosition(snowboarder, true);
 				snowboarder.isCrashed = false;
 			}
 
@@ -620,7 +595,7 @@ export default class Game {
 
 	// return info about the instantaneous skier-to-mouse angle and velocity vectors
 	getMouseAndVelocityInfo() {
-		let mouseDiffX = -(this.mousePos.x - ((this.gameWidth / 2) + 8));
+		let mouseDiffX = -(this.mousePos.x - ((this.gameWidth / 2) + 7));
 		let mouseDiffY = -(this.mousePos.y - ((this.gameHeight / 3) + 32));
 		let mouseAtanDegrees = this.util.degrees(Math.atan(mouseDiffY / mouseDiffX));
 		let mouseAngle = 0, mouseDiffXVector = 0, mouseDiffYVector = 0;
@@ -824,8 +799,8 @@ export default class Game {
 
 		if (!this.hideHUD) {
 			// draw hud (140x52 black border 1px)
-			let rightEdgeX = this.gameWidth > window.innerWidth ? this.gameWidth - (Math.floor((this.gameWidth - window.innerWidth) / 2.0)) : this.gameWidth;
-			let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2.0)) : 0;
+			let rightEdgeX = this.gameWidth > window.innerWidth ? this.gameWidth - (Math.floor((this.gameWidth - window.innerWidth) / 2)) : this.gameWidth;
+			let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2)) : 0;
 			let cornerOffset = 2;
 			ctx.fillStyle = '#000000';
 			ctx.fillRect(rightEdgeX - 140 - cornerOffset, topEdgeY + cornerOffset, 140, 52);
