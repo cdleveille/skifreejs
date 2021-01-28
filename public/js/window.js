@@ -16,6 +16,21 @@ export default class WindowHandler {
 			game.resizeCanvas(canvas.width, canvas.height);
 		});
 
+		window.addEventListener('online', function () {
+			console.log('switched online');
+			game.isOffline = false;
+			game.user.signInButton.disabled = false;
+			game.user.registerButton.disabled = false;
+			game.recordAndResetStyle();
+		});
+
+		window.addEventListener('offline', function () {
+			console.log('switched offline');
+			game.isOffline = true;
+			game.user.signInButton.disabled = true;
+			game.user.registerButton.disabled = true;
+		});
+
 		[canvas.width, canvas.height] = resizeCanvas();
 		game.resizeCanvas(canvas.width, canvas.height);
 	}

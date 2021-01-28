@@ -34,6 +34,7 @@ self.addEventListener('install', function (event) {
 				'./img/lift_tower.png',
 				'./img/logged_in.png',
 				'./img/logged_out.png',
+				'./img/offline.png',
 				'./img/other_skier_crash.png',
 				'./img/other_skier1.png',
 				'./img/other_skier2.png',

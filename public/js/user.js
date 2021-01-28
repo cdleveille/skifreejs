@@ -33,14 +33,14 @@ export default class User {
 				'Authorization': `Bearer ${loginToken}`
 			};
 			let body = {};
-			this.game.util.request('POST', '/api/validate', headers, body).then(res => {
-				console.log(res);
+			let route = '/api/validate';
+			this.game.util.request('POST', route, headers, body).then(res => {
+				console.log(route, res);
 				if (res.ok) {
 					this.isLoggedIn = true;
 					this.userData = res.data;
 					this.loggedInUsername.innerText = this.userData.username;
-					this.highScore = this.userData.score;
-					this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
+					this.highScoreDisplay.innerText = 'high score: ' + this.userData.score;
 				}
 			}).catch(err => console.log(err));
 		} else {
@@ -102,8 +102,9 @@ export default class User {
 					password: this.signInPassword.value
 				};
 				// post request to login api
-				this.game.util.request('POST', '/api/login', headers, body).then(res => {
-					console.log(res);
+				let route = '/api/login';
+				this.game.util.request('POST', route, headers, body).then(res => {
+					console.log(route, res);
 					if (res.ok) {
 						window.sessionStorage.setItem('loginToken', res.data.token);
 						this.validateLoginToken();
@@ -147,8 +148,9 @@ export default class User {
 					password: this.registerPassword.value
 				};
 				// post request to register api
-				this.game.util.request('POST', '/api/register', headers, body).then(res => {
-					console.log(res);
+				let route = '/api/register';
+				this.game.util.request('POST', route, headers, body).then(res => {
+					console.log(route, res);
 					if (res.ok) {
 						window.sessionStorage.setItem('loginToken', res.data.token);
 						this.validateLoginToken();

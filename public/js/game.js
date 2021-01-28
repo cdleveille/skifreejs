@@ -34,6 +34,7 @@ export default class Game {
 		this.hideHUD = false;
 		this.hideControls = true;
 		this.images = [];
+		this.scoreToSend = 0;
 		this.loadAssets();
 		this.init();
 	}
@@ -55,6 +56,7 @@ export default class Game {
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
+		this.isOffline = !navigator.onLine;
 	}
 
 	// load game assets
@@ -77,6 +79,7 @@ export default class Game {
 		this.snowboarder_left = this.util.loadImage('/img/snowboarder_left.png', this);
 		this.snowboarder_right = this.util.loadImage('/img/snowboarder_right.png', this);
 		this.snowboarder_crash = this.util.loadImage('/img/snowboarder_crash.png', this);
+		this.offlineImg = this.util.loadImage('/img/offline.png', this);
 
 		this.loadFont();
 		this.user.loadAssets();
@@ -598,23 +601,42 @@ export default class Game {
 
 	// send score to server and then reset back to 0
 	recordAndResetStyle() {
-		let style = Math.floor(this.style);
-		if (this.user.isLoggedIn && style > this.user.highScore) {
-			socket.emit('new_score', { _id: this.user.userData._id, username: this.user.userData.username, score: style });
-			socket.on('updated_score', (res) => {
-				console.log(res);
-				if (res.ok) {
-					window.sessionStorage.removeItem('loginToken');
-					window.sessionStorage.setItem('loginToken', res.data);
-					this.user.validateLoginToken();
-				} else {
-					this.user.signOut();
-				}
-			});
-			this.user.highScore = style;
-			this.user.highScoreDisplay.innerText = 'high score: ' + style;
+		let currentStyle = Math.floor(this.style);
+		if (currentStyle > this.scoreToSend) {
+			this.scoreToSend = currentStyle;
+		}
+
+		if (this.user.isLoggedIn && this.scoreToSend > this.user.userData.score) {
+			if (!this.isOffline) {
+				socket.emit('new_score', { _id: this.user.userData._id, username: this.user.userData.username, score: this.scoreToSend });
+				socket.on('updated_score', (res) => {
+					console.log('socket: updated_score', res);
+					this.scoreToSend = 0;
+					if (res.ok) {
+						window.sessionStorage.removeItem('loginToken');
+						window.sessionStorage.setItem('loginToken', res.data);
+						this.user.validateLoginToken();
+					} else {
+						this.user.signOut();
+					}
+				});
+			}
 		}
 		this.style = 0;
+	}
+
+	clearScore() {
+		socket.emit('new_score', { _id: this.user.userData._id, username: this.user.userData.username, score: 0 });
+		socket.on('updated_score', (res) => {
+			console.log(res);
+			if (res.ok) {
+				window.sessionStorage.removeItem('loginToken');
+				window.sessionStorage.setItem('loginToken', res.data);
+				this.user.validateLoginToken();
+			} else {
+				this.user.signOut();
+			}
+		});
 	}
 
 	// return info about the instantaneous skier-to-mouse angle and velocity vectors
@@ -873,6 +895,12 @@ export default class Game {
 
 			// draw user profile button
 			this.user.draw(ctx);
+
+			// draw offline indicator
+			if (this.isOffline) {
+				let x = this.user.x + 7, y = this.user.y + 50;
+				ctx.drawImage(this.offlineImg, x, y);
+			}
 		}
 	}
 }
