@@ -37,8 +37,9 @@ export default class User {
 				console.log(res);
 				if (res.ok) {
 					this.isLoggedIn = true;
-					this.loggedInUsername.innerText = res.data.username;
-					this.highScore = res.data.score;
+					this.userData = res.data;
+					this.loggedInUsername.innerText = this.userData.username;
+					this.highScore = this.userData.score;
 					this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
 				}
 			}).catch(err => console.log(err));
@@ -79,7 +80,7 @@ export default class User {
 		this.loggedInUsername = document.getElementById('logged-in-username');
 		this.signOutButton = document.getElementById('sign-out-btn');
 		this.signOutButton.owner = this;
-		this.signOutButton.onclick = this.signOutButton.owner.signOutButtonClickHandler;
+		this.signOutButton.onclick = this.signOutButton.owner.signOut;
 
 		this.highScoreDisplay = document.getElementById('high-score');
 	}
@@ -105,11 +106,8 @@ export default class User {
 					console.log(res);
 					if (res.ok) {
 						window.sessionStorage.setItem('loginToken', res.data.token);
-						this.isLoggedIn = true;
+						this.validateLoginToken();
 						this.hideSignInForm();
-						this.loggedInUsername.innerText = this.signInUsername.value;
-						this.highScore = res.data.score;
-						this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
 					} else {
 						messages.push(res.data.replace(/error: /gi, ''));
 						this.signInError.innerText = messages.join('\n');
@@ -153,11 +151,8 @@ export default class User {
 					console.log(res);
 					if (res.ok) {
 						window.sessionStorage.setItem('loginToken', res.data.token);
-						this.isLoggedIn = true;
+						this.validateLoginToken();
 						this.hideRegisterForm();
-						this.loggedInUsername.innerText = this.registerUsername.value;
-						this.highScore = 0;
-						this.highScoreDisplay.innerText = 'high score: ' + this.highScore;
 					} else {
 						messages.push(res.data.replace(/error: /gi, ''));
 						this.registerError.innerText = messages.join('\n');
@@ -200,6 +195,7 @@ export default class User {
 		this.owner.signInUsername.value = '';
 		this.owner.signInPassword.value = '';
 		this.owner.signInError.innerText = '';
+		this.owner.signInUsername.focus();
 	}
 
 	registerButtonClickHandler() {
@@ -209,9 +205,10 @@ export default class User {
 		this.owner.registerUsername.value = '';
 		this.owner.registerPassword.value = '';
 		this.owner.registerError.innerText = '';
+		this.owner.registerEmail.focus();
 	}
 
-	signOutButtonClickHandler() {
+	signOut() {
 		window.sessionStorage.removeItem('loginToken');
 		this.owner.loggedInUsername.innerText = '';
 		this.owner.isLoggedIn = false;

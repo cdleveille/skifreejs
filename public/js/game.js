@@ -5,6 +5,7 @@ import Lift from './lift.js';
 import Skier from './skier.js';
 import User from './user.js';
 import Util from './util.js';
+import socket from './socket.js';
 
 export default class Game {
 	constructor() {
@@ -551,7 +552,7 @@ export default class Game {
 	// make the skier crash
 	crashOnCollision() {
 		this.game.skier.isCrashed = true;
-		this.game.style = 0;
+		this.game.recordAndResetStyle();
 		if (typeof this.isOnFire !== undefined) {
 			if (this.game.skier.isJumping) {
 				this.isOnFire = true;
@@ -599,7 +600,17 @@ export default class Game {
 	recordAndResetStyle() {
 		let style = Math.floor(this.style);
 		if (this.user.isLoggedIn && style > this.user.highScore) {
-			//socket.emit('new_score', { username: this.user.username, score: style });
+			socket.emit('new_score', { _id: this.user.userData._id, username: this.user.userData.username, score: style });
+			socket.on('updated_score', (res) => {
+				console.log(res);
+				if (res.ok) {
+					window.sessionStorage.removeItem('loginToken');
+					window.sessionStorage.setItem('loginToken', res.data);
+					this.user.validateLoginToken();
+				} else {
+					this.user.signOut();
+				}
+			});
 			this.user.highScore = style;
 			this.user.highScoreDisplay.innerText = 'high score: ' + style;
 		}
