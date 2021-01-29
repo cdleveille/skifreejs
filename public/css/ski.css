@@ -34,8 +34,8 @@
 
 #game-paused-text {
 	position: absolute;
-	left: calc(50% - 36px);
-	top: 20px;
+	right: 38px;
+	top: 75px;
 	z-index: 2;
 	display: block;
 	font-family: 'ModernDOS';
@@ -92,7 +92,7 @@
 }
 
 .button {
-	width: 80px;
+	width: 120px;
 	height: 20px;
 	margin: 2px;
 	margin-bottom: 3px;
