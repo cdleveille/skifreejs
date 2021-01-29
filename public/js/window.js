@@ -17,18 +17,12 @@ export default class WindowHandler {
 		});
 
 		window.addEventListener('online', function () {
-			console.log('switched online');
-			game.isOffline = false;
-			game.user.signInButton.disabled = false;
-			game.user.registerButton.disabled = false;
+			game.goOnline();
 			game.recordAndResetStyle();
 		});
 
 		window.addEventListener('offline', function () {
-			console.log('switched offline');
-			game.isOffline = true;
-			game.user.signInButton.disabled = true;
-			game.user.registerButton.disabled = true;
+			game.goOffline();
 		});
 
 		[canvas.width, canvas.height] = resizeCanvas();

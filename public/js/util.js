@@ -84,15 +84,13 @@ export default class Util {
 			this.lastLogTime = null;
 		}
 	}
-
 	// generic rest method for outbound requests
-	request (method, uri, headers, body) {
+	request(method, uri, headers, body) {
 		return new Promise((resolve, reject) => {
-			fetch(uri, {
-				method: method || 'GET',
-				headers: headers,
-				body: JSON.stringify(body)
-			}).then(r => r.json()).then(data => {
+			fetch(uri, method == 'GET' || !body ?
+				{ method: method || 'GET', headers: headers } :
+				{ method: method || 'POST', headers: headers, body: JSON.stringify(body) }
+			).then(r => r.json()).then(data => {
 				return resolve(data);
 			}).catch(e => {
 				return reject(e);

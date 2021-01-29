@@ -78,7 +78,6 @@ export default class InputHandler {
 							game.startTime += (game.util.timestamp() - game.timePausedAt);
 							game.isPaused = false;
 						} else {
-							game.drawIsPaused = false; // will be flipped to true in game.draw()
 							game.timePausedAt = game.util.timestamp();
 							game.isPaused = true;
 						}

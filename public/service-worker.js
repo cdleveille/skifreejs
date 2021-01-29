@@ -7,6 +7,7 @@ self.addEventListener('install', function (event) {
 				'./js/game.js',
 				'./js/input.js',
 				'./js/lift.js',
+				'./js/npc.js',
 				'./js/ski.js',
 				'./js/skier.js',
 				'./js/socket.js',

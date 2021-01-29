@@ -31,5 +31,5 @@ POST http://localhost:3000/api/validate
 Authorization: Bearer token
 
 ###
-GET http://localhost:3000/api/leaderboard/2
+GET http://localhost:3000/api/leaderboard/10
 

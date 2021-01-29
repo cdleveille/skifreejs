@@ -35,6 +35,7 @@ export default class Game {
 		this.hideControls = true;
 		this.images = [];
 		this.scoreToSend = 0;
+		this.gamePausedText = document.getElementById('game-paused-text');
 		this.loadAssets();
 		this.init();
 	}
@@ -46,7 +47,6 @@ export default class Game {
 		this.skier.init();
 		this.lift.init();
 		this.isPaused = false;
-		this.drawIsPaused = false;
 		this.yDist = 0;
 		this.style = 0;
 		this.mousePos = {x: 0, y: 0};
@@ -56,7 +56,7 @@ export default class Game {
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
-		this.isOffline = !navigator.onLine;
+		navigator.onLine ? this.goOnline() : this.goOffline();
 	}
 
 	// load game assets
@@ -288,8 +288,6 @@ export default class Game {
 		return newObj;
 	}
 
-	
-
 	// update the gamestate
 	update(now, step) {
 		if (this.isPaused) return;
@@ -455,7 +453,6 @@ export default class Game {
 			// if the other skier hits the skier, crash them both
 			if (!otherSkier.hasCollided && this.isGameObjectCollidingWithSkier(otherSkier) && this.skier.jumpOffset < 29) {
 				this.skier.isCrashed = true;
-				this.recordAndResetStyle();
 				otherSkier.hasCollided = true;
 				this.crashOtherSkierOnCollision(otherSkier);
 			}
@@ -520,7 +517,6 @@ export default class Game {
 			// if the snowboarder hits the skier, crash them both
 			if (!snowboarder.hasCollided && this.isGameObjectCollidingWithSkier(snowboarder) && this.skier.jumpOffset < 30) {
 				this.skier.isCrashed = true;
-				this.recordAndResetStyle();
 				snowboarder.hasCollided = true;
 				this.crashSnowboarderOnCollision(snowboarder);
 			}
@@ -554,6 +550,7 @@ export default class Game {
 
 	// make the skier crash
 	crashOnCollision() {
+		console.log('hit');
 		this.game.skier.isCrashed = true;
 		this.game.recordAndResetStyle();
 		if (typeof this.isOnFire !== undefined) {
@@ -613,13 +610,16 @@ export default class Game {
 					console.log('socket: updated_score', res);
 					this.scoreToSend = 0;
 					if (res.ok) {
-						window.sessionStorage.removeItem('loginToken');
-						window.sessionStorage.setItem('loginToken', res.data);
+						window.localStorage.removeItem('loginToken');
+						window.localStorage.setItem('loginToken', res.data);
 						this.user.validateLoginToken();
+						this.user.refreshLeaderboard(this.user.leaderboardScoreCount);
 					} else {
 						this.user.signOut();
 					}
 				});
+			} else {
+				this.user.loggedInUsername.innerText = this.user.userData.username + ' ' + this.scoreToSend + '*';
 			}
 		}
 		this.style = 0;
@@ -630,8 +630,8 @@ export default class Game {
 		socket.on('updated_score', (res) => {
 			console.log(res);
 			if (res.ok) {
-				window.sessionStorage.removeItem('loginToken');
-				window.sessionStorage.setItem('loginToken', res.data);
+				window.localStorage.removeItem('loginToken');
+				window.localStorage.setItem('loginToken', res.data);
 				this.user.validateLoginToken();
 			} else {
 				this.user.signOut();
@@ -702,6 +702,20 @@ export default class Game {
 		}
 
 		return [mouseAngle, [mouseDiffXVector, mouseDiffYVector], [xvVector, yvVector]];
+	}
+
+	goOnline() {
+		console.log('network: online');
+		this.isOffline = false;
+		this.user.signInButton.disabled = false;
+		this.user.registerButton.disabled = false;
+	}
+
+	goOffline() {
+		console.log('network: offline');
+		this.isOffline = true;
+		this.user.signInButton.disabled = true;
+		this.user.registerButton.disabled = true;
 	}
 
 	// check to see if all images have been loaded and are ready to render
@@ -849,9 +863,9 @@ export default class Game {
 			let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2)) : 0;
 			let cornerOffset = 2;
 			ctx.fillStyle = '#000000';
-			ctx.fillRect(rightEdgeX - 140 - cornerOffset, topEdgeY + cornerOffset, 140, 52);
+			ctx.fillRect(rightEdgeX - 141 - cornerOffset, topEdgeY + cornerOffset, 140, 52);
 			ctx.fillStyle = '#FFFFFF';
-			ctx.fillRect(rightEdgeX - 139 - cornerOffset, topEdgeY + 1 + cornerOffset, 138, 50);
+			ctx.fillRect(rightEdgeX - 140 - cornerOffset, topEdgeY + 1 + cornerOffset, 138, 50);
 			ctx.font = '14px ModernDOS';
 			ctx.fillStyle = '#000000';
 			ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), rightEdgeX - 136 - cornerOffset, topEdgeY + 11 + cornerOffset);
@@ -876,21 +890,20 @@ export default class Game {
 			if (this.isPaused) {
 				let now = this.util.timestamp();
 				if (now - this.timestampPaused > 500) {
-					this.drawIsPaused = !this.drawIsPaused;
 					this.timestampPaused = now;
+					this.gamePausedText.style.display = this.gamePausedText.style.display == 'none' ? 'block' : 'none';
 				}
-				if (this.drawIsPaused) {
-					ctx.font = '14px ModernDOS';
-					ctx.fillText('GAME PAUSED', this.gameWidth / 2 - 25, topEdgeY + 25);
-				}
-			
+			} else {
+				this.gamePausedText.style.display = 'none';
 			}
 
 			// draw controls hud
 			if (!this.hideControls && !this.util.isOnMobile()) {
 				ctx.fillStyle = '#000000';
-				ctx.fillText('SPACE: Pause', rightEdgeX - 115, topEdgeY + 66);
-				ctx.fillText('F2: Restart', rightEdgeX - 112, topEdgeY + 78);
+				ctx.fillText('SPACE: Pause', rightEdgeX - 300, topEdgeY + 13);
+				ctx.fillText('F2: Restart', rightEdgeX - 300, topEdgeY + 25);
+				ctx.fillText('C: Show/Hide Controls', rightEdgeX - 300, topEdgeY + 37);
+				ctx.fillText('H: Show/Hide HUD', rightEdgeX - 300, topEdgeY + 49);
 			}
 
 			// draw user profile button

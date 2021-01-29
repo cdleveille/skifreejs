@@ -42,6 +42,25 @@
 				touch-action: manipulation;
 			}
 
+			#leaderboard {
+				position: relative;
+				left: -12px;
+				top: -12px;
+				display: block;
+			}
+
+			#game-paused-text {
+				position: relative;
+				left: calc(50% - 36px);
+				top: 20px;
+				z-index: 2;
+				display: block;
+				font-family: 'ModernDOS';
+				font-size: 16px;
+				color: black;
+				display: none;
+			}
+
 			.text-input {
 				width: 200px;
 				margin: 2px;
@@ -53,7 +72,7 @@
 			.button {
 				width: 70px;
 				margin: 2px;
-				background-color: #FFFFFF;
+				background-color: white;
 				border: 1px solid black;
 				text-align: center;
 				text-decoration: none;
@@ -111,6 +130,7 @@
 	<body>
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
+		<div id="game-paused-text">GAME PAUSED</div>
 		<div id="user-section">
 			<button id="user-profile"></button>
 			<div id="sign-in-or-register" class="user-panel">
@@ -150,10 +170,11 @@
 			</div>
 			<div id="logged-in-info-section" class="user-panel">
 				<div id="logged-in-username" style="margin: 2px;"></div>
-				<div id="high-score" style="margin: 2px;"></div>
 				<div>
+					<button id="leaderboard-btn" class="button" type="button"></button>
 					<button id="sign-out-btn" class="button" type="button">Sign Out</button>
 				</div>
+				<div id="leaderboard"></div>
 			</div>
 		</div>
 		<script src="/socket.io/socket.io.js"></script>

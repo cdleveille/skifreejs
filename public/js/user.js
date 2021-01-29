@@ -3,10 +3,12 @@ export default class User {
 	constructor(game) {
 		this.game = game;
 		this.images = [];
+		this.leaderboardScoreCount = 10;
 		this.validateLoginToken();
 		this.getHTMLElements();
 		this.createFormSubmitEventListeners();
 		this.setProfileButtonPosition();
+		this.refreshLeaderboard(this.leaderboardScoreCount);
 	}
 
 	loadAssets() {
@@ -24,8 +26,9 @@ export default class User {
 		this.profileButton.style.left = cornerOffset + 'px';
 	}
 
+	// authenticate the current locally-stored login token with the server, which responds with user data
 	validateLoginToken() {
-		let loginToken = window.sessionStorage.getItem('loginToken');
+		let loginToken = window.localStorage.getItem('loginToken');
 
 		if (loginToken) {
 			let headers = {
@@ -33,14 +36,13 @@ export default class User {
 				'Authorization': `Bearer ${loginToken}`
 			};
 			let body = {};
-			let route = '/api/validate';
-			this.game.util.request('POST', route, headers, body).then(res => {
-				console.log(route, res);
+			let method = 'POST', route = '/api/validate';
+			this.game.util.request(method, route, headers, body).then(res => {
+				console.log(method, route, res);
 				if (res.ok) {
 					this.isLoggedIn = true;
 					this.userData = res.data;
-					this.loggedInUsername.innerText = this.userData.username;
-					this.highScoreDisplay.innerText = 'high score: ' + this.userData.score;
+					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
 				}
 			}).catch(err => console.log(err));
 		} else {
@@ -82,7 +84,11 @@ export default class User {
 		this.signOutButton.owner = this;
 		this.signOutButton.onclick = this.signOutButton.owner.signOut;
 
-		this.highScoreDisplay = document.getElementById('high-score');
+		this.leaderboardButton = document.getElementById('leaderboard-btn');
+		this.leaderboardButton.owner = this;
+		this.leaderboardButton.onclick = this.leaderboardButtonClickHandler;
+		this.leaderboardButton.innerText = 'Top ' + this.leaderboardScoreCount;
+		this.leaderboard = document.getElementById('leaderboard');
 	}
 
 	createFormSubmitEventListeners() {
@@ -102,11 +108,11 @@ export default class User {
 					password: this.signInPassword.value
 				};
 				// post request to login api
-				let route = '/api/login';
-				this.game.util.request('POST', route, headers, body).then(res => {
-					console.log(route, res);
+				let method = 'POST', route = '/api/login';
+				this.game.util.request(method, route, headers, body).then(res => {
+					console.log(method, route, res);
 					if (res.ok) {
-						window.sessionStorage.setItem('loginToken', res.data.token);
+						window.localStorage.setItem('loginToken', res.data.token);
 						this.validateLoginToken();
 						this.hideSignInForm();
 					} else {
@@ -148,11 +154,11 @@ export default class User {
 					password: this.registerPassword.value
 				};
 				// post request to register api
-				let route = '/api/register';
-				this.game.util.request('POST', route, headers, body).then(res => {
-					console.log(route, res);
+				let method = 'POST', route = '/api/register';
+				this.game.util.request(method, route, headers, body).then(res => {
+					console.log(method, route, res);
 					if (res.ok) {
-						window.sessionStorage.setItem('loginToken', res.data.token);
+						window.localStorage.setItem('loginToken', res.data.token);
 						this.validateLoginToken();
 						this.hideRegisterForm();
 					} else {
@@ -187,7 +193,7 @@ export default class User {
 			} else {
 				this.owner.showLoggedInInfo();
 			}
-			
+			this.owner.leaderboard.innerHTML = '';
 		}
 	}
 
@@ -210,9 +216,45 @@ export default class User {
 		this.owner.registerEmail.focus();
 	}
 
+	leaderboardButtonClickHandler() {
+		if (this.owner.leaderboard.innerHTML == '') {
+			this.owner.refreshLeaderboard(this.owner.leaderboardScoreCount);
+		} else {
+			this.owner.leaderboard.innerHTML = '';
+		}
+	}
+
+	refreshLeaderboard(numToRetrieve) {
+		let headers = {
+			'Content-Type': 'application/json'
+		};
+		let body = {};
+		let method = 'GET', route = '/api/leaderboard/' + numToRetrieve;
+		this.game.util.request(method, route, headers, body).then(res => {
+			console.log(method, route, res);
+
+			if (res.ok) {
+				let html = '<ol>';
+				for (let i = 0; i < res.data.length; i++) {
+					let username = res.data[i].username, score = res.data[i].score;
+					html += '<li>' + username + ' ' + score + '</li>';
+				}
+
+				let numToLeaveBlank = numToRetrieve - res.data.length;
+				for (let i = 0; i < numToLeaveBlank; i ++) {
+					html += '<li></li>';
+				}
+
+				html += '</ol>';
+				this.leaderboard.innerHTML = html;
+			}
+		}).catch(err => console.log(err));
+	}
+
 	signOut() {
-		window.sessionStorage.removeItem('loginToken');
+		window.localStorage.removeItem('loginToken');
 		this.owner.loggedInUsername.innerText = '';
+		this.owner.leaderboard.innerHTML = '';
 		this.owner.isLoggedIn = false;
 		this.owner.hideLoggedInInfo();
 	}
