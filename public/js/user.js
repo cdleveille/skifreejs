@@ -13,6 +13,7 @@ export default class User {
 	loadAssets() {
 		this.logged_in = this.game.util.loadImage('/img/logged_in.png', this);
 		this.logged_out = this.game.util.loadImage('/img/logged_out.png', this);
+		this.crown = this.game.util.loadImage('/img/crown.png', this);
 	}
 
 	// authenticate the current locally-stored login token with the server, which responds with user data
@@ -243,8 +244,11 @@ export default class User {
 			if (res.ok) {
 				let html = '<ol>';
 				for (let i = 0; i < res.data.length; i++) {
-					let username = res.data[i].username, score = res.data[i].score;
-					html += '<li>' + username + ' ' + score + '</li>';
+					let username = res.data[i].username, score = res.data[i].score, crownImg = '';
+					if (i == 0) {
+						crownImg = ' <img src="' + this.crown.src + '">' ;
+					}
+					html += '<li>' + username + ' ' + score + crownImg + '</li>';
 				}
 
 				let numToLeaveBlank = numToRetrieve - res.data.length;

@@ -22,6 +22,7 @@ self.addEventListener('install', function (event) {
 				'./img/bump_group.png',
 				'./img/bump_large.png',
 				'./img/bump_small.png',
+				'./img/crown.png',
 				'./img/dog.png',
 				'./img/gate_fail.png',
 				'./img/gate_left.png',
