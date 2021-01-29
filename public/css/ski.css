@@ -141,5 +141,5 @@ html, body {
 	font-style: 'normal';
 	font-weight: 400;
 	src: local('ModernDOS'),
-		url(font/ModernDOS8x16.ttf) format('truetype');
+		url(../font/ModernDOS8x16.ttf) format('truetype');
 }
