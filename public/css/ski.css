@@ -106,6 +106,7 @@
 	touch-action: manipulation;
 	font-size: 16px;
 	font-family: 'ModernDOS';
+	outline: none;
 }
 
 .button.submit {
@@ -114,10 +115,6 @@
 	left: 50%;
 	-ms-transform: translate(-50%, 0%);
 	transform: translate(-50%, 0%);
-}
-
-.button:focus {
-	background-color: #DDDDDD;
 }
 
 .button:hover {
