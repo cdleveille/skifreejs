@@ -31,7 +31,7 @@ export default class User {
 				if (res.ok) {
 					this.userData = res.data;
 					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
-					this.profileButton.src = this.logged_in.src;
+					this.profileImage.src = this.logged_in.src;
 					this.isLoggedIn = true;
 				}
 			}).catch(err => console.log(err));
@@ -42,6 +42,7 @@ export default class User {
 
 	getHTMLElements() {
 		this.userSection = document.getElementById('user-section');
+		this.profileImage = document.getElementById('user-profile-img');
 		this.profileButton = document.getElementById('user-profile-btn');
 		this.profileButton.owner = this;
 		this.profileButton.onclick = this.profileButton.owner.userProfileButtonClickHandler;
@@ -264,7 +265,7 @@ export default class User {
 		this.owner.leaderboardSignedOut.innerHTML = '';
 		this.owner.isLoggedIn = false;
 		this.owner.hideLoggedInInfo();
-		this.owner.profileButton.src = this.owner.logged_out.src;
+		this.owner.profileImage.src = this.owner.logged_out.src;
 	}
 
 	showSignInForm() {

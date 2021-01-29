@@ -37,8 +37,9 @@ export default class Game {
 		this.scoreToSend = 0;
 		this.gamePausedText = document.getElementById('game-paused-text');
 		this.gameInfo = document.getElementById('game-info');
-		this.gameInfo.owner = this;
-		this.gameInfo.onclick = this.gameInfoClickHandler;
+		this.gameInfoBtn = document.getElementById('game-info-btn');
+		this.gameInfoBtn.owner = this;
+		this.gameInfoBtn.onclick = this.gameInfoBtnClickHandler;
 		this.gameInfoTime = document.getElementById('game-info-time');
 		this.gameInfoDist = document.getElementById('game-info-dist');
 		this.gameInfoSpeed = document.getElementById('game-info-speed');
@@ -611,7 +612,7 @@ export default class Game {
 		if (this.user.isLoggedIn && this.scoreToSend > this.user.userData.score) {
 			if (!this.isOffline) {
 				socket.emit('new_score', { _id: this.user.userData._id, username: this.user.userData.username, score: this.scoreToSend });
-				socket.on('updated_score', (res) => {
+				socket.once('updated_score', (res) => {
 					console.log('socket: updated_score', res);
 					this.scoreToSend = 0;
 					if (res.ok) {
@@ -725,7 +726,7 @@ export default class Game {
 		this.offlineInd.style.display = 'block';
 	}
 
-	gameInfoClickHandler() {
+	gameInfoBtnClickHandler() {
 		this.owner.togglePause();
 	}
 
@@ -764,7 +765,7 @@ export default class Game {
 		if (this.doImageLoadCheck) {
 			if (this.confirmImagesAreAllLoaded()) {
 				this.doImageLoadCheck = false;
-				this.user.profileButton.style.display = 'block';
+				this.user.profileImage.style.display = 'block';
 				this.gameInfo.style.display = 'block';
 			} else return;
 		}
@@ -911,14 +912,15 @@ export default class Game {
 			let styleText = 'Style:\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + Math.floor(this.style);
 			this.gameInfoStyle.innerText = styleText;
 
-			// draw controls hud
-			// if (!this.hideControls && !this.util.isOnMobile()) {
-			// 	ctx.fillStyle = '#000000';
-			// 	ctx.fillText('SPACE: Pause', rightEdgeX - 300, topEdgeY + 13);
-			// 	ctx.fillText('F2: Restart', rightEdgeX - 300, topEdgeY + 25);
-			// 	ctx.fillText('C: Show/Hide Controls', rightEdgeX - 300, topEdgeY + 37);
-			// 	ctx.fillText('H: Show/Hide HUD', rightEdgeX - 300, topEdgeY + 49);
-			// }
+			// control visibility of game paused text html element
+			if (this.isPaused) {
+				this.gamePausedText.style.display = 'block';
+			} else {
+				this.gamePausedText.style.display = 'none';
+			}
+
+		} else {
+			this.gamePausedText.style.display = 'none';
 		}
 	}
 }

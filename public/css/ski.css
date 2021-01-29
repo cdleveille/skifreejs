@@ -16,9 +16,8 @@
 	font-family: 'ModernDOS';
 }
 
-#user-profile-btn {
+#user-profile-img {
 	margin: 2px;
-	cursor: pointer;
 	position: absolute;
 	z-index: 2;
 	touch-action: manipulation;
@@ -28,8 +27,27 @@
 	display: none;
 }
 
-#user-profile-btn:hover {
+#user-profile-btn {
+	margin: 2px;
+	cursor: pointer;
+	position: absolute;
+	width: 45px;
+	height: 45px;
+	z-index: 3;
+}
+
+.button-invis {
+	outline: none;
+	border: none !important;
+	background: transparent;
+}
+
+#user-profile-btn:hover + #user-profile-img {
 	background-color: #DDDDDD;
+}
+
+#user-profile-btn:active + #user-profile-img {
+	background-color: #888888;
 }
 
 #game-paused-text {
@@ -55,13 +73,27 @@
 	font-size: 16px;
 	display: block;
 	z-index: 2;
-	cursor: pointer;
 	transition-duration: 0.2s;
 	display: none;
 }
 
-#game-info:hover {
+#game-info-btn {
+	cursor: pointer;
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	width: 154px;
+	height: 66px;
+	z-index: 3;
+}
+
+#game-info-btn:hover + #game-info {
 	background-color: #DDDDDD;
+}
+
+#game-info-btn:active + #game-info {
+	background-color: #888888;
+	color: white;
 }
 
 #offline-ind {
@@ -119,6 +151,11 @@
 
 .button:hover {
 	background-color: #DDDDDD;
+}
+
+.button:active {
+	background-color: #888888;
+	color: white;
 }
 
 .form-error {

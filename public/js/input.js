@@ -5,7 +5,7 @@ export default class InputHandler {
 			e.preventDefault();
 		};
 		
-		if (!game.util.isOnMobile()) {
+		if (!game.util.hasTouch()) {
 			canvas.addEventListener('mousemove', (event) => {
 				game.mousePos.x = event.clientX - ((window.innerWidth - canvas.width) / 2);
 				game.mousePos.y = event.clientY - ((window.innerHeight - canvas.height) / 2);
@@ -103,6 +103,22 @@ export default class InputHandler {
 			});
 
 		} else {
+			// remove :hover styles on touch screens
+			try { // prevent exception on browsers not supporting DOM styleSheets properly
+				for (var si in document.styleSheets) {
+					var styleSheet = document.styleSheets[si];
+					if (!styleSheet.rules) continue;
+
+					for (var ri = styleSheet.rules.length - 1; ri >= 0; ri--) {
+						if (!styleSheet.rules[ri].selectorText) continue;
+
+						if (styleSheet.rules[ri].selectorText.match(':hover')) {
+							styleSheet.deleteRule(ri);
+						}
+					}
+				}
+			} catch (ex) { console.log(ex); }
+
 			canvas.addEventListener('touchstart', (event) => {
 				event.preventDefault();
 				if (!game.isPaused) {

@@ -105,6 +105,12 @@ export default class Util {
 		return isMobile == null ? false : isMobile;
 	}
 
+	hasTouch() {
+		return 'ontouchstart' in document.documentElement
+				|| navigator.maxTouchPoints > 0
+				|| navigator.msMaxTouchPoints > 0;
+	}
+
 	// determine whether the given string consists of only alphanumeric characters
 	isAlphaNumeric(str) {
 		let code, i, len;

@@ -1,4 +1,3 @@
-<!--This file is included to allow local debugging of the client-side javascript in the public folder, as the .ejs file doesn't seem to work for that-->
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -11,116 +10,36 @@
 		<meta name="Description" content="Fan remake of the classic game from Windows Entertainment Pack 3">
 		<link rel="manifest" href="./manifest.json">
 		<link rel="apple-touch-icon" href="./img/ski.png">
+		<link rel="stylesheet" href="./css/ski.css">
 		<meta name="theme-color" content="#317EFB"/>
 		<script src="./js/sw.js"></script>
-		<style>
-			#gameScreen {
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				-moz-transform: translateX(-50%) translateY(-50%);
-				-webkit-transform: translateX(-50%) translateY(-50%);
-				transform: translateX(-50%) translateY(-50%);
-				z-index: 1;
-				touch-action: manipulation;
-			}
-
-			#user-section {
-				display: block;
-				touch-action: manipulation;
-			}
-
-			#user-profile {
-				background: transparent;
-				border: none !important;
-				font-size: 0;
-				outline: none;
-				width: 45px;
-				height: 45px;
-				cursor: pointer;
-				position: absolute;
-				z-index: 2;
-				touch-action: manipulation;
-			}
-
-			.text-input {
-				width: 200px;
-				margin: 2px;
-				border: 1px solid black;
-				font-family: 'ModernDOS';
-				touch-action: manipulation;
-			}
-
-			.button {
-				width: 70px;
-				margin: 2px;
-				background-color: #FFFFFF;
-				border: 1px solid black;
-				text-align: center;
-				text-decoration: none;
-				font-family: 'ModernDOS';
-				cursor: pointer;
-				border-radius: 0%;
-				transition-duration: 0.4s;
-				touch-action: manipulation;
-			}
-
-			.button:hover {
-				background-color: #888888;
-				color: white;
-			}
-
-			.form-error {
-				position: relative;
-				top: 2px;
-				left: 2px;
-				z-index: 2;
-				color: red;
-				display: block;
-			}
-
-			.user-panel {
-				position: absolute;
-				top: 0px;
-				left: 48px;
-				z-index: 2;
-				display: none;
-			}
-
-			html, body {
-				background-color: white;
-				width: 100%;
-				height: 100%;
-				margin: 0px;
-				border: 0;
-				overflow: hidden;
-				display: block;
-				-webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
-				-webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
-				-webkit-user-select: none;
-			}
-
-			@font-face {
-				font-family: 'ModernDOS';
-				font-style: 'normal';
-				font-weight: 400;
-				src: local('ModernDOS'),
-					url(font/ModernDOS8x16.ttf) format('truetype');
-			}
-		</style>
 	</head>
 	<body>
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
+		<div id="game-paused-text" class="animate-flicker">GAME PAUSED</div>
+		<img src="../img/offline.png" id="offline-ind" class="animate-flicker">
+		<button id="game-info-btn" class="button-invis"></button>
+		<div id="game-info">
+			<div id="game-info-time" class="game-info-item">Time:</div>
+			<div id="game-info-dist" class="game-info-item">Dist:</div>
+			<div id="game-info-speed" class="game-info-item">Speed:</div>
+			<div id="game-info-style" class="game-info-item">Style:</div>
+		</div>
 		<div id="user-section">
-			<button id="user-profile"></button>
-			<div id="sign-in-or-register" class="user-panel">
+			<button id="user-profile-btn" class="button-invis"></button>
+			<img src="../img/logged_out.png" id="user-profile-img">
+			<div id="sign-in-or-register" class="user-panel visible">
+				<div>
+					<button id="leaderboard-btn-signed-out" class="button" type="button">Top 10</button>
+				</div>
 				<div>
 					<button id="sign-in-btn" class="button" type="button">Sign In</button>
 				</div>
 				<div>
 					<button id="register-btn" class="button" type="button">Register</button>
 				</div>
+				<div id="leaderboard-signed-out" class="leaderboard"></div>
 			</div>
 			<div id="sign-in-form-section" class="user-panel">
 				<form id="sign-in-form" spellcheck="false">
@@ -130,7 +49,7 @@
 					<div>
 						<input id="sign-in-password" class="text-input" name="sign-in-password" placeholder="password" type="password" required>
 					</div>
-					<button type="submit" class="button">Sign In</button>
+					<button type="submit" class="button submit">Sign In</button>
 					<div id="sign-in-error" class="form-error"></div>
 				</form>
 			</div>
@@ -145,16 +64,19 @@
 					<div>
 						<input id="register-password" class="text-input" name="password" placeholder="password" type="password" required>
 					</div>
-					<button type="submit" class="button">Register</button>
+					<button type="submit" class="button submit">Register</button>
 					<div id="register-error" class="form-error"></div>
 				</form>
 			</div>
 			<div id="logged-in-info-section" class="user-panel">
-				<div id="logged-in-username" style="margin: 2px;"></div>
-				<div id="high-score" style="margin: 2px;"></div>
+				<div id="logged-in-username" style="margin: 2px; margin-top: 4px; margin-bottom: 5px;"></div>
+				<div>
+					<button id="leaderboard-btn-signed-in" class="button" type="button"></button>
+				</div>
 				<div>
 					<button id="sign-out-btn" class="button" type="button">Sign Out</button>
 				</div>
+				<div id="leaderboard-signed-in" class="leaderboard"></div>
 			</div>
 		</div>
 		<script src="/socket.io/socket.io.js"></script>
