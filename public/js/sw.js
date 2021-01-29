@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 if (navigator.serviceWorker.controller) {
-	console.log('Active service worker found.');
+	console.log('active service worker found');
 } else {
 	navigator.serviceWorker
 		.register('../service-worker.js',)
 		.then(function () {
-			console.log('New service worker registered.');
+			console.log('new service worker registered');
 		});
 }

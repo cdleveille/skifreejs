@@ -37,10 +37,14 @@ export default class Game {
 		this.scoreToSend = 0;
 		this.gamePausedText = document.getElementById('game-paused-text');
 		this.gameInfo = document.getElementById('game-info');
+		this.gameInfo.owner = this;
+		this.gameInfo.onclick = this.gameInfoClickHandler;
 		this.gameInfoTime = document.getElementById('game-info-time');
 		this.gameInfoDist = document.getElementById('game-info-dist');
 		this.gameInfoSpeed = document.getElementById('game-info-speed');
 		this.gameInfoStyle = document.getElementById('game-info-style');
+		this.offlineInd = document.getElementById('offline-ind');
+		navigator.onLine ? this.goOnline() : this.goOffline();
 		this.loadAssets();
 		this.init();
 	}
@@ -57,11 +61,9 @@ export default class Game {
 		this.mousePos = {x: 0, y: 0};
 		this.startTime = this.util.timestamp();
 		this.timestampFire = this.startTime;
-		this.timestampPaused = this.startTime;
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
-		navigator.onLine ? this.goOnline() : this.goOffline();
 	}
 
 	// load game assets
@@ -112,7 +114,6 @@ export default class Game {
 		this.skier.x = this.gameWidth / 2;
 		this.skier.y = this.gameHeight / 3;
 
-		this.user.setProfileButtonPosition();
 		this.setUpGameObjectsOnScreen();
 	}
 
@@ -713,6 +714,7 @@ export default class Game {
 		this.isOffline = false;
 		this.user.signInButton.disabled = false;
 		this.user.registerButton.disabled = false;
+		this.offlineInd.style.display = 'none';
 	}
 
 	goOffline() {
@@ -720,6 +722,25 @@ export default class Game {
 		this.isOffline = true;
 		this.user.signInButton.disabled = true;
 		this.user.registerButton.disabled = true;
+		this.offlineInd.style.display = 'block';
+	}
+
+	gameInfoClickHandler() {
+		this.owner.togglePause();
+	}
+
+	togglePause() {
+		if (!this.user.isTextInputActive()) {
+			if (this.isPaused) {
+				this.startTime += (this.util.timestamp() - this.timePausedAt);
+				this.isPaused = false;
+				this.gamePausedText.style.display = 'none';
+			} else {
+				this.timePausedAt = this.util.timestamp();
+				this.isPaused = true;
+				this.gamePausedText.style.display = 'block';
+			}
+		}
 	}
 
 	// check to see if all images have been loaded and are ready to render
@@ -743,6 +764,8 @@ export default class Game {
 		if (this.doImageLoadCheck) {
 			if (this.confirmImagesAreAllLoaded()) {
 				this.doImageLoadCheck = false;
+				this.user.profileButton.style.display = 'block';
+				this.gameInfo.style.display = 'block';
 			} else return;
 		}
 
@@ -888,17 +911,6 @@ export default class Game {
 			let styleText = 'Style:\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + Math.floor(this.style);
 			this.gameInfoStyle.innerText = styleText;
 
-			// draw game paused text if paused
-			if (this.isPaused) {
-				let now = this.util.timestamp();
-				if (now - this.timestampPaused > 500) {
-					this.timestampPaused = now;
-					this.gamePausedText.style.display = this.gamePausedText.style.display == 'none' ? 'block' : 'none';
-				}
-			} else {
-				this.gamePausedText.style.display = 'none';
-			}
-
 			// draw controls hud
 			// if (!this.hideControls && !this.util.isOnMobile()) {
 			// 	ctx.fillStyle = '#000000';
@@ -907,15 +919,6 @@ export default class Game {
 			// 	ctx.fillText('C: Show/Hide Controls', rightEdgeX - 300, topEdgeY + 37);
 			// 	ctx.fillText('H: Show/Hide HUD', rightEdgeX - 300, topEdgeY + 49);
 			// }
-
-			// draw user profile button
-			this.user.draw(ctx);
-
-			// draw offline indicator
-			if (this.isOffline) {
-				let x = this.user.x + 7, y = this.user.y + 50;
-				ctx.drawImage(this.offlineImg, x, y);
-			}
 		}
 	}
 }

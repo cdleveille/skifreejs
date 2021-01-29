@@ -17,7 +17,8 @@
 	<body>
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
-		<div id="game-paused-text">GAME PAUSED</div>
+		<div id="game-paused-text" class="animate-flicker">GAME PAUSED</div>
+		<img src="../img/offline.png" id="offline-ind" class="animate-flicker">
 		<div id="game-info">
 			<div id="game-info-time" class="game-info-item">Time:</div>
 			<div id="game-info-dist" class="game-info-item">Dist:</div>
@@ -25,8 +26,8 @@
 			<div id="game-info-style" class="game-info-item">Style:</div>
 		</div>
 		<div id="user-section">
-			<button id="user-profile"></button>
-			<div id="sign-in-or-register" class="user-panel">
+			<img src="../img/logged_out.png" id="user-profile-btn" class="user-profile-btn">
+			<div id="sign-in-or-register" class="user-panel visible">
 				<div>
 					<button id="leaderboard-btn-signed-out" class="button" type="button">Top 10</button>
 				</div>

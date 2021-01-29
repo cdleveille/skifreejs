@@ -4,26 +4,15 @@ export default class User {
 		this.game = game;
 		this.images = [];
 		this.leaderboardScoreCount = 10;
-		this.validateLoginToken();
 		this.getHTMLElements();
+		this.validateLoginToken();
 		this.createFormSubmitEventListeners();
-		this.setProfileButtonPosition();
 		this.refreshLeaderboard(this.leaderboardScoreCount);
 	}
 
 	loadAssets() {
 		this.logged_in = this.game.util.loadImage('/img/logged_in.png', this);
 		this.logged_out = this.game.util.loadImage('/img/logged_out.png', this);
-	}
-
-	setProfileButtonPosition() {
-		let leftEdgeX = this.game.gameWidth > window.innerWidth ? (Math.floor((this.game.gameWidth - window.innerWidth) / 2.0)) : 0;
-		let topEdgeY = this.game.gameHeight > window.innerHeight ? (Math.floor((this.game.gameHeight - window.innerHeight) / 2.0)) : 0;
-		let cornerOffset = 2;
-		this.x = leftEdgeX + cornerOffset;
-		this.y = topEdgeY + cornerOffset;
-		this.profileButton.style.top = cornerOffset + 'px';
-		this.profileButton.style.left = cornerOffset + 'px';
 	}
 
 	// authenticate the current locally-stored login token with the server, which responds with user data
@@ -40,9 +29,10 @@ export default class User {
 			this.game.util.request(method, route, headers, body).then(res => {
 				console.log(method, route, res);
 				if (res.ok) {
-					this.isLoggedIn = true;
 					this.userData = res.data;
 					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
+					this.profileButton.src = this.logged_in.src;
+					this.isLoggedIn = true;
 				}
 			}).catch(err => console.log(err));
 		} else {
@@ -52,7 +42,7 @@ export default class User {
 
 	getHTMLElements() {
 		this.userSection = document.getElementById('user-section');
-		this.profileButton = document.getElementById('user-profile');
+		this.profileButton = document.getElementById('user-profile-btn');
 		this.profileButton.owner = this;
 		this.profileButton.onclick = this.profileButton.owner.userProfileButtonClickHandler;
 
@@ -274,6 +264,7 @@ export default class User {
 		this.owner.leaderboardSignedOut.innerHTML = '';
 		this.owner.isLoggedIn = false;
 		this.owner.hideLoggedInInfo();
+		this.profileButton.src = this.logged_out.src;
 	}
 
 	showSignInForm() {
@@ -308,7 +299,9 @@ export default class User {
 		this.loggedInInfoSection.style.display = 'none';
 	}
 
-	draw(ctx) {
-		ctx.drawImage(this.isLoggedIn ? this.logged_in : this.logged_out, this.x, this.y);
+	isTextInputActive() {
+		return this.signInUsername === document.activeElement || this.signInPassword === document.activeElement ||
+			this.registerUsername === document.activeElement || this.registerPassword === document.activeElement ||
+			this.registerEmail === document.activeElement;
 	}
 }

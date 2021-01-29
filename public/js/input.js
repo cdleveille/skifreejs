@@ -48,7 +48,7 @@ export default class InputHandler {
 			let left = 65, right = 68, f2 = 113, space = 32, c = 67, h = 72;
 
 			document.addEventListener('keydown', (event) => {
-				if (!this.isTextInputActive()) {
+				if (!game.user.isTextInputActive()) {
 					switch (event.keyCode) {
 					case left:
 						if (game.skier.isStopped) {
@@ -73,27 +73,19 @@ export default class InputHandler {
 					game.skier.isSkatingRight = false;
 					break;
 				case space:
-					if (!this.isTextInputActive()) {
-						if (game.isPaused) {
-							game.startTime += (game.util.timestamp() - game.timePausedAt);
-							game.isPaused = false;
-						} else {
-							game.timePausedAt = game.util.timestamp();
-							game.isPaused = true;
-						}
-					}
+					game.togglePause();
 					break;
 				case f2:
 					game.init();
 					game.setUpGameObjectsOnScreen();
 					break;
 				case c:
-					if (!this.isTextInputActive()) {
+					if (!game.user.isTextInputActive()) {
 						game.hideControls = !game.hideControls;
 					}
 					break;
 				case h:
-					if (!this.isTextInputActive()) {
+					if (!game.user.isTextInputActive()) {
 						game.hideHUD = !game.hideHUD;
 						if (game.hideHUD) {
 							game.user.userSection.style.display = 'none';
@@ -170,11 +162,5 @@ export default class InputHandler {
 				}
 			});
 		}
-	}
-
-	isTextInputActive() {
-		return document.getElementById('sign-in-username') === document.activeElement || document.getElementById('sign-in-password') === document.activeElement ||
-			document.getElementById('register-username') === document.activeElement || document.getElementById('register-password') === document.activeElement ||
-			document.getElementById('register-email') === document.activeElement;
 	}
 }
