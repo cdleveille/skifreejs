@@ -36,6 +36,11 @@ export default class Game {
 		this.images = [];
 		this.scoreToSend = 0;
 		this.gamePausedText = document.getElementById('game-paused-text');
+		this.gameInfo = document.getElementById('game-info');
+		this.gameInfoTime = document.getElementById('game-info-time');
+		this.gameInfoDist = document.getElementById('game-info-dist');
+		this.gameInfoSpeed = document.getElementById('game-info-speed');
+		this.gameInfoStyle = document.getElementById('game-info-style');
 		this.loadAssets();
 		this.init();
 	}
@@ -550,7 +555,6 @@ export default class Game {
 
 	// make the skier crash
 	crashOnCollision() {
-		console.log('hit');
 		this.game.skier.isCrashed = true;
 		this.game.recordAndResetStyle();
 		if (typeof this.isOnFire !== undefined) {
@@ -858,33 +862,31 @@ export default class Game {
 		this.lift.drawTowerTops(ctx);
 
 		if (!this.hideHUD) {
-			// draw hud (140x52 black border 1px)
-			let rightEdgeX = this.gameWidth > window.innerWidth ? this.gameWidth - (Math.floor((this.gameWidth - window.innerWidth) / 2)) : this.gameWidth;
-			let topEdgeY = this.gameHeight > window.innerHeight ? (Math.floor((this.gameHeight - window.innerHeight) / 2)) : 0;
-			let cornerOffset = 2;
-			ctx.fillStyle = '#000000';
-			ctx.fillRect(rightEdgeX - 141 - cornerOffset, topEdgeY + cornerOffset, 140, 52);
-			ctx.fillStyle = '#FFFFFF';
-			ctx.fillRect(rightEdgeX - 140 - cornerOffset, topEdgeY + 1 + cornerOffset, 138, 50);
-			ctx.font = '14px ModernDOS';
-			ctx.fillStyle = '#000000';
-			ctx.fillText('Time:  ' + this.util.timeToString(this.currentTime - this.startTime), rightEdgeX - 136 - cornerOffset, topEdgeY + 11 + cornerOffset);
-			let leadingSpace = '     ';
+			// draw game info section
+			let timeText = 'Time:\xa0\xa0' + this.util.timeToString(this.currentTime - this.startTime);
+			this.gameInfoTime.innerText = timeText;
+
+			let leadingSpace = '\xa0\xa0\xa0\xa0\xa0';
 			let dist = Math.ceil(this.yDist / 28.7514);
 			if (dist > 999999) {
 				leadingSpace = '';
 			} else if (dist > 99999) {
-				leadingSpace = ' ';
+				leadingSpace = '\xa0';
 			} else if (dist > 9999) {
-				leadingSpace = '  ';
+				leadingSpace = '\xa0\xa0';
 			} else if (dist > 999) {
-				leadingSpace = '   ';
+				leadingSpace = '\xa0\xa0\xa0';
 			} else if (dist > 99) {
-				leadingSpace = '    ';
+				leadingSpace = '\xa0\xa0\xa0\xa0';
 			}
-			ctx.fillText('Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm', rightEdgeX - 136 - cornerOffset, topEdgeY + 23 + cornerOffset);
-			ctx.fillText('Speed:    ' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s', rightEdgeX - 136 - cornerOffset, topEdgeY + 35 + cornerOffset);
-			ctx.fillText('Style:       ' + Math.floor(this.style), rightEdgeX - 136 - cornerOffset, topEdgeY + 47 + cornerOffset);
+			let distText = 'Dist:' + leadingSpace + dist.toString().padStart(2, '0') + 'm';
+			this.gameInfoDist.innerText = distText;
+
+			let speedText = 'Speed:\xa0\xa0\xa0\xa0' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s';
+			this.gameInfoSpeed.innerText = speedText;
+
+			let styleText = 'Style:\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + Math.floor(this.style);
+			this.gameInfoStyle.innerText = styleText;
 
 			// draw game paused text if paused
 			if (this.isPaused) {
@@ -898,13 +900,13 @@ export default class Game {
 			}
 
 			// draw controls hud
-			if (!this.hideControls && !this.util.isOnMobile()) {
-				ctx.fillStyle = '#000000';
-				ctx.fillText('SPACE: Pause', rightEdgeX - 300, topEdgeY + 13);
-				ctx.fillText('F2: Restart', rightEdgeX - 300, topEdgeY + 25);
-				ctx.fillText('C: Show/Hide Controls', rightEdgeX - 300, topEdgeY + 37);
-				ctx.fillText('H: Show/Hide HUD', rightEdgeX - 300, topEdgeY + 49);
-			}
+			// if (!this.hideControls && !this.util.isOnMobile()) {
+			// 	ctx.fillStyle = '#000000';
+			// 	ctx.fillText('SPACE: Pause', rightEdgeX - 300, topEdgeY + 13);
+			// 	ctx.fillText('F2: Restart', rightEdgeX - 300, topEdgeY + 25);
+			// 	ctx.fillText('C: Show/Hide Controls', rightEdgeX - 300, topEdgeY + 37);
+			// 	ctx.fillText('H: Show/Hide HUD', rightEdgeX - 300, topEdgeY + 49);
+			// }
 
 			// draw user profile button
 			this.user.draw(ctx);

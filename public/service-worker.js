@@ -4,6 +4,7 @@ self.addEventListener('install', function (event) {
 	event.waitUntil(
 		caches.open('v1').then(function (cache) {
 			return cache.addAll([
+				'./css/ski.css',
 				'./js/game.js',
 				'./js/input.js',
 				'./js/lift.js',

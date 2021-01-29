@@ -1,0 +1,145 @@
+#gameScreen {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-moz-transform: translateX(-50%) translateY(-50%);
+	-webkit-transform: translateX(-50%) translateY(-50%);
+	transform: translateX(-50%) translateY(-50%);
+	z-index: 1;
+	touch-action: manipulation;
+}
+
+#user-section {
+	display: block;
+	touch-action: manipulation;
+	font-size: 16px;
+	font-family: 'ModernDOS';
+}
+
+#user-profile {
+	background: transparent;
+	border: none !important;
+	font-size: 0;
+	outline: none;
+	width: 45px;
+	height: 45px;
+	cursor: pointer;
+	position: absolute;
+	z-index: 2;
+	touch-action: manipulation;
+}
+
+#game-paused-text {
+	position: relative;
+	left: calc(50% - 36px);
+	top: 20px;
+	z-index: 2;
+	display: block;
+	font-family: 'ModernDOS';
+	font-size: 16px;
+	color: black;
+	display: none;
+}
+
+#game-info {
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	background-color: white;
+	color: black;
+	border: 1px solid black;
+	font-family: 'ModernDOS';
+	font-size: 16px;
+	display: block;
+	z-index: 2;
+}
+
+.game-info-item {
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+.text-input {
+	width: 200px;
+	margin: 2px;
+	border: 1px solid black;
+	touch-action: manipulation;
+	font-size: 16px;
+	font-family: 'ModernDOS';
+}
+
+.button {
+	width: 80px;
+	height: 20px;
+	margin: 2px;
+	margin-bottom: 3px;
+	background-color: white;
+	border: 1px solid black;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	border-radius: 0%;
+	transition-duration: 0.4s;
+	touch-action: manipulation;
+	font-size: 16px;
+	font-family: 'ModernDOS';
+}
+
+.button.submit {
+	margin-top: 2px;
+	position: relative;
+	left: 50%;
+	-ms-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+.button:hover {
+	background-color: #888888;
+	color: white;
+}
+
+.form-error {
+	text-align: center;
+	position: relative;
+	top: 2px;
+	left: 2px;
+	z-index: 2;
+	color: red;
+	display: block;
+}
+
+.user-panel {
+	position: absolute;
+	top: 0px;
+	left: 48px;
+	z-index: 2;
+	display: none;
+}
+
+.leaderboard {
+	position: relative;
+	left: -12px;
+	top: -12px;
+	display: block;
+}
+
+html, body {
+	background-color: white;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	border: 0;
+	overflow: hidden;
+	display: block;
+	-webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
+	-webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
+	-webkit-user-select: none;
+}
+
+@font-face {
+	font-family: 'ModernDOS';
+	font-style: 'normal';
+	font-weight: 400;
+	src: local('ModernDOS'),
+		url(font/ModernDOS8x16.ttf) format('truetype');
+}

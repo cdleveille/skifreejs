@@ -95,7 +95,16 @@ export default class InputHandler {
 				case h:
 					if (!this.isTextInputActive()) {
 						game.hideHUD = !game.hideHUD;
-						document.getElementById('user-section').style.display = document.getElementById('user-section').style.display == 'none' ? 'block' : 'none';
+						if (game.hideHUD) {
+							game.user.userSection.style.display = 'none';
+							game.gamePausedText.style.display = 'none';
+							game.gameInfo.style.display = 'none';
+						} else {
+							game.user.userSection.style.display = 'block';
+							game.gamePausedText.style.display = 'block';
+							game.gameInfo.style.display = 'block';
+						}
+						
 					}
 					break;
 				}

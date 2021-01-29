@@ -51,6 +51,7 @@ export default class User {
 	}
 
 	getHTMLElements() {
+		this.userSection = document.getElementById('user-section');
 		this.profileButton = document.getElementById('user-profile');
 		this.profileButton.owner = this;
 		this.profileButton.onclick = this.profileButton.owner.userProfileButtonClickHandler;
@@ -84,11 +85,17 @@ export default class User {
 		this.signOutButton.owner = this;
 		this.signOutButton.onclick = this.signOutButton.owner.signOut;
 
-		this.leaderboardButton = document.getElementById('leaderboard-btn');
-		this.leaderboardButton.owner = this;
-		this.leaderboardButton.onclick = this.leaderboardButtonClickHandler;
-		this.leaderboardButton.innerText = 'Top ' + this.leaderboardScoreCount;
-		this.leaderboard = document.getElementById('leaderboard');
+		this.leaderboardButtonSignedIn = document.getElementById('leaderboard-btn-signed-in');
+		this.leaderboardButtonSignedIn.owner = this;
+		this.leaderboardButtonSignedIn.onclick = this.leaderboardButtonSignedInClickHandler;
+		this.leaderboardButtonSignedIn.innerText = 'Top ' + this.leaderboardScoreCount;
+		this.leaderboardSignedIn = document.getElementById('leaderboard-signed-in');
+
+		this.leaderboardButtonSignedOut = document.getElementById('leaderboard-btn-signed-out');
+		this.leaderboardButtonSignedOut.owner = this;
+		this.leaderboardButtonSignedOut.onclick = this.leaderboardButtonSignedOutClickHandler;
+		this.leaderboardButtonSignedOut.innerText = 'Top ' + this.leaderboardScoreCount;
+		this.leaderboardSignedOut = document.getElementById('leaderboard-signed-out');
 	}
 
 	createFormSubmitEventListeners() {
@@ -187,13 +194,14 @@ export default class User {
 				this.owner.hideRegisterForm();
 				this.owner.hideSignInOrRegister();
 			}
+			this.owner.leaderboardSignedOut.innerHTML = '';
 		} else {
 			if (this.owner.loggedInInfoSection.style.display == 'block') {
 				this.owner.hideLoggedInInfo();
 			} else {
 				this.owner.showLoggedInInfo();
 			}
-			this.owner.leaderboard.innerHTML = '';
+			this.owner.leaderboardSignedIn.innerHTML = '';
 		}
 	}
 
@@ -216,11 +224,19 @@ export default class User {
 		this.owner.registerEmail.focus();
 	}
 
-	leaderboardButtonClickHandler() {
-		if (this.owner.leaderboard.innerHTML == '') {
+	leaderboardButtonSignedInClickHandler() {
+		if (this.owner.leaderboardSignedIn.innerHTML == '') {
 			this.owner.refreshLeaderboard(this.owner.leaderboardScoreCount);
 		} else {
-			this.owner.leaderboard.innerHTML = '';
+			this.owner.leaderboardSignedIn.innerHTML = '';
+		}
+	}
+
+	leaderboardButtonSignedOutClickHandler() {
+		if (this.owner.leaderboardSignedOut.innerHTML == '') {
+			this.owner.refreshLeaderboard(this.owner.leaderboardScoreCount);
+		} else {
+			this.owner.leaderboardSignedOut.innerHTML = '';
 		}
 	}
 
@@ -246,7 +262,7 @@ export default class User {
 				}
 
 				html += '</ol>';
-				this.leaderboard.innerHTML = html;
+				this.isLoggedIn ? this.leaderboardSignedIn.innerHTML = html : this.leaderboardSignedOut.innerHTML = html;
 			}
 		}).catch(err => console.log(err));
 	}
@@ -254,7 +270,8 @@ export default class User {
 	signOut() {
 		window.localStorage.removeItem('loginToken');
 		this.owner.loggedInUsername.innerText = '';
-		this.owner.leaderboard.innerHTML = '';
+		this.owner.leaderboardSignedIn.innerHTML = '';
+		this.owner.leaderboardSignedOut.innerHTML = '';
 		this.owner.isLoggedIn = false;
 		this.owner.hideLoggedInInfo();
 	}
