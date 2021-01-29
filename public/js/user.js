@@ -264,7 +264,7 @@ export default class User {
 		this.owner.leaderboardSignedOut.innerHTML = '';
 		this.owner.isLoggedIn = false;
 		this.owner.hideLoggedInInfo();
-		this.profileButton.src = this.logged_out.src;
+		this.owner.profileButton.src = this.owner.logged_out.src;
 	}
 
 	showSignInForm() {
