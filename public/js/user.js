@@ -4,7 +4,6 @@ export default class User {
 		this.game = game;
 		this.images = [];
 		this.leaderboardScoreCount = 10;
-		this.mouseIsOverProfileButton = false;
 		this.getHTMLElements();
 		this.validateLoginToken();
 		this.createFormSubmitEventListeners();
@@ -50,8 +49,8 @@ export default class User {
 		this.profileButton = document.getElementById('user-profile-btn');
 		this.profileButton.owner = this;
 		this.profileButton.onclick = this.profileButton.owner.userProfileButtonClickHandler;
-		this.profileButton.onmouseover = () => { this.mouseIsOverProfileButton = true; };
-		this.profileButton.onmouseout = () => { this.mouseIsOverProfileButton = false; };
+		this.profileButton.onmousedown = () => { this.profileImage.src = this.isLoggedIn ? this.logged_in_inverted.src : this.logged_out_inverted.src; };
+		this.profileButton.onmouseup = () => { this.profileImage.src = this.isLoggedIn ? this.logged_in.src : this.logged_out.src; };
 
 		this.signInOrRegister = document.getElementById('sign-in-or-register');
 

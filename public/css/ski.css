@@ -42,7 +42,7 @@
 }
 
 #user-profile-btn:active + #user-profile-img {
-	background-color: #888888;
+	background-color: #666666;
 }
 
 #game-paused-text {
@@ -87,7 +87,7 @@
 }
 
 #game-info-btn:active + #game-info {
-	background-color: #888888;
+	background-color: #666666;
 	color: white;
 }
 
@@ -149,7 +149,7 @@
 }
 
 .button:active {
-	background-color: #888888;
+	background-color: #666666;
 	color: white;
 }
 
