@@ -89,22 +89,10 @@ export default class Game {
 		this.snowboarder_crash = this.util.loadImage('/img/snowboarder_crash.png', this);
 		this.offlineImg = this.util.loadImage('/img/offline.png', this);
 
-		this.loadFont();
 		this.user.loadAssets();
 		this.skier.loadAssets();
 		this.lift.loadAssets();
 		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images);
-	}
-
-	// load the font family used for the game hud
-	loadFont() {
-		this.font = new FontFace('ModernDOS', 'url(../font/ModernDOS8x16.ttf)');
-		this.font.load().then(function (loaded_face) {
-			document.fonts.add(loaded_face);
-			document.body.style.fontFamily = '"ModernDOS", Arial';
-		}).catch(function (error) {
-			console.log('Error loading ModernDOS font: ', error);
-		});
 	}
 
 	// adapt game to the size of the window
@@ -159,7 +147,7 @@ export default class Game {
 		}
 	}
 
-	// return a random game object type, weighted based on the frequency value for each type
+	// return a random game object type weighted based on the frequency value for each type
 	getRandomGameObjectType() {
 		if (!this.objectFreqArray) {
 			this.createGameObjectFreqArray();
@@ -168,6 +156,7 @@ export default class Game {
 		return this.objectFreqArray[i];
 	}
 
+	// spawn a game object of random type at a random location on screen
 	spawnNewGameObjectOnScreen(type) {
 		let xy = this.getRandomCoordinateOnScreen();
 		return this.spawnNewGameObject(type, xy.x, xy.y);
@@ -193,6 +182,7 @@ export default class Game {
 		}
 	}
 
+	// spawn a game object of random type at a random location off screen
 	getRandomCoordinateOnScreen() {
 		let space = 80, width = window.innerWidth, height = this.gameHeight;
 		let searching = true, attempts = 0, maxAttempts = 10, xy;
@@ -251,10 +241,12 @@ export default class Game {
 		switch (type) {
 		case 'bump_group':
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 64, hbHeight: 32, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_group };
+			if (!this.bumpsGroup) this.bumpsGroup = [];
 			this.bumpsGroup.push(newObj);
 			break;
 		case 'bump_small':
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 4, jumpOverHeight: 4, onCollision: this.slowOnCollision, img: this.bump_small };
+			if (!this.bumpsSmall) this.bumpsSmall = [];
 			this.bumpsSmall.push(newObj);
 			break;
 		case 'bump_large':
@@ -263,6 +255,7 @@ export default class Game {
 			break;
 		case 'tree_small':
 			newObj = { game: this, x: x, y: y, hbXOffset: 8, hbYOffset: 22, hbWidth: 14, hbHeight: 10, jumpOverHeight: 32, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.tree_small, drawThresholdY: -5 };
+			if (!this.treesSmall) this.treesSmall = [];
 			this.treesSmall.push(newObj);
 			break;
 		case 'tree_large':

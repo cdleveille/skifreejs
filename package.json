@@ -6,7 +6,9 @@
   "main": "build/index.js",
   "scripts": {
     "start": "node build/index.js",
+    "start-i": "npm i && npm run start",
     "dev": "nodemon build/index.js",
+    "dev-i": "npm i && npm run dev",
     "debug": "http-server -a localhost -p 8000 -c-1",
     "prebuild": "eslint --fix --ext .ts,.tsx .",
     "build": "tsc",

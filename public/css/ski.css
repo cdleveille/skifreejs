@@ -22,7 +22,6 @@
 	z-index: 2;
 	touch-action: manipulation;
 	background-color: white;
-	border-radius: 0%;
 	transition-duration: 0.2s;
 	display: none;
 }
@@ -36,11 +35,7 @@
 	z-index: 3;
 }
 
-.button-invis {
-	outline: none;
-	border: none !important;
-	background: transparent;
-}
+
 
 #user-profile-btn:hover + #user-profile-img {
 	background-color: #DDDDDD;
@@ -156,6 +151,12 @@
 .button:active {
 	background-color: #888888;
 	color: white;
+}
+
+.button-invis {
+	outline: none;
+	border: none !important;
+	background: transparent;
 }
 
 .form-error {
