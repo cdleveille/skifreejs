@@ -1,9 +1,19 @@
 /* eslint-disable no-undef */
 export default class InputHandler {
 	constructor(canvas, game) {
-		canvas.oncontextmenu = function (e) {
+		document.oncontextmenu = function (e) {
 			e.preventDefault();
 		};
+
+		document.addEventListener('mousedown', () => {
+			if (game.user.mouseIsOverProfileButton) {
+				game.user.profileImage.src = game.user.isLoggedIn ? game.user.logged_in_inverted.src : game.user.logged_out_inverted.src;
+			}
+		});
+
+		document.addEventListener('mouseup', () => {
+			game.user.profileImage.src = game.user.isLoggedIn ? game.user.logged_in.src : game.user.logged_out.src;
+		});
 		
 		if (!game.util.hasTouch()) {
 			canvas.addEventListener('mousemove', (event) => {
