@@ -104,7 +104,6 @@ export default class InputHandler {
 							game.restartBtn.style.display = 'block';
 							game.restartImg.style.display = 'block';
 						}
-						
 					}
 					break;
 				}
