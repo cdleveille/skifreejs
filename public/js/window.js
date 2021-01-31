@@ -2,12 +2,13 @@
 export default class WindowHandler {
 	constructor(canvas, game) {
 		function gameWindowChangeHandler() {
+			let ctx = canvas.getContext('2d');
 			let [width, height] = resizeCanvas();
-			let scale = window.devicePixelRatio;
 
-			canvas.style.width = width + 'px';
-			canvas.style.height = height + 'px';
-			[canvas.width, canvas.height] = [width * scale, height * scale];
+			let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+			canvas.width = width;
+			canvas.height = height;
+			ctx.putImageData(imgData, 0, 0);
 			
 			game.resizeCanvas(canvas.width, canvas.height);
 		}
