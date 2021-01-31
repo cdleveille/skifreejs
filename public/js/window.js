@@ -1,11 +1,7 @@
 /* eslint-disable no-undef */
 export default class WindowHandler {
 	constructor(canvas, game) {
-		function resizeCanvas() {
-			return [Math.max(screen.width, window.innerWidth), Math.max(screen.height, window.innerHeight)];
-		}
-
-		window.addEventListener('resize', function () {
+		function gameWindowChangeHandler() {
 			let [width, height] = resizeCanvas();
 			let scale = window.devicePixelRatio;
 
@@ -14,6 +10,18 @@ export default class WindowHandler {
 			[canvas.width, canvas.height] = [width * scale, height * scale];
 			
 			game.resizeCanvas(canvas.width, canvas.height);
+		}
+
+		function resizeCanvas() {
+			return [Math.max(screen.width, window.innerWidth), Math.max(screen.height, window.innerHeight)];
+		}
+
+		window.addEventListener('resize', function () {
+			gameWindowChangeHandler();
+		});
+
+		window.addEventListener('orientationchange', function () {
+			gameWindowChangeHandler();
 		});
 
 		window.addEventListener('online', function () {
