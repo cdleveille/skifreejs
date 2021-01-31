@@ -36,6 +36,12 @@ export default class Game {
 		this.images = [];
 		this.scoreToSend = 0;
 		this.gamePausedText = document.getElementById('game-paused-text');
+		this.restartImg = document.getElementById('restart-img');
+		this.restartBtn = document.getElementById('restart-btn');
+		this.restartBtn.owner = this;
+		this.restartBtn.onclick = () => { this.restart(); };
+		this.restartBtn.onmousedown = () => { this.restartImg.src = this.restart_inverted.src; };
+		this.restartBtn.onmouseup = () => { this.restartImg.src = this.restart_img.src; };
 		this.gameInfo = document.getElementById('game-info');
 		this.gameInfoBtn = document.getElementById('game-info-btn');
 		this.gameInfoBtn.owner = this;
@@ -67,6 +73,12 @@ export default class Game {
 		this.stylePointsToAwardOnLanding = 0;
 	}
 
+	// restart the gamestate
+	restart() {
+		this.init();
+		this.setUpGameObjectsOnScreen();
+	}
+
 	// load game assets
 	loadAssets() {
 		this.tree_small = this.util.loadImage('/img/tree_small.png', this);
@@ -88,6 +100,8 @@ export default class Game {
 		this.snowboarder_right = this.util.loadImage('/img/snowboarder_right.png', this);
 		this.snowboarder_crash = this.util.loadImage('/img/snowboarder_crash.png', this);
 		this.offlineImg = this.util.loadImage('/img/offline.png', this);
+		this.restart_img = this.util.loadImage('/img/restart.png', this);
+		this.restart_inverted = this.util.loadImage('/img/restart_inverted.png', this);
 
 		this.user.loadAssets();
 		this.skier.loadAssets();
@@ -729,10 +743,14 @@ export default class Game {
 				this.startTime += (this.util.timestamp() - this.timePausedAt);
 				this.isPaused = false;
 				this.gamePausedText.style.display = 'none';
+				this.restartBtn.style.display = 'none';
+				this.restartImg.style.display = 'none';
 			} else {
 				this.timePausedAt = this.util.timestamp();
 				this.isPaused = true;
 				this.gamePausedText.style.display = 'block';
+				this.restartBtn.style.display = 'block';
+				this.restartImg.style.display = 'block';
 			}
 		}
 	}
@@ -908,12 +926,18 @@ export default class Game {
 			// control visibility of game paused text html element
 			if (this.isPaused) {
 				this.gamePausedText.style.display = 'block';
+				this.restartBtn.style.display = 'block';
+				this.restartImg.style.display = 'block';
 			} else {
 				this.gamePausedText.style.display = 'none';
+				this.restartBtn.style.display = 'none';
+				this.restartImg.style.display = 'none';
 			}
 
 		} else {
 			this.gamePausedText.style.display = 'none';
+			this.restartBtn.style.display = 'none';
+			this.restartImg.style.display = 'none';
 		}
 	}
 }

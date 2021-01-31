@@ -6,12 +6,11 @@
 	-webkit-transform: translateX(-50%) translateY(-50%);
 	transform: translateX(-50%) translateY(-50%);
 	z-index: 1;
-	touch-action: manipulation;
 }
 
 #user-section {
+	position: absolute;
 	display: block;
-	touch-action: manipulation;
 	font-size: 16px;
 	font-family: 'ModernDOS';
 }
@@ -20,7 +19,6 @@
 	margin: 2px;
 	position: absolute;
 	z-index: 2;
-	touch-action: manipulation;
 	background-color: white;
 	transition-duration: 0.2s;
 	display: none;
@@ -28,14 +26,11 @@
 
 #user-profile-btn {
 	margin: 2px;
-	cursor: pointer;
 	position: absolute;
 	width: 45px;
 	height: 45px;
 	z-index: 3;
 }
-
-
 
 #user-profile-btn:hover + #user-profile-img {
 	background-color: #DDDDDD;
@@ -57,6 +52,32 @@
 	display: none;
 }
 
+#restart-img{
+	position: absolute;
+	z-index: 2;
+	top: 98px;
+	right: 67px;
+	background-color: white;
+	transition-duration: 0.2s;
+}
+
+#restart-btn {
+	position: absolute;
+	top: 98px;
+	right: 67px;
+	width: 24px;
+	height: 24px;
+	z-index: 3;
+}
+
+#restart-btn:hover + #restart-img {
+	background-color: #DDDDDD;
+}
+
+#restart-btn:active + #restart-img {
+	background-color: #666666;
+}
+
 #game-info {
 	position: absolute;
 	right: 2px;
@@ -73,7 +94,6 @@
 }
 
 #game-info-btn {
-	cursor: pointer;
 	position: absolute;
 	right: 2px;
 	top: 2px;
@@ -108,7 +128,6 @@
 	width: 200px;
 	margin: 2px;
 	border: 1px solid black;
-	touch-action: manipulation;
 	font-size: 16px;
 	font-family: 'ModernDOS';
 	transition-duration: 0.2s;
@@ -130,7 +149,6 @@
 	cursor: pointer;
 	border-radius: 0%;
 	transition-duration: 0.2s;
-	touch-action: manipulation;
 	font-size: 16px;
 	font-family: 'ModernDOS';
 	outline: none;
@@ -154,6 +172,7 @@
 }
 
 .button-invis {
+	cursor: pointer;
 	outline: none;
 	border: none !important;
 	background: transparent;
@@ -195,6 +214,7 @@ html, body {
 	-webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
 	-webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
 	-webkit-user-select: none;
+	touch-action: none;
 }
 
 @font-face {

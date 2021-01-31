@@ -4,6 +4,11 @@ export default class InputHandler {
 		document.oncontextmenu = (e) => {
 			e.preventDefault();
 		};
+
+		document.addEventListener('mouseup', () => {
+			game.user.profileImage.src = game.user.isLoggedIn ? game.user.logged_in.src : game.user.logged_out.src;
+			game.restartImg.src = game.restart_img.src;
+		});
 		
 		if (!game.util.hasTouch()) {
 			canvas.addEventListener('mousemove', (event) => {
@@ -76,8 +81,7 @@ export default class InputHandler {
 					game.togglePause();
 					break;
 				case f2:
-					game.init();
-					game.setUpGameObjectsOnScreen();
+					game.restart();
 					break;
 				case c:
 					if (!game.user.isTextInputActive()) {
@@ -91,10 +95,14 @@ export default class InputHandler {
 							game.user.userSection.style.display = 'none';
 							game.gamePausedText.style.display = 'none';
 							game.gameInfo.style.display = 'none';
+							game.restartBtn.style.display = 'none';
+							game.restartImg.style.display = 'none';
 						} else {
 							game.user.userSection.style.display = 'block';
 							game.gamePausedText.style.display = 'block';
 							game.gameInfo.style.display = 'block';
+							game.restartBtn.style.display = 'block';
+							game.restartImg.style.display = 'block';
 						}
 						
 					}
