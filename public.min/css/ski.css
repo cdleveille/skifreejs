@@ -1,0 +1,255 @@
+#gameScreen {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-moz-transform: translateX(-50%) translateY(-50%);
+	-webkit-transform: translateX(-50%) translateY(-50%);
+	transform: translateX(-50%) translateY(-50%);
+	z-index: 1;
+}
+
+#user-section {
+	position: absolute;
+	display: block;
+	font-size: 16px;
+	font-family: 'ModernDOS';
+}
+
+#user-profile-img {
+	margin: 2px;
+	position: absolute;
+	z-index: 2;
+	background-color: white;
+	transition-duration: 0.2s;
+	display: none;
+}
+
+#user-profile-btn {
+	margin: 2px;
+	position: absolute;
+	width: 45px;
+	height: 45px;
+	z-index: 3;
+}
+
+#user-profile-btn:hover + #user-profile-img {
+	background-color: #DDDDDD;
+}
+
+#user-profile-btn:active + #user-profile-img {
+	background-color: #666666;
+}
+
+#game-paused-text {
+	position: absolute;
+	right: 38px;
+	top: 75px;
+	z-index: 2;
+	display: block;
+	font-family: 'ModernDOS';
+	font-size: 16px;
+	color: black;
+	display: none;
+}
+
+#restart-img{
+	position: absolute;
+	z-index: 2;
+	top: 98px;
+	right: 67px;
+	background-color: white;
+	transition-duration: 0.2s;
+}
+
+#restart-btn {
+	position: absolute;
+	top: 98px;
+	right: 67px;
+	width: 24px;
+	height: 24px;
+	z-index: 3;
+}
+
+#restart-btn:hover + #restart-img {
+	background-color: #DDDDDD;
+}
+
+#restart-btn:active + #restart-img {
+	background-color: #666666;
+}
+
+#game-info {
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	background-color: white;
+	color: black;
+	border: 1px solid black;
+	font-family: 'ModernDOS';
+	font-size: 16px;
+	display: block;
+	z-index: 2;
+	transition-duration: 0.2s;
+	display: none;
+}
+
+#game-info-btn {
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	width: 154px;
+	height: 66px;
+	z-index: 3;
+}
+
+#game-info-btn:hover + #game-info {
+	background-color: #DDDDDD;
+}
+
+#game-info-btn:active + #game-info {
+	background-color: #666666;
+	color: white;
+}
+
+#offline-ind {
+	position: absolute;
+	left: 8px;
+	top: 50px;
+	z-index: 2;
+	display: none;
+}
+
+.game-info-item {
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+.text-input {
+	width: 200px;
+	margin: 2px;
+	border: 1px solid black;
+	font-size: 16px;
+	font-family: 'ModernDOS';
+	transition-duration: 0.2s;
+}
+
+.text-input:focus {
+	background-color: #DDDDDD;
+}
+
+.button {
+	width: 120px;
+	height: 20px;
+	margin: 2px;
+	margin-bottom: 3px;
+	background-color: white;
+	border: 1px solid black;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	border-radius: 0%;
+	transition-duration: 0.2s;
+	font-size: 16px;
+	font-family: 'ModernDOS';
+	outline: none;
+}
+
+.button.submit {
+	margin-top: 2px;
+	position: relative;
+	left: 50%;
+	-ms-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+.button:hover {
+	background-color: #DDDDDD;
+}
+
+.button:active {
+	background-color: #666666;
+	color: white;
+}
+
+.button-invis {
+	cursor: pointer;
+	outline: none;
+	border: none !important;
+	background: transparent;
+}
+
+.form-error {
+	text-align: center;
+	position: relative;
+	top: 2px;
+	left: 2px;
+	z-index: 2;
+	color: red;
+	display: block;
+}
+
+.user-panel {
+	position: absolute;
+	top: 0px;
+	left: 48px;
+	z-index: 2;
+	display: none;
+}
+
+.leaderboard {
+	position: relative;
+	left: -12px;
+	top: -12px;
+	display: block;
+	width: 200px;
+}
+
+html, body {
+	background-color: white;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	border: 0;
+	overflow: hidden;
+	display: block;
+	-webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
+	-webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
+	-webkit-user-select: none;
+	touch-action: none;
+}
+
+@font-face {
+	font-family: 'ModernDOS';
+	font-style: 'normal';
+	font-weight: 400;
+	src: local('ModernDOS'),
+		url(../font/ModernDOS8x16.ttf) format('truetype');
+}
+
+.animate-flicker {
+	-webkit-animation: flickerAnimation 1s infinite;
+	-moz-animation: flickerAnimation 1s infinite;
+	-o-animation: flickerAnimation 1s infinite;
+	animation: flickerAnimation 1s infinite;
+}
+
+@keyframes flickerAnimation {
+	0%   { opacity:0; }
+	50%  { opacity:1; }
+	100% { opacity:0; }
+}
+@-o-keyframes flickerAnimation{
+	0%   { opacity:0; }
+	50%  { opacity:1; }
+	100% { opacity:0; }
+}
+@-moz-keyframes flickerAnimation{
+	0%   { opacity:0; }
+	50%  { opacity:1; }
+	100% { opacity:0; }
+}
+@-webkit-keyframes flickerAnimation{
+	0%   { opacity:0; }
+	50%  { opacity:1; }
+	100% { opacity:0; }
+}

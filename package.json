@@ -12,7 +12,8 @@
     "debug": "http-server -a localhost -p 8000 -c-1",
     "prebuild": "eslint --fix --ext .ts,.tsx .",
     "build": "tsc",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "minify": "minify.bat"
   },
   "repository": {
     "type": "git",
