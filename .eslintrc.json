@@ -16,7 +16,6 @@
             "warn",
             "tab"
         ],
-		"linebreak-style": ["error", "windows"],
         "quotes": [
             "warn",
             "single"
