@@ -91,6 +91,8 @@ self.addEventListener('install', function (event) {
 				'./img/tree_bare.png',
 				'./img/tree_large.png',
 				'./img/tree_small.png',
+				'./img/tree_small_moving_left.png',
+				'./img/tree_small_moving_right.png',
 				'./img/yeti1.png',
 				'./img/yeti2.png',
 			]);
