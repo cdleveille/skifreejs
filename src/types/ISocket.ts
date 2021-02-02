@@ -3,3 +3,8 @@ export interface INewScore {
 	username: string,
 	score: number
 }
+
+export interface IPlayer {
+	id: string,
+	score: number
+}
