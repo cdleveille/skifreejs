@@ -16,7 +16,7 @@ app.post('/api/register', async (req: Request, res: Response, next: NextFunction
 		if (typeof username !== T.string || typeof email !== T.string || typeof password !== T.string)
 			throw Error(Errors.invalidScoreRequest);
 
-		if (username.length > 100) throw 'fuck off forrest';
+		if (username.length > 20) throw 'username too long';
 
 		const user: IUser = await _User.Register(req.body);
 
