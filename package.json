@@ -14,7 +14,7 @@
 		"build": "tsc",
 		"postinstall": "npm run build",
 		"min": "javascript-obfuscator public --output public.min",
-		"walk": "node robocopy.js"
+		"walk": "node cpx.js"
 	},
 	"repository": {
 		"type": "git",
