@@ -38,7 +38,7 @@ export default class User {
 		this.signInError = document.getElementById('sign-in-error');
 		
 		this.registerButton = document.getElementById('register-btn');
-		this.registerButton.onclick = () => { this.registerButton.blud(); this.registerButtonClickHandler(); };
+		this.registerButton.onclick = () => { this.registerButton.blur(); this.registerButtonClickHandler(); };
 
 		this.registerForm = document.getElementById('register-form');
 		this.registerFormSection = document.getElementById('register-form-section');
