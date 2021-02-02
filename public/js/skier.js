@@ -206,7 +206,7 @@ export default class Skier {
 
 					if (this.trick1StartTime != null && this.trick1EndTime != null) {
 						let duration = this.trick1EndTime - this.trick1StartTime;
-						styleToAdd += Math.floor(duration / 80.0 + 5);
+						styleToAdd += ((duration / 80.0) + 5);
 						this.trick1StartTime = null;
 						this.trick1EndTime = null;
 					}
