@@ -18,31 +18,6 @@ export default class User {
 		this.crown = this.game.util.loadImage('/img/crown.png', this);
 	}
 
-	// authenticate the current locally-stored login token with the server, which responds with user data
-	validateLoginToken() {
-		let loginToken = window.localStorage.getItem('loginToken');
-
-		if (loginToken) {
-			let headers = {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${loginToken}`
-			};
-			let body = {};
-			let method = 'POST', route = '/api/validate';
-			this.game.util.request(method, route, headers, body).then(res => {
-				console.log(method, route, res);
-				if (res.ok) {
-					this.userData = res.data;
-					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
-					this.profileImage.src = this.logged_in.src;
-					this.isLoggedIn = true;
-				}
-			}).catch(err => console.log(err));
-		} else {
-			this.isLoggedIn = false;
-		}
-	}
-
 	getHTMLElements() {
 		this.userSection = document.getElementById('user-section');
 		this.profileImage = document.getElementById('user-profile-img');
@@ -92,6 +67,31 @@ export default class User {
 		this.leaderboardButtonSignedOut.onclick = this.leaderboardButtonSignedOutClickHandler;
 		this.leaderboardButtonSignedOut.innerText = 'Top ' + this.leaderboardScoreCount;
 		this.leaderboardSignedOut = document.getElementById('leaderboard-signed-out');
+	}
+
+	// authenticate the current locally-stored login token with the server, which responds with user data
+	validateLoginToken() {
+		let loginToken = window.localStorage.getItem('loginToken');
+
+		if (loginToken) {
+			let headers = {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${loginToken}`
+			};
+			let body = {};
+			let method = 'POST', route = '/api/validate';
+			this.game.util.request(method, route, headers, body).then(res => {
+				console.log(method, route, res);
+				if (res.ok) {
+					this.userData = res.data;
+					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
+					this.profileImage.src = this.logged_in.src;
+					this.isLoggedIn = true;
+				}
+			}).catch(err => console.log(err));
+		} else {
+			this.isLoggedIn = false;
+		}
 	}
 
 	createFormSubmitEventListeners() {

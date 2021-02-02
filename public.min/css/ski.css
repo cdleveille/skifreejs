@@ -59,6 +59,7 @@
 	right: 67px;
 	background-color: white;
 	transition-duration: 0.2s;
+	display: none;
 }
 
 #restart-btn {
@@ -68,6 +69,7 @@
 	width: 24px;
 	height: 24px;
 	z-index: 3;
+	display: none;
 }
 
 #restart-btn:hover + #restart-img {

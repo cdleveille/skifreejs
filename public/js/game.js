@@ -34,24 +34,7 @@ export default class Game {
 		this.hideHUD = false;
 		this.hideControls = true;
 		this.images = [];
-		this.scoreToSend = 0;
-		this.gamePausedText = document.getElementById('game-paused-text');
-		this.restartImg = document.getElementById('restart-img');
-		this.restartBtn = document.getElementById('restart-btn');
-		this.restartBtn.owner = this;
-		this.restartBtn.onclick = () => { this.restart(); };
-		this.restartBtn.onmousedown = () => { this.restartImg.src = this.restart_inverted.src; };
-		this.restartBtn.onmouseup = () => { this.restartImg.src = this.restart_img.src; };
-		this.gameInfo = document.getElementById('game-info');
-		this.gameInfoBtn = document.getElementById('game-info-btn');
-		this.gameInfoBtn.owner = this;
-		this.gameInfoBtn.onclick = this.gameInfoBtnClickHandler;
-		this.gameInfoTime = document.getElementById('game-info-time');
-		this.gameInfoDist = document.getElementById('game-info-dist');
-		this.gameInfoSpeed = document.getElementById('game-info-speed');
-		this.gameInfoStyle = document.getElementById('game-info-style');
-		this.offlineInd = document.getElementById('offline-ind');
-		navigator.onLine ? this.goOnline() : this.goOffline();
+		this.getHTMLElements();
 		this.loadAssets();
 		this.init();
 	}
@@ -71,6 +54,7 @@ export default class Game {
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
+		this.scoreToSend = 0;
 	}
 
 	// restart the gamestate
@@ -107,6 +91,25 @@ export default class Game {
 		this.skier.loadAssets();
 		this.lift.loadAssets();
 		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images);
+	}
+
+	getHTMLElements() {
+		this.gamePausedText = document.getElementById('game-paused-text');
+		this.restartImg = document.getElementById('restart-img');
+		this.restartBtn = document.getElementById('restart-btn');
+		this.restartBtn.owner = this;
+		this.restartBtn.onclick = () => { this.restart(); };
+		this.restartBtn.onmousedown = () => { this.restartImg.src = this.restart_inverted.src; };
+		this.restartBtn.onmouseup = () => { this.restartImg.src = this.restart_img.src; };
+		this.gameInfo = document.getElementById('game-info');
+		this.gameInfoBtn = document.getElementById('game-info-btn');
+		this.gameInfoBtn.onclick = () => { this.togglePause(); };
+		this.gameInfoTime = document.getElementById('game-info-time');
+		this.gameInfoDist = document.getElementById('game-info-dist');
+		this.gameInfoSpeed = document.getElementById('game-info-speed');
+		this.gameInfoStyle = document.getElementById('game-info-style');
+		this.offlineInd = document.getElementById('offline-ind');
+		navigator.onLine ? this.goOnline() : this.goOffline();
 	}
 
 	// adapt game to the size of the window
@@ -778,6 +781,7 @@ export default class Game {
 				this.doImageLoadCheck = false;
 				this.user.profileImage.style.display = 'block';
 				this.gameInfo.style.display = 'block';
+
 			} else return;
 		}
 
