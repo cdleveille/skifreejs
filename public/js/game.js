@@ -637,7 +637,6 @@ export default class Game {
 				this.user.loggedInUsername.innerText = this.user.userData.username + ' ' + this.scoreToSend + '*';
 			}
 		}
-		this.style = 0;
 	}
 
 	clearScore() {

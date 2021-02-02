@@ -27,7 +27,7 @@ export default class WindowHandler {
 
 		window.addEventListener('online', function () {
 			game.goOnline();
-			game.recordAndResetStyle();
+			game.style = 0;
 		});
 
 		window.addEventListener('offline', function () {

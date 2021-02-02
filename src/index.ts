@@ -36,9 +36,45 @@ app.get('*', async (req: Request, res: Response): Promise<Response> => {
 });
 
 // new websocket connection
+import cache from './helpers/cache';
+
 io.on('connection', (socket: any) => {
+	cache.set(`player_${socket.id}_score`, { score: 0 });
+
+	socket.on('disconnect', () => {
+		cache.del(`player_${socket.id}_score`);
+		//console.log(cache.keys());
+	});
+
+	socket.on('new_point', (curScore: number) => {
+		const cacheScore = cache.get(`player_${socket.id}_score`);
+
+		if (!cacheScore) {
+			throw 'user not found';
+		}
+		else if (curScore - cacheScore.score > 100) {
+			throw 'suspicious activity detected';
+		}
+		cache.set(`player_${socket.id}_score`, { score: curScore });
+	});
+
 	socket.on('new_score', async (payload: INewScore) => {
 		// maybe run some checks here
+		const cacheScore = cache.get(`player_${socket.id}_score`);
+
+		if (!cacheScore) {
+			throw 'user not found';
+		}
+		else if (cacheScore.score != payload.score) {
+			throw 'suspicious activity detected';
+		}
+		else if (payload.score - cacheScore.score > 100) {
+			throw 'suspicious activity detected';
+		}
+		else if (payload.score % 1 != 0) {
+			throw 'suspicious activity detected';
+		}
+
 		try {
 			const newScore: IUser = await _User.UpdateScore(payload);
 
