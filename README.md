@@ -38,5 +38,5 @@ Fan remake of the classic game from Windows Entertainment Pack 3, written in Jav
 - While Crashed:
     - Touch below skier: stand up
 - While Jumping:
-    - Touch above skier (hold): trick 1
-    - Touch below skier: advance backflip stage
+    - Touch above skier: advance backflip stage
+    - Touch below skier (hold): trick 1
