@@ -97,13 +97,12 @@ export default class Game {
 		this.gamePausedText = document.getElementById('game-paused-text');
 		this.restartImg = document.getElementById('restart-img');
 		this.restartBtn = document.getElementById('restart-btn');
-		this.restartBtn.owner = this;
 		this.restartBtn.onclick = () => { this.restart(); };
 		this.restartBtn.onmousedown = () => { this.restartImg.src = this.restart_inverted.src; };
 		this.restartBtn.onmouseup = () => { this.restartImg.src = this.restart_img.src; };
 		this.gameInfo = document.getElementById('game-info');
 		this.gameInfoBtn = document.getElementById('game-info-btn');
-		this.gameInfoBtn.onclick = () => { this.togglePause(); };
+		this.gameInfoBtn.onclick = () => { this.gameInfoBtn.blur(); this.togglePause(); };
 		this.gameInfoTime = document.getElementById('game-info-time');
 		this.gameInfoDist = document.getElementById('game-info-dist');
 		this.gameInfoSpeed = document.getElementById('game-info-speed');
@@ -734,10 +733,6 @@ export default class Game {
 		this.user.signInButton.disabled = true;
 		this.user.registerButton.disabled = true;
 		this.offlineInd.style.display = 'block';
-	}
-
-	gameInfoBtnClickHandler() {
-		this.owner.togglePause();
 	}
 
 	togglePause() {
