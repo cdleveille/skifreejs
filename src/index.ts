@@ -18,9 +18,9 @@ import { Environment as Env } from './types/Constants';
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-app.use(express.static(path.join(cwd(), config.ENV === Env.dev ? './public/' : './public/')));
+app.use(express.static(path.join(cwd(), config.ENV === Env.dev ? './public/' : './public.min/')));
 app.set('view engine', 'ejs');
-app.set('views', path.join(cwd(), config.ENV === Env.dev ? './public/' : './public/'));
+app.set('views', path.join(cwd(), config.ENV === Env.dev ? './public/' : './public.min/'));
 
 // serve static
 app.get('/', async (req: Request, res: Response): Promise<void> => {
