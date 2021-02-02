@@ -47,7 +47,6 @@ export default class Game {
 		this.lift.init();
 		this.isPaused = false;
 		this.yDist = 0;
-		this.style = 0;
 		this.mousePos = {x: 0, y: 0};
 		this.startTime = this.util.timestamp();
 		this.timestampFire = this.startTime;
@@ -55,6 +54,8 @@ export default class Game {
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
 		this.scoreToSend = 0;
+		this.style = 0;
+		this.util.newPoint(0);
 	}
 
 	// restart the gamestate
