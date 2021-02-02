@@ -10,10 +10,11 @@
 		"dev": "nodemon build/index.js",
 		"dev-i": "npm i && npm run dev",
 		"debug": "http-server -a localhost -p 8000 -c-1",
-		"prebuild": "eslint --fix --ext .ts,.tsx . && npm run min",
+		"prebuild": "eslint --fix --ext .ts,.tsx . && npm run walk && npm run min",
 		"build": "tsc",
 		"postinstall": "npm run build",
-		"min": "javascript-obfuscator public --output public.min"
+		"min": "javascript-obfuscator public --output public.min",
+		"walk": "node robocopy.js"
 	},
 	"repository": {
 		"type": "git",
@@ -48,6 +49,7 @@
 		"cluster": "^0.7.7",
 		"compression": "^1.7.4",
 		"cors": "^2.8.5",
+		"cpx": "^1.5.0",
 		"dateformat": "^4.5.1",
 		"dotenv": "^8.2.0",
 		"ejs": "^3.1.5",
