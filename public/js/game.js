@@ -29,7 +29,7 @@ export default class Game {
 		this.snowboarderFreq = 0.00;
 		this.jumpVBase = 0.7;
 		this.jumpVMult = 0.0022;
-		this.collisionsEnabled = true;
+		this.collisionsEnabled = false;
 		this.doImageLoadCheck = true;
 		this.hideHUD = false;
 		this.hideControls = true;

@@ -39,3 +39,6 @@ yarn.lock
 
 # py stuff
 __pycache__/
+
+# minified/obfuscated js
+public.min/*
