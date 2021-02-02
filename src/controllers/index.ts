@@ -16,6 +16,8 @@ app.post('/api/register', async (req: Request, res: Response, next: NextFunction
 		if (typeof username !== T.string || typeof email !== T.string || typeof password !== T.string)
 			throw Error(Errors.invalidScoreRequest);
 
+		if (username.length > 100) throw 'fuck off forrest';
+
 		const user: IUser = await _User.Register(req.body);
 
 		const token: string = await Jwt.SignUser({
