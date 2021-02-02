@@ -39,7 +39,7 @@ app.get('*', async (req: Request, res: Response): Promise<Response> => {
 import cache from './helpers/cache';
 
 io.on('connection', (socket: any) => {
-	cache.set(`player_${socket.id}_score`, { score: 6 });
+	cache.set(`player_${socket.id}_score`, { score: 0 });
 
 	socket.on('disconnect', () => {
 		cache.del(`player_${socket.id}_score`);

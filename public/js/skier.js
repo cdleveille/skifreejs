@@ -201,18 +201,25 @@ export default class Skier {
 
 				// award style points for landing jumps and doing tricks
 				if (!this.isCrashed) {
-					this.game.style += this.game.stylePointsToAwardOnLanding;
-					this.game.style += 20 * this.backflipsCompleted;
+					let styleToAdd = this.game.stylePointsToAwardOnLanding + (20 * this.backflipsCompleted);
+					if (styleToAdd > 0) {
+						this.game.style += styleToAdd;
+						this.game.util.newPoint(this.game.style);
+					}
 
 					if (this.trick1StartTime != null && this.trick1EndTime != null) {
 						let duration = this.trick1EndTime - this.trick1StartTime;
 						let points = Math.floor(duration / 80.0 + 5);
 						this.game.style += points;
+						this.game.util.newPoint(this.game.style);
 						this.trick1StartTime = null;
 						this.trick1EndTime = null;
 					}
 
-					this.game.style += 10 * this.trick2Times;
+					if (this.trick2Times > 0) {
+						this.game.style += 10 * this.trick2Times;
+						this.game.util.newPoint(this.game.style);
+					}
 				}
 
 				this.jumpOffset = 0;

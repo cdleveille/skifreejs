@@ -42,6 +42,7 @@ export default class InputHandler {
 							}
 						} else if (game.skier.isStopped) {
 							game.skier.isCrashed = false;
+							game.style = 0;
 						}
 					} else if (event.button == 2) {
 						game.skier.isDoingTrick1 = false;
