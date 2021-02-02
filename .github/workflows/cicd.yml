@@ -1,0 +1,24 @@
+name: skifree ci/cd
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install dependencies
+      run: npm ci
+
+    - name: lint project
+      run: npm run postinstall
