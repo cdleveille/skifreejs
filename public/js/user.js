@@ -215,18 +215,20 @@ export default class User {
 	}
 
 	leaderboardButtonSignedInClickHandler() {
-		if (this.leaderboardSignedIn.innerHTML == '') {
+		if (this.leaderboardSignedIn.style.display != 'block') {
+			this.leaderboardSignedIn.style.display = 'block';
 			this.refreshLeaderboard(this.leaderboardScoreCount);
 		} else {
-			this.leaderboardSignedIn.innerHTML = '';
+			this.leaderboardSignedIn.style.display = 'none';
 		}
 	}
 
 	leaderboardButtonSignedOutClickHandler() {
-		if (this.leaderboardSignedOut.innerHTML == '') {
+		if (this.leaderboardSignedOut.style.display != 'block') {
+			this.leaderboardSignedOut.style.display = 'block';
 			this.refreshLeaderboard(this.leaderboardScoreCount);
 		} else {
-			this.leaderboardSignedOut.innerHTML = '';
+			this.leaderboardSignedOut.style.display = 'none';
 		}
 	}
 

@@ -121,6 +121,14 @@
 	display: none;
 }
 
+#leaderboard-signed-in {
+	display: none;
+}
+
+#leaderboard-signed-out {
+	display: none;
+}
+
 .game-info-item {
 	margin-left: 4px;
 	margin-right: 4px;
