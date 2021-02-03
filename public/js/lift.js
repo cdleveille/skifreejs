@@ -37,23 +37,19 @@ export default class Lift {
 				}
 			}
 
-			// if an other skier hits a lift tower, set isCrashed to true
-			for (let j = 0; j < this.game.otherSkiers.length; j++) {
-				let otherSkier = this.game.otherSkiers[j];
-				if (!otherSkier.isCrashed && this.game.isGameObjectCollidingWithOtherSkier(otherSkier, { x: tower.x, y: tower.y, hbXOffset: 10, hbYOffset: 50, hbWidth: 11, hbHeight: 11 })) {
-					if (this.game.collisionsEnabled) {
-						this.game.crashOtherSkierOnCollision(otherSkier);
-					}
+			// if an other skier hits a lift tower, crash the other skier
+			for (let j = 0; j < this.game.npcHandler.otherSkiers.length; j++) {
+				let otherSkier = this.game.npcHandler.otherSkiers[j];
+				if (!otherSkier.isCrashed && this.game.npcHandler.isGameObjectCollidingWithNPC(otherSkier, { x: tower.x, y: tower.y, hbXOffset: 10, hbYOffset: 50, hbWidth: 11, hbHeight: 11 })) {
+					this.game.npcHandler.crashOtherSkierOnCollision(otherSkier);
 				}
 			}
 
-			// if a snowboarder hits a lift tower, set isCrashed to true
-			for (let j = 0; j < this.game.snowboarders.length; j++) {
-				let snowboarder = this.game.snowboarders[j];
-				if (!snowboarder.isCrashed && this.game.isGameObjectCollidingWithOtherSkier(snowboarder, { x: tower.x, y: tower.y, hbXOffset: 10, hbYOffset: 50, hbWidth: 11, hbHeight: 11 })) {
-					if (this.game.collisionsEnabled) {
-						this.game.crashSnowboarderOnCollision(snowboarder);
-					}
+			// if a snowboarder hits a lift tower, crash the snowboarder
+			for (let j = 0; j < this.game.npcHandler.snowboarders.length; j++) {
+				let snowboarder = this.game.npcHandler.snowboarders[j];
+				if (!snowboarder.isCrashed && this.game.npcHandler.isGameObjectCollidingWithNPC(snowboarder, { x: tower.x, y: tower.y, hbXOffset: 10, hbYOffset: 50, hbWidth: 11, hbHeight: 11 })) {
+					this.game.npcHandler.crashSnowboarderOnCollision(snowboarder);
 				}
 			}
 

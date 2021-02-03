@@ -17,20 +17,20 @@ export default class WindowHandler {
 			return [Math.max(screen.width, window.innerWidth), Math.max(screen.height, window.innerHeight)];
 		}
 
-		window.addEventListener('resize', function () {
+		window.addEventListener('resize', () => {
 			gameWindowChangeHandler();
 		});
 
-		window.addEventListener('orientationchange', function () {
+		window.addEventListener('orientationchange', () => {
 			gameWindowChangeHandler();
 		});
 
-		window.addEventListener('online', function () {
+		window.addEventListener('online', () => {
 			game.goOnline();
 			game.style = 0;
 		});
 
-		window.addEventListener('offline', function () {
+		window.addEventListener('offline', () => {
 			game.goOffline();
 		});
 

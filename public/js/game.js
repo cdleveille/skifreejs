@@ -6,6 +6,7 @@ import Skier from './skier.js';
 import User from './user.js';
 import Util from './util.js';
 import socket from './socket.js';
+import NPCHandler from './npc.js';
 
 export default class Game {
 	constructor() {
@@ -13,6 +14,7 @@ export default class Game {
 		this.user = new User(this);
 		this.skier = new Skier(this);
 		this.lift = new Lift(this);
+		this.npcHandler = new NPCHandler(this);
 		this.resCoefficient = 1 / 18000;
 		this.objectFreq = {
 			treeSmallFreq: [24, 'tree_small'],
@@ -25,8 +27,6 @@ export default class Game {
 			stumpFreq: [4, 'stump'],
 			jumpFreq: [4, 'jump']
 		};
-		this.otherSkierFreq = 0.00;
-		this.snowboarderFreq = 0.00;
 		this.jumpVBase = 0.7;
 		this.jumpVMult = 0.0022;
 		this.collisionsEnabled = true;
@@ -53,7 +53,6 @@ export default class Game {
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
-		this.scoreToSend = 0;
 		this.style = 0;
 		this.util.newPoint(0);
 	}
@@ -61,7 +60,8 @@ export default class Game {
 	// restart the gamestate
 	restart() {
 		this.init();
-		this.setUpGameObjectsOnScreen();
+		this.setUpGameObjects();
+		this.npcHandler.setUpNPCs();
 	}
 
 	// load game assets
@@ -77,13 +77,6 @@ export default class Game {
 		this.rock = this.util.loadImage('/img/rock.png', this);
 		this.stump = this.util.loadImage('/img/stump.png', this);
 		this.jump = this.util.loadImage('/img/jump.png', this);
-		this.otherSkier1 = this.util.loadImage('/img/other_skier1.png', this);
-		this.otherSkier2 = this.util.loadImage('/img/other_skier2.png', this);
-		this.otherSkier3 = this.util.loadImage('/img/other_skier3.png', this);
-		this.otherSkier_crash = this.util.loadImage('/img/other_skier_crash.png', this);
-		this.snowboarder_left = this.util.loadImage('/img/snowboarder_left.png', this);
-		this.snowboarder_right = this.util.loadImage('/img/snowboarder_right.png', this);
-		this.snowboarder_crash = this.util.loadImage('/img/snowboarder_crash.png', this);
 		this.offlineImg = this.util.loadImage('/img/offline.png', this);
 		this.restart_img = this.util.loadImage('/img/restart.png', this);
 		this.restart_inverted = this.util.loadImage('/img/restart_inverted.png', this);
@@ -91,7 +84,8 @@ export default class Game {
 		this.user.loadAssets();
 		this.skier.loadAssets();
 		this.lift.loadAssets();
-		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images);
+		this.npcHandler.loadAssets();
+		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images, this.npcHandler.images);
 	}
 
 	getHTMLElements() {
@@ -120,11 +114,12 @@ export default class Game {
 		this.skier.x = this.gameWidth / 2;
 		this.skier.y = this.gameHeight / 3;
 
-		this.setUpGameObjectsOnScreen();
+		this.setUpGameObjects();
+		this.npcHandler.setUpNPCs();
 	}
 
 	// initialize game objects on screen at start of game
-	setUpGameObjectsOnScreen() {
+	setUpGameObjects() {
 		this.treesSmall = [];
 		this.treesLarge = [];
 		this.treesBare = [];
@@ -134,13 +129,11 @@ export default class Game {
 		this.rocks = [];
 		this.jumps = [];
 		this.stumps = [];
-		this.otherSkiers = [];
-		this.snowboarders = [];
 
 		this.calculateGameObjectCount();
 		for (let n = 0; n < this.gameObjectCount; n++) {
 			let type = this.getRandomGameObjectType();
-			this.spawnNewGameObjectOnScreen(type);
+			this.spawnNewGameObjectAtStart(type);
 		}
 	}
 
@@ -174,8 +167,8 @@ export default class Game {
 	}
 
 	// spawn a game object of random type at a random location on screen
-	spawnNewGameObjectOnScreen(type) {
-		let xy = this.getRandomCoordinateOnScreen();
+	spawnNewGameObjectAtStart(type) {
+		let xy = this.getRandomCoordinateAtStart();
 		return this.spawnNewGameObject(type, xy.x, xy.y);
 	}
 
@@ -199,8 +192,8 @@ export default class Game {
 		}
 	}
 
-	// spawn a game object of random type at a random location off screen
-	getRandomCoordinateOnScreen() {
+	// get a random coordinate onscreen or offscreen at start of game
+	getRandomCoordinateAtStart() {
 		let space = 80, width = window.innerWidth, height = this.gameHeight;
 		let searching = true, attempts = 0, maxAttempts = 10, xy;
 
@@ -295,12 +288,8 @@ export default class Game {
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.stump };
 			this.stumps.push(newObj);
 			break;
-		case 'other_skier':
-			return { x: x, y: y, xv: 0, yv: 0.1, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 13, hbWidth: 11, hbHeight: 11, hasCollided: false, isCrashed: false, timestamp: this.startTime + this.util.randomInt(0, 1000), img: this.otherSkier3 };
-		case 'snowboarder':
-			return { x: x, y: y, xv: -0.25, yv: 0.75, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 16, hbWidth: 13, hbHeight: 9, hasCollided: false, isCrashed: false, timestamp: this.startTime + this.util.randomInt(0, 1000), img: this.snowboarder_left };
 		default:
-			console.log('Invalid game object type: ' + type);
+			console.log('invalid game object type: ' + type);
 		}
 		return newObj;
 	}
@@ -311,8 +300,7 @@ export default class Game {
 		this.currentTime = now;
 		this.skier.update(this.getMouseAndVelocityInfo());
 		this.lift.update(step);
-		this.updateOtherSkiers(step);
-		this.updateSnowboarders(step);
+		this.npcHandler.update(step);
 		this.updateSkierTrail(step);
 
 		this.updateGameObjects(this.bumpsGroup, step);
@@ -350,7 +338,7 @@ export default class Game {
 				
 			}
 			// if the skier hits an object they haven't hit already, mark it as hit and do collision action if applicable
-			else if (this.collisionsEnabled && this.isGameObjectCollidingWithSkier(object) && this.skier.jumpOffset < object.jumpOverHeight) {
+			else if (this.isGameObjectCollidingWithSkier(object) && this.skier.jumpOffset < object.jumpOverHeight) {
 				if (typeof object.onCollision !== 'undefined') {
 					if (typeof object.hasCollided !== 'undefined') {
 						if (!object.hasCollided) {
@@ -364,21 +352,21 @@ export default class Game {
 			}
 
 			// if an other skier hits an object...
-			for (let i = 0; i < this.otherSkiers.length; i++) {
-				let otherSkier = this.otherSkiers[i];
-				if (this.collisionsEnabled && !otherSkier.isCrashed && this.isGameObjectCollidingWithOtherSkier(otherSkier, object)) {
+			for (let i = 0; i < this.npcHandler.otherSkiers.length; i++) {
+				let otherSkier = this.npcHandler.otherSkiers[i];
+				if (!otherSkier.isCrashed && this.npcHandler.isGameObjectCollidingWithNPC(otherSkier, object)) {
 					if (typeof object.npcCanCrashInto !== 'undefined' && object.npcCanCrashInto) {
-						this.crashOtherSkierOnCollision(otherSkier);
+						this.npcHandler.crashOtherSkierOnCollision(otherSkier);
 					}
 				}
 			}
 
 			// if a snowboarder hits an object...
-			for (let i = 0; i < this.snowboarders.length; i++) {
-				let snowboarder = this.snowboarders[i];
-				if (this.collisionsEnabled && !snowboarder.isCrashed && this.isGameObjectCollidingWithOtherSkier(snowboarder, object)) {
+			for (let i = 0; i < this.npcHandler.snowboarders.length; i++) {
+				let snowboarder = this.npcHandler.snowboarders[i];
+				if (!snowboarder.isCrashed && this.npcHandler.isGameObjectCollidingWithNPC(snowboarder, object)) {
 					if (typeof object.npcCanCrashInto !== 'undefined' && object.npcCanCrashInto) {
-						this.crashSnowboarderOnCollision(snowboarder);
+						this.npcHandler.crashSnowboarderOnCollision(snowboarder);
 					}
 				}
 			}
@@ -424,144 +412,11 @@ export default class Game {
 			|| object.x > width * 3 / 4;
 	}
 
-	// update image, velocity, and position of the other skiers
-	updateOtherSkiers(step) {
-		for (let i = 0; i < this.otherSkiers.length; i++) {
-			let otherSkier = this.otherSkiers[i];
-
-			// give the other skier a random xv (left, center, or right) every 1 sec
-			if (!otherSkier.isCrashed) {
-				let now = this.util.timestamp();
-				if (now - otherSkier.timestamp >= 1000) {
-					let newXV = this.util.randomInt(0, 3);
-					switch(newXV){
-					case 0:
-						otherSkier.xv = -otherSkier.xSpeed;
-						otherSkier.img = this.otherSkier1;
-						break;
-					case 1:
-						otherSkier.xv = otherSkier.xSpeed;
-						otherSkier.img = this.otherSkier2;
-						break;
-					default:
-						otherSkier.xv = 0;
-						otherSkier.img = this.otherSkier3;
-						break;
-					}
-					otherSkier.timestamp = now;
-					otherSkier.yv = 0.1;
-				}
-
-				// if the other skier hits another other skier, crash them both
-				for (let j = 0; j < this.otherSkiers.length; j++) {
-					if (i != j) {
-						let otherOtherSkier = this.otherSkiers[j];
-						if (this.isGameObjectCollidingWithOtherSkier(otherSkier, otherOtherSkier)) {
-							this.crashOtherSkierOnCollision(otherSkier);
-							this.crashOtherSkierOnCollision(otherOtherSkier);
-						}
-					}
-				}
-			// recycle the other skier's position if they are crashed and have been passed
-			} else if (this.hasGameObjectBeenPassed(otherSkier)) {
-				otherSkier.isCrashed = false;
-			}
-
-			// if the other skier hits the skier, crash them both
-			if (!otherSkier.hasCollided && this.isGameObjectCollidingWithSkier(otherSkier) && this.skier.jumpOffset < 29) {
-				this.skier.isCrashed = true;
-				otherSkier.hasCollided = true;
-				this.crashOtherSkierOnCollision(otherSkier);
-			}
-
-			// if the other skier (crashed or not) is far enough away, recyle its position
-			if (otherSkier.y < -2000 || otherSkier.y > 5000 || otherSkier.x > 3000 || otherSkier.x < -3000) {
-				otherSkier.isCrashed = false;
-			}
-	
-			// update position
-			otherSkier.x -= this.skier.xv * step - otherSkier.xv;
-			otherSkier.y -= this.skier.yv * step - otherSkier.yv;
-		}
-	}
-
-	updateSnowboarders(step) {
-		for (let i = 0; i < this.snowboarders.length; i++) {
-			let snowboarder = this.snowboarders[i];
-
-			// give the snowboarder a random xv (left, center, or right) every 0.5 sec
-			if (!snowboarder.isCrashed) {
-				let now = this.util.timestamp();
-				if (now - snowboarder.timestamp >= 500) {
-					let newXV = this.util.randomInt(0, 2);
-					switch(newXV){
-					case 0:
-						snowboarder.xv = -snowboarder.xSpeed;
-						snowboarder.img = this.snowboarder_left;
-						break;
-					case 1:
-						snowboarder.xv = snowboarder.xSpeed;
-						snowboarder.img = this.snowboarder_right;
-						break;
-					}
-					snowboarder.timestamp = now;
-					snowboarder.yv = 0.75;
-				}
-
-				// if the snowboarder another snowboarder, crash them both
-				for (let j = 0; j < this.snowboarders.length; j++) {
-					if (i != j) {
-						let otherSnowboarder = this.snowboarders[j];
-						if (this.isGameObjectCollidingWithOtherSkier(snowboarder, otherSnowboarder)) {
-							this.crashSnowboarderOnCollision(snowboarder);
-							this.crashSnowboarderOnCollision(otherSnowboarder);
-						}
-					}
-				}
-			} else {
-				// recover from crash after 1 sec
-				if (this.util.timestamp() - snowboarder.crashTimestamp >= 1000) {
-					snowboarder.y += 30;
-					snowboarder.isCrashed = false;
-				}
-
-				// recycle the snowboarder's position if they are crashed and have been passed
-				if (this.hasGameObjectBeenPassed(snowboarder)) {
-					snowboarder.isCrashed = false;
-				}
-			}
-
-			// if the snowboarder hits the skier, crash them both
-			if (!snowboarder.hasCollided && this.isGameObjectCollidingWithSkier(snowboarder) && this.skier.jumpOffset < 30) {
-				this.skier.isCrashed = true;
-				snowboarder.hasCollided = true;
-				this.crashSnowboarderOnCollision(snowboarder);
-			}
-
-			// if the snowboarder (crashed or not) is far enough away, recyle its position
-			if (snowboarder.y < -2000 || snowboarder.y > 5000 || snowboarder.x > 3000 || snowboarder.x < -3000) {
-				snowboarder.isCrashed = false;
-			}
-
-			// update position
-			snowboarder.x -= this.skier.xv * step - snowboarder.xv;
-			snowboarder.y -= this.skier.yv * step - snowboarder.yv;
-		}
-	}
-
 	// determine if the game object is colliding with the skier
 	isGameObjectCollidingWithSkier(object) {
+		if (!this.collisionsEnabled) return false;
 		let rect1 = this.skier.hitbox;
 		let rect2 = { x: object.x + object.hbXOffset, y: object.y + object.hbYOffset, width: object.hbWidth, height: object.hbHeight };
-
-		return this.util.areRectanglesColliding(rect1, rect2);
-	}
-
-	// determine if the game object is colliding with an other skier
-	isGameObjectCollidingWithOtherSkier(otherSkier, object) {
-		let rect1 = { x: otherSkier.x + otherSkier.hbXOffset, y: otherSkier.y + otherSkier.hbYOffset, width: otherSkier.hbWidth, height: otherSkier.hbHeight };
-		let rect2 = { x: object.x + object.hbXOffset, y: object.y + object.hbYOffset, width: object.hbWidth, height: object.hbHeight };
-
 		return this.util.areRectanglesColliding(rect1, rect2);
 	}
 
@@ -573,27 +428,6 @@ export default class Game {
 			if (this.game.skier.isJumping) {
 				this.isOnFire = true;
 			}
-		}
-	}
-
-	// make the other skier crash
-	crashOtherSkierOnCollision(otherSkier) {
-		if (!otherSkier.isCrashed) {
-			otherSkier.isCrashed = true;
-			otherSkier.xv = 0;
-			otherSkier.yv = 0;
-			otherSkier.img = this.otherSkier_crash;
-		}
-	}
-
-	// make the snowboarder crash
-	crashSnowboarderOnCollision(snowboarder) {
-		if (!snowboarder.isCrashed) {
-			snowboarder.isCrashed = true;
-			snowboarder.crashTimestamp = this.util.timestamp();
-			snowboarder.xv = 0;
-			snowboarder.yv = 0;
-			snowboarder.img = this.snowboarder_crash;
 		}
 	}
 
@@ -614,44 +448,18 @@ export default class Game {
 
 	// send score to server and then reset back to 0
 	recordAndResetStyle() {
-		let currentStyle = Math.floor(this.style);
-		if (currentStyle > this.scoreToSend) {
-			this.scoreToSend = currentStyle;
+		if (!this.isOffline && this.user.isLoggedIn && this.style > this.user.userData.score) {
+			socket.emit('new_score', { _id: this.user.userData._id, username: this.user.userData.username, score: this.style });
+			socket.once('updated_score', (res) => {
+				console.log('socket: updated_score', res);
+				if (res.ok) {
+					window.localStorage.removeItem('loginToken');
+					window.localStorage.setItem('loginToken', res.data);
+					this.user.validateLoginToken();
+					this.user.refreshLeaderboard(this.user.leaderboardScoreCount);
+				} else this.user.signOut();
+			});
 		}
-
-		if (this.user.isLoggedIn && this.scoreToSend > this.user.userData.score) {
-			if (!this.isOffline) {
-				socket.emit('new_score', { _id: this.user.userData._id, username: this.user.userData.username, score: this.scoreToSend });
-				socket.once('updated_score', (res) => {
-					console.log('socket: updated_score', res);
-					this.scoreToSend = 0;
-					if (res.ok) {
-						window.localStorage.removeItem('loginToken');
-						window.localStorage.setItem('loginToken', res.data);
-						this.user.validateLoginToken();
-						this.user.refreshLeaderboard(this.user.leaderboardScoreCount);
-					} else {
-						this.user.signOut();
-					}
-				});
-			} else {
-				this.user.loggedInUsername.innerText = this.user.userData.username + ' ' + this.scoreToSend + '*';
-			}
-		}
-	}
-
-	clearScore() {
-		socket.emit('new_score', { _id: this.user.userData._id, username: this.user.userData.username, score: 0 });
-		socket.on('updated_score', (res) => {
-			console.log(res);
-			if (res.ok) {
-				window.localStorage.removeItem('loginToken');
-				window.localStorage.setItem('loginToken', res.data);
-				this.user.validateLoginToken();
-			} else {
-				this.user.signOut();
-			}
-		});
 	}
 
 	// return info about the instantaneous skier-to-mouse angle and velocity vectors
@@ -807,17 +615,8 @@ export default class Game {
 			ctx.drawImage(jump.img, this.skier.x + jump.x, this.skier.y + jump.y);
 		}
 
-		// draw other skiers
-		for (let i = 0; i < this.otherSkiers.length; i++) {
-			let otherSkier = this.otherSkiers[i];
-			ctx.drawImage(otherSkier.img, this.skier.x + otherSkier.x, this.skier.y + otherSkier.y);
-		}
-
-		// draw snowboarders
-		for (let i = 0; i < this.snowboarders.length; i++) {
-			let snowboarder = this.snowboarders[i];
-			ctx.drawImage(snowboarder.img, this.skier.x + snowboarder.x, this.skier.y + snowboarder.y);
-		}
+		this.npcHandler.drawOtherSkiers(ctx);
+		this.npcHandler.drawSnowboarders(ctx);
 
 		// draw rocks
 		for (let i = 0; i < this.rocks.length; i++) {
@@ -919,7 +718,7 @@ export default class Game {
 			let speedText = 'Speed:\xa0\xa0\xa0\xa0' + Math.ceil(this.skier.currentSpeed / 28.7514).toString().padStart(2, '0') + 'm/s';
 			this.gameInfoSpeed.innerText = speedText;
 
-			let styleText = 'Style:\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + Math.floor(this.style);
+			let styleText = 'Style:\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + this.style;
 			this.gameInfoStyle.innerText = styleText;
 
 			// control visibility of game paused text html element

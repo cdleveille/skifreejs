@@ -184,14 +184,14 @@ export default class User {
 				this.hideRegisterForm();
 				this.hideSignInOrRegister();
 			}
-			this.leaderboardSignedOut.innerHTML = '';
+			this.hideLeaderboardSignedOut();
 		} else {
 			if (this.loggedInInfoSection.style.display == 'block') {
 				this.hideLoggedInInfo();
 			} else {
 				this.showLoggedInInfo();
 			}
-			this.leaderboardSignedIn.innerHTML = '';
+			this.hideLeaderboardSignedIn();
 		}
 	}
 
@@ -216,19 +216,19 @@ export default class User {
 
 	leaderboardButtonSignedInClickHandler() {
 		if (this.leaderboardSignedIn.style.display != 'block') {
-			this.leaderboardSignedIn.style.display = 'block';
+			this.showLeaderboardSignedIn();
 			this.refreshLeaderboard(this.leaderboardScoreCount);
 		} else {
-			this.leaderboardSignedIn.style.display = 'none';
+			this.hideLeaderboardSignedIn();
 		}
 	}
 
 	leaderboardButtonSignedOutClickHandler() {
 		if (this.leaderboardSignedOut.style.display != 'block') {
-			this.leaderboardSignedOut.style.display = 'block';
+			this.showLeaderboardSignedOut();
 			this.refreshLeaderboard(this.leaderboardScoreCount);
 		} else {
-			this.leaderboardSignedOut.style.display = 'none';
+			this.hideLeaderboardSignedOut();
 		}
 	}
 
@@ -259,7 +259,7 @@ export default class User {
 				html += '</ol>';
 				this.isLoggedIn ? this.leaderboardSignedIn.innerHTML = html : this.leaderboardSignedOut.innerHTML = html;
 			}
-		}).catch(err => console.log(err));
+		}).catch((err) => console.log(err));
 	}
 
 	signOut() {
@@ -302,6 +302,24 @@ export default class User {
 
 	hideLoggedInInfo() {
 		this.loggedInInfoSection.style.display = 'none';
+	}
+
+	showLeaderboardSignedIn() {
+		this.leaderboardSignedIn.style.display = 'block';
+	}
+
+	hideLeaderboardSignedIn() {
+		this.leaderboardSignedIn.style.display = 'none';
+		this.leaderboardSignedIn.innerHTML = '';
+	}
+
+	showLeaderboardSignedOut() {
+		this.leaderboardSignedOut.style.display = 'block';
+	}
+
+	hideLeaderboardSignedOut() {
+		this.leaderboardSignedOut.style.display = 'none';
+		this.leaderboardSignedOut.innerHTML = '';
 	}
 
 	isTextInputActive() {
