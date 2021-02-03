@@ -30,7 +30,7 @@ export default class NPCHandler {
 
 	calculateNPCCount() {
 		let area = window.innerWidth * window.innerHeight;
-		this.npcCount = Math.floor(area * this.resCoefficient);
+		this.npcCount = Math.max(2, Math.floor(area * this.resCoefficient));
 
 		console.log('npc count: ' + this.npcCount);
 	}
