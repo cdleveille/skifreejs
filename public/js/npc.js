@@ -259,14 +259,14 @@ export default class NPCHandler {
 	drawOtherSkiers(ctx) {
 		for (let i = 0; i < this.otherSkiers.length; i++) {
 			let otherSkier = this.otherSkiers[i];
-			ctx.drawImage(otherSkier.img, this.game.skier.x + otherSkier.x, this.game.skier.y + otherSkier.y);
+			ctx.drawImage(otherSkier.img, Math.floor(this.game.skier.x + otherSkier.x), Math.floor(this.game.skier.y + otherSkier.y));
 		}
 	}
 
 	drawSnowboarders(ctx) {
 		for (let i = 0; i < this.snowboarders.length; i++) {
 			let snowboarder = this.snowboarders[i];
-			ctx.drawImage(snowboarder.img, this.game.skier.x + snowboarder.x, this.game.skier.y + snowboarder.y);
+			ctx.drawImage(snowboarder.img, Math.floor(this.game.skier.x + snowboarder.x), Math.floor(this.game.skier.y + snowboarder.y));
 		}
 	}
 }

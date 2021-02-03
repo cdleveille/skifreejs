@@ -357,6 +357,6 @@ export default class Skier {
 			xOffset = -6;
 			break;
 		}
-		ctx.drawImage(this.currentImage, this.x + xOffset, this.y - this.jumpOffset);
+		ctx.drawImage(this.currentImage, Math.floor(this.x + xOffset), Math.floor(this.y - this.jumpOffset));
 	}
 }
