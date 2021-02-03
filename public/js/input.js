@@ -146,6 +146,7 @@ export default class InputHandler {
 								
 							} else if (game.skier.isCrashed) {
 								game.skier.isCrashed = false;
+								game.style = 0;
 							}
 						// touch start above skier
 						} else {
