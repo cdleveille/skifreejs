@@ -131,7 +131,7 @@ export default class Lift {
 	drawTowersAbovePlayer(ctx) {
 		for (let i = 0; i < this.liftTowers.length; i++) {
 			if (this.liftTowers[i].y < -38) {
-				ctx.drawImage(this.lift_tower, Math.floor(this.game.skier.x + this.liftTowers[i].x), Math.floor(this.game.skier.y + this.liftTowers[i].y));
+				ctx.drawImage(this.lift_tower, this.game.skier.x + this.liftTowers[i].x, this.game.skier.y + this.liftTowers[i].y);
 			}
 		}
 	}
@@ -139,33 +139,33 @@ export default class Lift {
 	drawTowersBelowPlayer(ctx) {
 		for (let i = 0; i < this.liftTowers.length; i++) {
 			if (this.liftTowers[i].y >= -38) {
-				ctx.drawImage(this.lift_tower, Math.floor(this.game.skier.x + this.liftTowers[i].x), Math.floor(this.game.skier.y + this.liftTowers[i].y));
+				ctx.drawImage(this.lift_tower, this.game.skier.x + this.liftTowers[i].x, this.game.skier.y + this.liftTowers[i].y);
 			}
 		}
 	}
 
 	drawTowerTops(ctx) {
 		for (let i = 0; i < this.liftTowers.length; i++) {
-			ctx.drawImage(this.lift_tower_top, Math.floor(this.game.skier.x + this.liftTowers[i].x), Math.floor(this.game.skier.y + this.liftTowers[i].y));
+			ctx.drawImage(this.lift_tower_top, this.game.skier.x + this.liftTowers[i].x, this.game.skier.y + this.liftTowers[i].y);
 		}
 	}
 
 	drawChairs(ctx) {
 		for (let i = 0; i < this.liftChairsDown.length; i++) {
-			ctx.drawImage(this.lift_chair_down, Math.floor(this.game.skier.x + this.liftChairsDown[i].x), Math.floor(this.game.skier.y + this.liftChairsDown[i].y));
+			ctx.drawImage(this.lift_chair_down, this.game.skier.x + this.liftChairsDown[i].x, this.game.skier.y + this.liftChairsDown[i].y);
 		}
 		for (let i = 0; i < this.liftChairsUp.length; i++) {
 			let img = this.lift_chair_up1;
 			if (this.liftChairsUp[i].passengers == 2) {
 				img = this.lift_chair_up2;
 			}
-			ctx.drawImage(img, Math.floor(this.game.skier.x + this.liftChairsUp[i].x), Math.floor(this.game.skier.y + this.liftChairsUp[i].y));
+			ctx.drawImage(img, this.game.skier.x + this.liftChairsUp[i].x, this.game.skier.y + this.liftChairsUp[i].y);
 		}
 	}
 
 	drawCables(ctx) {
 		ctx.fillStyle = '#333333';
-		ctx.fillRect(Math.floor(this.game.skier.x + this.liftTowers[0].x + 1), Math.floor(this.game.skier.y - this.game.gameHeight / 3), 1, Math.floor(this.game.gameHeight));
-		ctx.fillRect(Math.floor(this.game.skier.x + this.liftTowers[0].x + 30), Math.floor(this.game.skier.y - this.game.gameHeight / 3), 1, Math.floor(this.game.gameHeight));
+		ctx.fillRect(this.game.skier.x + this.liftTowers[0].x + 1, this.game.skier.y - this.game.gameHeight / 3, 1, this.game.gameHeight);
+		ctx.fillRect(this.game.skier.x + this.liftTowers[0].x + 30, this.game.skier.y - this.game.gameHeight / 3, 1, this.game.gameHeight);
 	}
 }

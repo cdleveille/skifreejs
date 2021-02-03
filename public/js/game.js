@@ -575,9 +575,9 @@ export default class Game {
 	// render the current state of the game
 	draw(ctx) {
 		// clear and fill with background color
-		ctx.clearRect(0, 0, Math.floor(this.gameWidth), Math.floor(this.gameHeight));
+		ctx.clearRect(0, 0, this.gameWidth, this.gameHeight);
 		ctx.fillStyle = '#FFFFFF';
-		ctx.fillRect(0, 0, Math.floor(this.gameWidth), Math.floor(this.gameHeight));
+		ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
 
 		if (this.doImageLoadCheck) {
 			if (this.confirmImagesAreAllLoaded()) {
@@ -591,15 +591,15 @@ export default class Game {
 		// draw bumps
 		for (let i = 0; i < this.bumpsGroup.length; i++) {
 			let bump = this.bumpsGroup[i];
-			ctx.drawImage(bump.img, Math.floor(this.skier.x + bump.x), Math.floor(this.skier.y + bump.y));
+			ctx.drawImage(bump.img, this.skier.x + bump.x, this.skier.y + bump.y);
 		}
 		for (let i = 0; i < this.bumpsSmall.length; i++) {
 			let bump = this.bumpsSmall[i];
-			ctx.drawImage(bump.img, Math.floor(this.skier.x + bump.x), Math.floor(this.skier.y + bump.y));
+			ctx.drawImage(bump.img, this.skier.x + bump.x, this.skier.y + bump.y);
 		}
 		for (let i = 0; i < this.bumpsLarge.length; i++) {
 			let bump = this.bumpsLarge[i];
-			ctx.drawImage(bump.img, Math.floor(this.skier.x + bump.x), Math.floor(this.skier.y + bump.y));
+			ctx.drawImage(bump.img, this.skier.x + bump.x, this.skier.y + bump.y);
 		}
 
 		// draw skier trail
@@ -612,7 +612,7 @@ export default class Game {
 		// draw jumps
 		for (let i = 0; i < this.jumps.length; i++) {
 			let jump = this.jumps[i];
-			ctx.drawImage(jump.img, Math.floor(this.skier.x + jump.x), Math.floor(this.skier.y + jump.y));
+			ctx.drawImage(jump.img, this.skier.x + jump.x, this.skier.y + jump.y);
 		}
 
 		this.npcHandler.drawOtherSkiers(ctx);
@@ -621,35 +621,35 @@ export default class Game {
 		// draw rocks
 		for (let i = 0; i < this.rocks.length; i++) {
 			let rock = this.rocks[i];
-			ctx.drawImage(rock.img, Math.floor(this.skier.x + rock.x), Math.floor(this.skier.y + rock.y));
+			ctx.drawImage(rock.img, this.skier.x + rock.x, this.skier.y + rock.y);
 		}
 
 		// draw stumps
 		for (let i = 0; i < this.stumps.length; i++) {
 			let stump = this.stumps[i];
-			ctx.drawImage(stump.img, Math.floor(this.skier.x + stump.x), Math.floor(this.skier.y + stump.y));
+			ctx.drawImage(stump.img, this.skier.x + stump.x, this.skier.y + stump.y);
 		}
 
 		// draw trees above skier
 		for (let i = 0; i < this.treesSmall.length; i++) {
 			let tree = this.treesSmall[i];
 			if (tree.y < tree.drawThresholdY) {
-				ctx.drawImage(tree.img, Math.floor(this.skier.x + tree.x), Math.floor(this.skier.y + tree.y));
+				ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
 			}
 		}
 		for (let i = 0; i < this.treesLarge.length; i++) {
 			let tree = this.treesLarge[i];
 			if (tree.y < tree.drawThresholdY) {
-				ctx.drawImage(tree.img, Math.floor(this.skier.x + tree.x), Math.floor(this.skier.y + tree.y));
+				ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
 			}
 		}
 		for (let i = 0; i < this.treesBare.length; i++) {
 			let tree = this.treesBare[i];
 			if (tree.y < tree.drawThresholdY) {
 				if (tree.isOnFire) {
-					ctx.drawImage(this.currentTreeFireImg, Math.floor(this.skier.x + tree.x), Math.floor(this.skier.y + tree.y));
+					ctx.drawImage(this.currentTreeFireImg, this.skier.x + tree.x, this.skier.y + tree.y);
 				} else {
-					ctx.drawImage(tree.img, Math.floor(this.skier.x + tree.x), Math.floor(this.skier.y + tree.y));
+					ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
 				}
 			}
 		}
@@ -664,22 +664,22 @@ export default class Game {
 		for (let i = 0; i < this.treesSmall.length; i++) {
 			let tree = this.treesSmall[i];
 			if (tree.y >= tree.drawThresholdY) {
-				ctx.drawImage(tree.img, Math.floor(this.skier.x + tree.x), Math.floor(this.skier.y + tree.y));
+				ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
 			}
 		}
 		for (let i = 0; i < this.treesLarge.length; i++) {
 			let tree = this.treesLarge[i];
 			if (tree.y >= tree.drawThresholdY) {
-				ctx.drawImage(tree.img, Math.floor(this.skier.x + tree.x), Math.floor(this.skier.y + tree.y));
+				ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
 			}
 		}
 		for (let i = 0; i < this.treesBare.length; i++) {
 			let tree = this.treesBare[i];
 			if (tree.y >= tree.drawThresholdY) {
 				if (tree.isOnFire) {
-					ctx.drawImage(this.currentTreeFireImg, Math.floor(this.skier.x + tree.x), Math.floor(this.skier.y + tree.y));
+					ctx.drawImage(this.currentTreeFireImg, this.skier.x + tree.x, this.skier.y + tree.y);
 				} else {
-					ctx.drawImage(tree.img, Math.floor(this.skier.x + tree.x), Math.floor(this.skier.y + tree.y));
+					ctx.drawImage(tree.img, this.skier.x + tree.x, this.skier.y + tree.y);
 				}
 			}
 		}
