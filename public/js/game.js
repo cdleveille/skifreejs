@@ -574,11 +574,9 @@ export default class Game {
 
 	// render the current state of the game
 	draw(ctx) {
-		// clear and fill with background color
+		// clear canvas
 		ctx.clearRect(0, 0, this.gameWidth, this.gameHeight);
-		ctx.fillStyle = '#FFFFFF';
-		ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
-
+		
 		if (this.doImageLoadCheck) {
 			if (this.confirmImagesAreAllLoaded()) {
 				this.doImageLoadCheck = false;
