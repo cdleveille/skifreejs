@@ -176,11 +176,7 @@ export default class NPCHandler {
 				if (this.game.util.timestamp() - snowboarder.crashTimestamp >= 1000) {
 					snowboarder.y += 30;
 					snowboarder.isCrashed = false;
-				}
-
-				// recycle the snowboarder's position if they are crashed and have been passed
-				if (this.game.hasGameObjectBeenPassed(snowboarder)) {
-					this.recycleNPCPosition(snowboarder);
+					snowboarder.hasCollided = false;
 				}
 			}
 
