@@ -9,3 +9,7 @@ export const enum Environment {
 	stg = 'staging',
 	prod = 'production'
 }
+
+export const enum Nums {
+	oneDay = 86400000 // 24 * 60 * 60 * 1000
+}

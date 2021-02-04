@@ -5,6 +5,7 @@ import IResponse from '../types/IResponse';
 import { IUser } from '../models/User';
 import T, { IJwtPayload, ILeaderBoard } from '../types/Abstract';
 import validate from '../middleware/jwt';
+import * as checks from '../helpers/checks';
 import { Errors } from '../types/Constants';
 import Jwt from '../helpers/jwt';
 
@@ -16,7 +17,7 @@ app.post('/api/register', async (req: Request, res: Response, next: NextFunction
 		if (typeof username !== T.string || typeof email !== T.string || typeof password !== T.string)
 			throw Error(Errors.invalidScoreRequest);
 
-		if (!isAlphaNumeric(username)) {
+		if (!checks.isAlphaNumeric(username)) {
 			throw 'username must be alphanumeric only';
 		}
 
@@ -98,17 +99,61 @@ app.get('/api/leaderboard/:limit', async (req: Request, res: Response, next: Nex
 	}
 });
 
-function isAlphaNumeric(str: String) {
-	let code, i, len;
-	for (i = 0, len = str.length; i < len; i++) {
-		code = str.charCodeAt(i);
-		if (!(code > 47 && code < 58) && // numeric (0-9)
-			!(code > 64 && code < 91) && // upper alpha (A-Z)
-			!(code > 96 && code < 123)) { // lower alpha (a-z)
-			return false;
+app.post('/api/sendrecovery', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+
+	const { username, email }: IUser = req.body;
+
+	try {
+		if (username == undefined || email == undefined) {
+			throw 'missing username / email';
 		}
+
+		await _User.SendRecovery(email, username);
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: `recovery email sent to ${email}`
+		} as IResponse);
+	} catch (error) {
+		next(error);
 	}
-	return true;
-}
+});
+
+app.post('/api/updatepassword', validate, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+
+	const { password, newPassword } = req.body;
+
+	try {
+		if (password == undefined || newPassword == undefined) {
+			throw 'missing password / new password';
+		}
+
+		const updated = await _User.UpdatePassword({
+			password: password,
+			newPassword: newPassword,
+			email: res.locals.jwt.email,
+			username: res.locals.jwt.username
+		});
+
+		const token: string = await Jwt.SignUser({
+			_id: updated._id,
+			email: updated.email,
+			username: updated.username,
+			score: updated.score
+		} as IJwtPayload);
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: {
+				token: token,
+				score: updated.score
+			}
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
+});
 
 export default app;

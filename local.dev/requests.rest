@@ -33,3 +33,12 @@ Authorization: Bearer token
 ###
 GET http://localhost:3000/api/leaderboard/10
 
+###
+POST http://localhost:3000/api/updatepassword HTTP/1.1
+Authorization: Bearer token
+Content-Type: application/json
+
+{
+	"newPassword": "blahblah",
+	"password": "Testd1234!",
+}

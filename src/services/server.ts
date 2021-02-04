@@ -7,7 +7,6 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import cors from 'cors';
-import { Environment as Env } from '../types/Constants';
 
 const app = express();
 
@@ -34,11 +33,11 @@ app.use(
 	})
 );
 
-if (config.ENV === Env.dev) {
+if (!config.IS_PROD) {
 	app.use(responseTime());
 	app.use(morgan('combined'));
 }
-if (config.ENV === Env.prod) {
+if (config.IS_PROD) {
 	app.use(helmet());
 }
 
