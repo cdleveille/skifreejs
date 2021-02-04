@@ -144,7 +144,7 @@ export default class InputHandler {
 								game.skier.trick1Disabled = true;
 								game.skier.trick1StartTime = game.util.timestamp();
 								
-							} else if (game.skier.isCrashed) {
+							} else if (game.skier.isCrashed && game.skier.isStopped) {
 								game.skier.isCrashed = false;
 								game.style = 0;
 							}

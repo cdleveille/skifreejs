@@ -36,6 +36,7 @@ export default class Slalom {
 		this.spawnNewGate('finish_left', this.startX - 100, y);
 		this.spawnNewGate('finish_right', this.startX + 100, y);
 		this.courseIsActive = false;
+		this.courseCompleted = false;
 	}
 
 	spawnNewGate(type, x, y) {
@@ -88,6 +89,7 @@ export default class Slalom {
 							gate.img = this.gate_pass;
 						} else {
 							gate.img = this.gate_fail;
+							this.game.startTime -= 2000;
 						}
 					} else if (gate.type == 'gate_right') {
 						gate.xOffset = 4;
@@ -95,9 +97,11 @@ export default class Slalom {
 							gate.img = this.gate_pass;
 						} else {
 							gate.img = this.gate_fail;
+							this.game.startTime -= 2000;
 						}
 					} else if (gate.type == 'finish_left') {
 						this.courseIsActive = false;
+						this.courseCompleted = true;
 					}
 				}
 

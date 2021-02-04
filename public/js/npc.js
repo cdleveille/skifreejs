@@ -44,11 +44,11 @@ export default class NPCHandler {
 		let newNPC;
 		switch(type) {
 		case 'other_skier':
-			newNPC = { x: x, y: y, xv: 0, yv: 0.1, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 13, hbWidth: 11, hbHeight: 11, hasCollided: false, isCrashed: false, timestamp: this.game.startTime + this.game.util.randomInt(0, 1000), img: this.otherSkier3 };
+			newNPC = { x: x, y: y, xv: 0, yv: 0.1, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 13, hbWidth: 11, hbHeight: 11, hasCollided: false, isCrashed: false, timestamp: this.game.util.timestamp() + this.game.util.randomInt(0, 1000), img: this.otherSkier3 };
 			this.otherSkiers.push(newNPC);
 			return newNPC;
 		case 'snowboarder':
-			newNPC = { x: x, y: y, xv: -0.25, yv: 0.75, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 16, hbWidth: 13, hbHeight: 9, hasCollided: false, isCrashed: false, timestamp: this.game.startTime + this.game.util.randomInt(0, 1000), img: this.snowboarder_left };
+			newNPC = { x: x, y: y, xv: -0.25, yv: 0.75, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 16, hbWidth: 13, hbHeight: 9, hasCollided: false, isCrashed: false, timestamp: this.game.util.timestamp() + this.game.util.randomInt(0, 1000), img: this.snowboarder_left };
 			this.snowboarders.push(newNPC);
 			return newNPC;
 		default:

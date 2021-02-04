@@ -51,8 +51,7 @@ export default class Game {
 		this.isPaused = false;
 		this.yDist = 0;
 		this.mousePos = {x: 0, y: 0};
-		this.startTime = this.util.timestamp();
-		this.timestampFire = this.startTime;
+		this.timestampFire = this.util.timestamp();
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
@@ -701,7 +700,11 @@ export default class Game {
 
 		if (!this.hideHUD) {
 			// draw game info section
-			let timeText = 'Time:\xa0\xa0' + this.util.timeToString(this.currentTime - this.startTime);
+			if ((typeof this.startTime === 'undefined' || !this.slalom.courseIsActive) && !this.slalom.courseCompleted) this.startTime = this.currentTime;
+			if (!this.slalom.courseCompleted) {
+				this.slalomTime = this.currentTime - this.startTime;
+			}
+			let timeText = 'Time:\xa0\xa0' + this.util.timeToString(this.slalomTime);
 			this.gameInfoTime.innerText = timeText;
 
 			let leadingSpace = '\xa0\xa0\xa0\xa0\xa0';
