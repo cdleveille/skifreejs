@@ -4,10 +4,13 @@ export default class Skier {
 		this.game = game;
 		if (this.game.util.hasTouch()) {
 			this.maxSpeed = 400;
+			this.jumpGravity = .0008;
 		} else if (window.devicePixelRatio > 1) {
 			this.maxSpeed = 500;
+			this.jumpGravity = .0009;
 		} else {
 			this.maxSpeed = 600;
+			this.jumpGravity = 0.01;
 		}
 		this.enforceMaxSpeed = true;
 		this.skateV = 225;
@@ -16,7 +19,6 @@ export default class Skier {
 		this.decel = -2.75;
 		this.decelCrash = -4;
 		this.jumpVInit = 0.7;
-		this.jumpGravity = .01;
 		this.hitbox = {
 			x: 2,
 			y: 24,
