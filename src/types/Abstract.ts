@@ -43,5 +43,12 @@ export interface IMailOptions {
 	text: string
 }
 
+export interface INewPassword {
+	password: string,
+	newPassword: string,
+	email: string,
+	username: string
+}
+
 
 export default IGeneric;

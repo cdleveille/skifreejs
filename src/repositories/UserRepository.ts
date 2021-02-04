@@ -2,7 +2,10 @@ import User, { IUser } from '../models/User';
 import Password from '../helpers/password';
 import { INewScore } from '../types/ISocket';
 import Base from './abstract/UserRepositoryBase';
-import { ILeaderBoard } from '../types/Abstract';
+import { ILeaderBoard, INewPassword } from '../types/Abstract';
+import { Nums } from '../types/Constants';
+import Mail from '../services/mailer';
+import bytes from '../helpers/bytes';
 
 class UserRepository extends Base {
 
@@ -21,6 +24,7 @@ class UserRepository extends Base {
 			newUser.email = user.email;
 			newUser.password = await Password.hash(user.password);
 			newUser.score = 0;
+			newUser.lastUpdated = new Date;
 			newUser.isNew = true;
 
 			return await newUser.save();
@@ -69,6 +73,53 @@ class UserRepository extends Base {
 			else lim = limit;
 
 			return await User.find({}, { username: 1, score: 1, _id: 0 }).sort({ score: -1 }).limit(lim);
+		} catch (e) {
+			throw Error(e);
+		}
+	}
+
+	public async SendRecovery(email: string, username: string): Promise<void> {
+		try {
+			const exists = await User.findOne({ username: username, email: email });
+			if (!exists) throw 'username / email not found';
+
+			const newPass = await bytes();
+
+			const template = {
+				to: email,
+				from: '',
+				subject: 'Forgot Password (DO NOT REPLY)',
+				text: `your new temporary password is ${newPass}`
+			};
+
+			exists.isNew = false;
+			exists.password = await Password.hash(newPass);
+			await exists.save();
+
+			await Mail.SendMail(template);
+		} catch (e) {
+			throw Error(e);
+		}
+	}
+
+	public async UpdatePassword(newPass: INewPassword): Promise<IUser> {
+		try {
+			const exists = await User.findOne({ username: newPass.username, email: newPass.email });
+			if (!exists) throw 'username / email not found';
+
+			const pass: boolean = await Password.compare(newPass.password, exists.password);
+			if (!pass) throw Error('incorrect password');
+
+			const timestamp: number = +new Date(exists.lastUpdated);
+			const now: number = +new Date();
+			if ((now - timestamp) < Nums.oneDay) {
+				throw 'password updated too recently';
+			}
+
+			exists.lastUpdated = new Date();
+			exists.isNew = false;
+			exists.password = await Password.hash(newPass.newPassword);
+			return await exists.save();
 		} catch (e) {
 			throw Error(e);
 		}
