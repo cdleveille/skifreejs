@@ -89,7 +89,7 @@ export default class Slalom {
 							gate.img = this.gate_pass;
 						} else {
 							gate.img = this.gate_fail;
-							this.game.startTime -= 2000;
+							this.game.startTime -= 5000;
 						}
 					} else if (gate.type == 'gate_right') {
 						gate.xOffset = 4;
@@ -97,7 +97,7 @@ export default class Slalom {
 							gate.img = this.gate_pass;
 						} else {
 							gate.img = this.gate_fail;
-							this.game.startTime -= 2000;
+							this.game.startTime -= 5000;
 						}
 					} else if (gate.type == 'finish_left') {
 						this.courseIsActive = false;
