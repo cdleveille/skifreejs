@@ -5,7 +5,8 @@ export interface IUser extends Document {
 	username: string,
 	email: string,
 	password: string,
-	score: number
+	score: number,
+	lastUpdated: Date
 }
 
 const User = new mongoose.Schema(
@@ -24,6 +25,10 @@ const User = new mongoose.Schema(
 		},
 		score: {
 			type: Number,
+			required: true
+		},
+		lastUpdated: {
+			type: Date,
 			required: true
 		}
 	},
