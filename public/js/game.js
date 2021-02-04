@@ -7,6 +7,7 @@ import User from './user.js';
 import Util from './util.js';
 import socket from './socket.js';
 import NPCHandler from './npc.js';
+import Slalom from './slalom.js';
 
 export default class Game {
 	constructor() {
@@ -15,6 +16,7 @@ export default class Game {
 		this.skier = new Skier(this);
 		this.lift = new Lift(this);
 		this.npcHandler = new NPCHandler(this);
+		this.slalom = new Slalom(this);
 		this.resCoefficient = 1 / 18000;
 		this.objectFreq = {
 			treeSmallFreq: [24, 'tree_small'],
@@ -45,6 +47,7 @@ export default class Game {
 		this.gameHeight = Math.max(screen.height, window.innerHeight);
 		this.skier.init();
 		this.lift.init();
+		this.slalom.init();
 		this.isPaused = false;
 		this.yDist = 0;
 		this.mousePos = {x: 0, y: 0};
@@ -85,7 +88,8 @@ export default class Game {
 		this.skier.loadAssets();
 		this.lift.loadAssets();
 		this.npcHandler.loadAssets();
-		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images, this.npcHandler.images);
+		this.slalom.loadAssets();
+		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images, this.npcHandler.images, this.slalom.images);
 	}
 
 	getHTMLElements() {
@@ -174,7 +178,7 @@ export default class Game {
 
 	// determine whether or not a game object is occupying the specified location
 	isLocationOccupiedByGameObject(xy, getDistanceBetweenPointsFunc) {
-		let gameObjectsListsToCheck = [[{ x: 0, y: 0 }], this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.jumps, this.stumps, this.lift.liftTowers];
+		let gameObjectsListsToCheck = [[{ x: 0, y: 0 }], this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.jumps, this.stumps, this.lift.liftTowers, this.slalom.gates];
 		for (let i = 0; i < gameObjectsListsToCheck.length; i++) {
 			let gameObjectList = gameObjectsListsToCheck[i];
 			if (locationOccupiedHelper(gameObjectList)) return true;
@@ -302,6 +306,7 @@ export default class Game {
 		this.lift.update(step);
 		this.npcHandler.update(step);
 		this.updateSkierTrail(step);
+		this.slalom.update(step);
 
 		this.updateGameObjects(this.bumpsGroup, step);
 		this.updateGameObjects(this.bumpsSmall, step);
@@ -612,6 +617,8 @@ export default class Game {
 			let jump = this.jumps[i];
 			ctx.drawImage(jump.img, this.skier.x + jump.x, this.skier.y + jump.y);
 		}
+
+		this.slalom.draw(ctx);
 
 		this.npcHandler.drawOtherSkiers(ctx);
 		this.npcHandler.drawSnowboarders(ctx);
