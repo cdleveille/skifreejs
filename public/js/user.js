@@ -16,6 +16,7 @@ export default class User {
 		this.logged_out = this.game.util.loadImage('/img/logged_out.png', this);
 		this.logged_out_inverted = this.game.util.loadImage('/img/logged_out_inverted.png', this);
 		this.crown = this.game.util.loadImage('/img/crown.png', this);
+		this.gear = this.game.util.loadImage('/img/gear.png', this);
 	}
 
 	getHTMLElements() {
@@ -49,8 +50,6 @@ export default class User {
 
 		this.loggedInInfoSection = document.getElementById('logged-in-info-section');
 		this.loggedInUsername = document.getElementById('logged-in-username');
-		this.signOutButton = document.getElementById('sign-out-btn');
-		this.signOutButton.onclick = () => { this.signOutButton.blur(); this.signOut(); };
 
 		this.leaderboardButtonSignedIn = document.getElementById('leaderboard-btn-signed-in');
 		this.leaderboardButtonSignedIn.onclick = () => { this.leaderboardButtonSignedIn.blur(); this.leaderboardButtonSignedInClickHandler(); };
@@ -61,6 +60,14 @@ export default class User {
 		this.leaderboardButtonSignedOut.onclick = () => { this.leaderboardButtonSignedOut.blur(); this.leaderboardButtonSignedOutClickHandler(); };
 		this.leaderboardButtonSignedOut.innerText = 'Top ' + this.leaderboardScoreCount;
 		this.leaderboardSignedOut = document.getElementById('leaderboard-signed-out');
+
+		this.userSettingsImage = document.getElementById('user-settings-img');
+		this.userSettingsButton = document.getElementById('user-settings-btn');
+		this.userSettingsButton.onclick = () => { this.userSettingsButtonClickHandler(); };
+
+		this.userInfoSection = document.getElementById('user-info-section');
+		this.signOutButton = document.getElementById('sign-out-btn');
+		this.signOutButton.onclick = () => { this.signOutButton.blur(); this.signOut(); };
 	}
 
 	// authenticate the current locally-stored login token with the server, which responds with user data
@@ -79,6 +86,7 @@ export default class User {
 				if (res.ok) {
 					this.userData = res.data;
 					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
+					this.hideLoggedInUsername();
 					this.profileImage.src = this.logged_in.src;
 					this.isLoggedIn = true;
 				}
@@ -186,11 +194,16 @@ export default class User {
 			}
 			this.hideLeaderboardSignedOut();
 		} else {
-			if (this.loggedInInfoSection.style.display == 'block') {
+			if (this.userSettingsButton.style.display == 'block') {
+				this.hideLoggedInUsername();
 				this.hideLoggedInInfo();
+				this.hideUserSettingsButton();
 			} else {
+				this.showLoggedInUsername();
 				this.showLoggedInInfo();
+				this.showUserSettingsButton();
 			}
+			this.hideUserInfoSection();
 			this.hideLeaderboardSignedIn();
 		}
 	}
@@ -232,6 +245,17 @@ export default class User {
 		}
 	}
 
+	userSettingsButtonClickHandler() {
+		if (this.loggedInInfoSection.style.display != 'block') {
+			this.showLoggedInInfo();
+			this.hideUserInfoSection();
+		} else {
+			this.hideLoggedInInfo();
+			this.hideLeaderboardSignedIn();
+			this.showUserInfoSection();
+		}
+	}
+
 	refreshLeaderboard(numToRetrieve) {
 		let headers = {
 			'Content-Type': 'application/json'
@@ -269,6 +293,8 @@ export default class User {
 		this.leaderboardSignedOut.innerHTML = '';
 		this.isLoggedIn = false;
 		this.hideLoggedInInfo();
+		this.hideUserInfoSection();
+		this.hideUserSettingsButton();
 		this.profileImage.src = this.logged_out.src;
 	}
 
@@ -320,6 +346,32 @@ export default class User {
 	hideLeaderboardSignedOut() {
 		this.leaderboardSignedOut.style.display = 'none';
 		this.leaderboardSignedOut.innerHTML = '';
+	}
+
+	showUserSettingsButton() {
+		this.userSettingsImage.style.display = 'block';
+		this.userSettingsButton.style.display = 'block';
+	}
+
+	hideUserSettingsButton() {
+		this.userSettingsImage.style.display = 'none';
+		this.userSettingsButton.style.display = 'none';
+	}
+
+	showLoggedInUsername() {
+		this.loggedInUsername.style.display = 'block';
+	}
+
+	hideLoggedInUsername() {
+		this.loggedInUsername.style.display = 'none';
+	}
+
+	showUserInfoSection() {
+		this.userInfoSection.style.display = 'block';
+	}
+
+	hideUserInfoSection() {
+		this.userInfoSection.style.display = 'none';
 	}
 
 	isTextInputActive() {

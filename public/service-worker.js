@@ -43,6 +43,7 @@ self.addEventListener('install', function (event) {
 				'./img/gate_left.png',
 				'./img/gate_pass.png',
 				'./img/gate_right.png',
+				'./img/gear.png',
 				'./img/jump.png',
 				'./img/lift_chair_down.png',
 				'./img/lift_chair_up1.png',

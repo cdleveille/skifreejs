@@ -18,6 +18,8 @@
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
 		<div id="game-paused-text" class="animate-flicker">GAME PAUSED</div>
+		<button id="restart-btn" class="button-invis"></button>
+		<img src="../img/restart.png" id="restart-img">
 		<img src="../img/offline.png" id="offline-ind" class="animate-flicker">
 		<button id="game-info-btn" class="button-invis"></button>
 		<div id="game-info">
@@ -29,7 +31,9 @@
 		<div id="user-section">
 			<button id="user-profile-btn" class="button-invis"></button>
 			<img src="../img/logged_out.png" id="user-profile-img">
-			<div id="sign-in-or-register" class="user-panel visible">
+			<button id="user-settings-btn" class="button-invis"></button>
+			<img src="../img/gear.png" id="user-settings-img">
+			<div id="sign-in-or-register" class="user-panel-signed-out visible">
 				<div>
 					<button id="leaderboard-btn-signed-out" class="button" type="button">Top 10</button>
 				</div>
@@ -41,7 +45,7 @@
 				</div>
 				<div id="leaderboard-signed-out" class="leaderboard"></div>
 			</div>
-			<div id="sign-in-form-section" class="user-panel">
+			<div id="sign-in-form-section" class="user-panel-signed-out">
 				<form id="sign-in-form" spellcheck="false">
 					<div>
 						<input id="sign-in-username" class="text-input" name="sign-in-username" placeholder="username" type="text" required>
@@ -53,7 +57,7 @@
 					<div id="sign-in-error" class="form-error"></div>
 				</form>
 			</div>
-			<div id="register-form-section" class="user-panel">
+			<div id="register-form-section" class="user-panel-signed-out">
 				<form id="register-form" spellcheck="false">
 					<div>
 						<input id="register-email" class="text-input" name="email" placeholder="email" type="email" required>
@@ -68,19 +72,21 @@
 					<div id="register-error" class="form-error"></div>
 				</form>
 			</div>
-			<div id="logged-in-info-section" class="user-panel">
-				<div id="logged-in-username" style="margin: 2px; margin-top: 4px; margin-bottom: 5px;"></div>
+			<div id="logged-in-username" style="margin: 2px; margin-top: 4px; margin-bottom: 5px;"></div>
+			<div id="logged-in-info-section" class="user-panel-signed-in">
 				<div>
 					<button id="leaderboard-btn-signed-in" class="button" type="button"></button>
 				</div>
+				<div id="leaderboard-signed-in" class="leaderboard"></div>
+			</div>
+			<div id="user-info-section" class="user-panel-signed-in">
 				<div>
 					<button id="sign-out-btn" class="button" type="button">Sign Out</button>
 				</div>
-				<div id="leaderboard-signed-in" class="leaderboard"></div>
 			</div>
 		</div>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="./js/socket.js" type="module"></script>
-		<script defer src="./js/ski.js" type="module"></script>
+		<script src="./js/ski.js" type="module" defer></script>
 	</body>
 </html>

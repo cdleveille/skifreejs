@@ -15,6 +15,15 @@
 	font-family: 'ModernDOS';
 }
 
+#logged-in-username {
+	z-index: 2;
+	position: absolute;
+	top: 2px;
+	left: 50px;
+	width: 250px;
+	display: none;
+}
+
 #user-profile-img {
 	margin: 2px;
 	position: absolute;
@@ -38,6 +47,31 @@
 
 #user-profile-btn:active + #user-profile-img {
 	background-color: #666666;
+}
+
+#user-settings-img {
+	position: absolute;
+	z-index: 2;
+	top: 51px;
+	left: 16px;
+	transition: all 0.2s ease-in-out 0s;
+	display: none;
+}
+
+#user-settings-btn {
+	position: absolute;
+	z-index: 3;
+	top: 51px;
+	left: 16px;
+	width: 17px;
+	height: 17px;
+	border-radius: 50%;
+	display: none;
+}
+
+#user-settings-btn:hover + #user-settings-img {
+	transform: rotate(90deg);
+    transition: all 0.2s ease-in-out 0s;
 }
 
 #game-paused-text {
@@ -115,8 +149,8 @@
 
 #offline-ind {
 	position: absolute;
-	left: 8px;
-	top: 50px;
+	right: 180px;
+	top: 20px;
 	z-index: 2;
 	display: none;
 }
@@ -136,7 +170,9 @@
 
 .text-input {
 	width: 200px;
-	margin: 2px;
+	height: 17px;
+	margin: 1px;
+	margin-bottom: 2px;
 	border: 1px solid black;
 	font-size: 16px;
 	font-family: 'ModernDOS';
@@ -149,9 +185,9 @@
 
 .button {
 	width: 120px;
-	height: 20px;
-	margin: 2px;
-	margin-bottom: 3px;
+	height: 21px;
+	margin: 1px;
+	margin-bottom: 1px;
 	background-color: white;
 	border: 1px solid black;
 	text-align: center;
@@ -198,9 +234,17 @@
 	display: block;
 }
 
-.user-panel {
+.user-panel-signed-in {
 	position: absolute;
-	top: 0px;
+	top: 25px;
+	left: 48px;
+	z-index: 2;
+	display: none;
+}
+
+.user-panel-signed-out {
+	position: absolute;
+	top: 1px;
 	left: 48px;
 	z-index: 2;
 	display: none;
@@ -225,6 +269,7 @@ html, body {
 	-webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
 	-webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
 	-webkit-user-select: none;
+	user-select: none;
 	touch-action: none;
 }
 
