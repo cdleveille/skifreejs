@@ -201,6 +201,7 @@
 	font-size: 16px;
 	font-family: 'ModernDOS';
 	outline: none;
+	white-space: nowrap;
 }
 
 .button.submit {
