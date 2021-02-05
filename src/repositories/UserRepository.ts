@@ -6,6 +6,7 @@ import { ILeaderBoard, INewPassword } from '../types/Abstract';
 import { Nums } from '../types/Constants';
 import Mail from '../services/mailer';
 import bytes from '../helpers/bytes';
+import config from '../helpers/config';
 
 class UserRepository extends Base {
 
@@ -112,7 +113,7 @@ class UserRepository extends Base {
 
 			const timestamp: number = +new Date(exists.lastUpdated);
 			const now: number = +new Date();
-			if ((now - timestamp) < Nums.oneDay) {
+			if (config.IS_PROD && (now - timestamp) < Nums.oneDay) {
 				throw 'password updated too recently';
 			}
 

@@ -66,8 +66,17 @@ export default class User {
 		this.userSettingsButton.onclick = () => { this.userSettingsButtonClickHandler(); };
 
 		this.userInfoSection = document.getElementById('user-info-section');
+		this.userInfoMessage = document.getElementById('user-info-message');
 		this.signOutButton = document.getElementById('sign-out-btn');
 		this.signOutButton.onclick = () => { this.signOutButton.blur(); this.signOut(); };
+
+		this.changePasswordButton = document.getElementById('change-password-btn');
+		this.changePasswordButton.onclick = () => { this.changePasswordButtonClickHandler(); };
+		this.changePasswordForm = document.getElementById('change-password-form');
+		this.changePasswordFormSection = document.getElementById('change-password-form-section');
+		this.currentPassword = document.getElementById('current-password');
+		this.newPassword = document.getElementById('new-password');
+		this.changePasswordError = document.getElementById('change-password-error');
 	}
 
 	// authenticate the current locally-stored login token with the server, which responds with user data
@@ -80,6 +89,7 @@ export default class User {
 				'Authorization': `Bearer ${loginToken}`
 			};
 			let body = {};
+			// post request to validate api route
 			let method = 'POST', route = '/api/validate';
 			this.game.util.request(method, route, headers, body).then(res => {
 				console.log(method, route, res);
@@ -112,7 +122,7 @@ export default class User {
 					username: this.signInUsername.value,
 					password: this.signInPassword.value
 				};
-				// post request to login api
+				// post request to login api route
 				let method = 'POST', route = '/api/login';
 				this.game.util.request(method, route, headers, body).then(res => {
 					console.log(method, route, res);
@@ -158,7 +168,7 @@ export default class User {
 					username: this.registerUsername.value,
 					password: this.registerPassword.value
 				};
-				// post request to register api
+				// post request to register api route
 				let method = 'POST', route = '/api/register';
 				this.game.util.request(method, route, headers, body).then(res => {
 					console.log(method, route, res);
@@ -171,6 +181,51 @@ export default class User {
 						this.registerError.innerText = messages.join('\n');
 					}
 				}).catch(err => console.log(err));
+			}
+		});
+
+		this.changePasswordForm.addEventListener('submit', (e) => {
+			e.preventDefault();
+			let messages = [];
+
+			if (this.newPassword.value.length < 8) {
+				messages.push('new password must be at least 8 characters');
+			}
+			
+			// show any validation errors
+			if (messages.length > 0) {
+				this.changePasswordError.innerText = messages.join('\n');
+			} else {
+				let loginToken = window.localStorage.getItem('loginToken');
+				if (loginToken) {
+					let headers = {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${loginToken}`
+					};
+					let body = {
+						password: this.currentPassword.value,
+						newPassword: this.newPassword.value
+					};
+					// post request to update password api route
+					let method = 'POST', route = '/api/updatepassword';
+					this.game.util.request(method, route, headers, body).then(res => {
+						console.log(method, route, res);
+						if (res.ok) {
+							window.localStorage.removeItem('loginToken');
+							window.localStorage.setItem('loginToken', res.data.token);
+							this.hideChangePasswordFormSection();
+							this.showLoggedInUsername();
+							this.showUserInfoSection();
+							this.userInfoMessage.innerText = 'password updated';
+							
+						} else {
+							messages.push(res.data.replace(/error: /gi, ''));
+							this.changePasswordError.innerText = messages.join('\n');
+						}
+					}).catch(err => console.log(err));
+				} else {
+					this.isLoggedIn = false;
+				}
 			}
 		});
 	}
@@ -205,6 +260,7 @@ export default class User {
 			}
 			this.hideUserInfoSection();
 			this.hideLeaderboardSignedIn();
+			this.hideChangePasswordFormSection();
 		}
 	}
 
@@ -246,14 +302,30 @@ export default class User {
 	}
 
 	userSettingsButtonClickHandler() {
-		if (this.loggedInInfoSection.style.display != 'block') {
-			this.showLoggedInInfo();
-			this.hideUserInfoSection();
+		if (this.changePasswordFormSection.style.display != 'block') {
+			if (this.loggedInInfoSection.style.display != 'block') {
+				this.showLoggedInInfo();
+				this.hideUserInfoSection();
+			} else {
+				this.hideLoggedInInfo();
+				this.hideLeaderboardSignedIn();
+				this.showUserInfoSection();
+			}
 		} else {
+			this.hideChangePasswordFormSection();
 			this.hideLoggedInInfo();
-			this.hideLeaderboardSignedIn();
 			this.showUserInfoSection();
 		}
+		
+	}
+
+	changePasswordButtonClickHandler() {
+		this.hideLoggedInInfo();
+		this.hideUserInfoSection();
+		this.showChangePasswordFormSection();
+		this.currentPassword.value = '';
+		this.newPassword.value = '';
+		this.changePasswordError.innerText = '';
 	}
 
 	refreshLeaderboard(numToRetrieve) {
@@ -368,15 +440,26 @@ export default class User {
 
 	showUserInfoSection() {
 		this.userInfoSection.style.display = 'block';
+		this.userInfoMessage.innerText = '';
 	}
 
 	hideUserInfoSection() {
 		this.userInfoSection.style.display = 'none';
+		this.userInfoMessage.innerText = '';
+	}
+
+	showChangePasswordFormSection() {
+		this.changePasswordFormSection.style.display = 'block';
+	}
+
+	hideChangePasswordFormSection() {
+		this.changePasswordFormSection.style.display = 'none';
 	}
 
 	isTextInputActive() {
 		return this.signInUsername === document.activeElement || this.signInPassword === document.activeElement ||
 			this.registerUsername === document.activeElement || this.registerPassword === document.activeElement ||
-			this.registerEmail === document.activeElement;
+			this.registerEmail === document.activeElement || this.currentPassword === document.activeElement ||
+			this.newPassword === document.activeElement;
 	}
 }

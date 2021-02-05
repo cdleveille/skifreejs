@@ -3,7 +3,7 @@ export default class Lift {
 	constructor(game) {
 		this.game = game;
 		this.liftSpeed = 50;
-		this.liftX = -250;
+		this.liftX = 170;
 		this.liftChairSpacing = 500;
 		this.liftTowerSpacing = 1000;
 		this.images = [];

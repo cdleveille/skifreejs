@@ -72,7 +72,7 @@
 					<div id="register-error" class="form-error"></div>
 				</form>
 			</div>
-			<div id="logged-in-username" style="margin: 2px; margin-top: 4px; margin-bottom: 5px;"></div>
+			<div id="logged-in-username"></div>
 			<div id="logged-in-info-section" class="user-panel-signed-in">
 				<div>
 					<button id="leaderboard-btn-signed-in" class="button" type="button"></button>
@@ -81,8 +81,24 @@
 			</div>
 			<div id="user-info-section" class="user-panel-signed-in">
 				<div>
+					<button id="change-password-btn" class="button" type="button">Change Password</button>
+				</div>
+				<div>
 					<button id="sign-out-btn" class="button" type="button">Sign Out</button>
 				</div>
+				<div id="user-info-message" class="info-message"></div>
+			</div>
+			<div id="change-password-form-section" class="user-panel-signed-in">
+				<form id="change-password-form" spellcheck="false">
+					<div>
+						<input id="current-password" class="text-input" name="password" placeholder="current password" type="password" required>
+					</div>
+					<div>
+						<input id="new-password" class="text-input" name="newPassword" placeholder="new password" type="password" required>
+					</div>
+					<button type="submit" class="button submit">Submit</button>
+					<div id="change-password-error" class="form-error"></div>
+				</form>
 			</div>
 		</div>
 		<script src="/socket.io/socket.io.js"></script>

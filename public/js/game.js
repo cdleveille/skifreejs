@@ -103,6 +103,7 @@ export default class Game {
 		this.gameInfo = document.getElementById('game-info');
 		this.gameInfoBtn = document.getElementById('game-info-btn');
 		this.gameInfoBtn.onclick = () => { this.gameInfoBtn.blur(); this.togglePause(); };
+		this.gameInfoBtn.oncontextmenu = () => { this.gameInfoBtn.blur(); };
 		this.gameInfoTime = document.getElementById('game-info-time');
 		this.gameInfoDist = document.getElementById('game-info-dist');
 		this.gameInfoSpeed = document.getElementById('game-info-speed');
@@ -174,22 +175,21 @@ export default class Game {
 	// spawn a game object of random type at a random location on screen
 	spawnNewGameObjectAtStart(type) {
 		let xy = this.getRandomCoordinateAtStart();
-		return this.spawnNewGameObject(type, xy.x, xy.y);
+		this.spawnNewGameObject(type, xy.x, xy.y);
 	}
 
 	// determine whether or not a game object is occupying the specified location
 	isLocationOccupiedByGameObject(xy, getDistanceBetweenPointsFunc) {
-		let gameObjectsListsToCheck = [[{ x: 0, y: 0 }], this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.jumps, this.stumps, this.lift.liftTowers, this.slalom.gates, [this.logo]];
-		for (let i = 0; i < gameObjectsListsToCheck.length; i++) {
-			let gameObjectList = gameObjectsListsToCheck[i];
+		let gameObjectsListsToCheck = [[{ x: 0, y: 0 }], this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.jumps,
+			this.stumps, this.lift.liftTowers, this.slalom.gates, [this.logo, { x: this.logo.x + 75, y: this.logo.y }]];
+		for (let gameObjectList of gameObjectsListsToCheck) {
 			if (locationOccupiedHelper(gameObjectList)) return true;
 		}
 		return false;
 
 		function locationOccupiedHelper(gameObjectList) {
 			let minSpaceBetween = 80;
-			for (let i = 0; i < gameObjectList.length; i++) {
-				let obj = gameObjectList[i];
+			for (let obj of gameObjectList) {
 				let dist = getDistanceBetweenPointsFunc(xy.x, xy.y, obj.x, obj.y);
 				if (dist < minSpaceBetween) return true;
 			}
@@ -203,7 +203,7 @@ export default class Game {
 		let searching = true, attempts = 0, maxAttempts = 10, xy;
 
 		while (searching && attempts < maxAttempts) {
-			xy = getCoordinateHelper(this.util.randomInt);
+			xy = getRandomCoordinateAtStartHelper(this.util.randomInt);
 			if (!this.isLocationOccupiedByGameObject(xy, this.util.getDistanceBetweenPoints)) {
 				searching = false;
 				break;
@@ -213,7 +213,7 @@ export default class Game {
 		}
 		return xy;
 
-		function getCoordinateHelper(randomIntFunc) {
+		function getRandomCoordinateAtStartHelper(randomIntFunc) {
 			return { x: randomIntFunc(-width * 3 / 4, width * 3 / 4), y: randomIntFunc(-height / 3 - space, height) };
 		}
 	}
@@ -224,7 +224,7 @@ export default class Game {
 		let searching = true, attempts = 0, maxAttempts = 10, xy;
 
 		while (searching && attempts < maxAttempts) {
-			xy = getCoordinateHelper(this.util.randomInt);
+			xy = getRandomCoordinateOffScreenHelper(this.util.randomInt);
 			if (!this.isLocationOccupiedByGameObject(xy, this.util.getDistanceBetweenPoints)) {
 				searching = false;
 				break;
@@ -235,7 +235,7 @@ export default class Game {
 
 		return xy;
 
-		function getCoordinateHelper(randomIntFunc) {
+		function getRandomCoordinateOffScreenHelper(randomIntFunc) {
 			switch (randomIntFunc(0, 3)) {
 			case 0:
 				// offscreen left
@@ -258,45 +258,44 @@ export default class Game {
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 64, hbHeight: 32, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_group };
 			if (!this.bumpsGroup) this.bumpsGroup = [];
 			this.bumpsGroup.push(newObj);
-			break;
+			return;
 		case 'bump_small':
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 4, jumpOverHeight: 4, onCollision: this.slowOnCollision, img: this.bump_small };
 			if (!this.bumpsSmall) this.bumpsSmall = [];
 			this.bumpsSmall.push(newObj);
-			break;
+			return;
 		case 'bump_large':
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 24, hbHeight: 8, jumpOverHeight: 8, onCollision: this.slowOnCollision, img: this.bump_large };
 			this.bumpsLarge.push(newObj);
-			break;
+			return;
 		case 'tree_small':
 			newObj = { game: this, x: x, y: y, hbXOffset: 8, hbYOffset: 22, hbWidth: 14, hbHeight: 10, jumpOverHeight: 32, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.tree_small, drawThresholdY: -5 };
 			if (!this.treesSmall) this.treesSmall = [];
 			this.treesSmall.push(newObj);
-			break;
+			return;
 		case 'tree_large':
 			newObj = { game: this, x: x, y: y, hbXOffset: 9, hbYOffset: 52, hbWidth: 15, hbHeight: 12, jumpOverHeight: 64, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.tree_large, drawThresholdY: -37 };
 			this.treesLarge.push(newObj);
-			break;
+			return;
 		case 'tree_bare':
 			newObj = { game: this, x: x, y: y, hbXOffset: 7, hbYOffset: 18, hbWidth: 9, hbHeight: 9, jumpOverHeight: 27, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.tree_bare, drawThresholdY: 1 , isOnFire: false};
 			this.treesBare.push(newObj);
-			break;
+			return;
 		case 'rock':
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 23, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.rock };
 			this.rocks.push(newObj);
-			break;
+			return;
 		case 'jump':
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 32, hbHeight: 8, jumpOverHeight: 8, hasCollided: false, onCollision: this.jumpOnCollision, img: this.jump };
 			this.jumps.push(newObj);
-			break;
+			return;
 		case 'stump':
 			newObj = { game: this, x: x, y: y, hbXOffset: 0, hbYOffset: 0, hbWidth: 16, hbHeight: 11, jumpOverHeight: 11, hasCollided: false, onCollision: this.crashOnCollision, npcCanCrashInto: true, img: this.stump };
 			this.stumps.push(newObj);
-			break;
+			return;
 		default:
 			console.log('invalid game object type: ' + type);
 		}
-		return newObj;
 	}
 
 	// update the gamestate

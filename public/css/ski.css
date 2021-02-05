@@ -64,10 +64,10 @@
 #user-settings-btn {
 	position: absolute;
 	z-index: 3;
-	top: 51px;
-	left: 16px;
-	width: 17px;
-	height: 17px;
+	top: 48px;
+	left: 13px;
+	width: 23px;
+	height: 23px;
 	border-radius: 50%;
 	display: none;
 }
@@ -187,7 +187,7 @@
 }
 
 .button {
-	width: 120px;
+	width: 150px;
 	height: 21px;
 	margin: 1px;
 	margin-bottom: 1px;
@@ -234,6 +234,16 @@
 	left: 2px;
 	z-index: 2;
 	color: red;
+	display: block;
+}
+
+.info-message {
+	text-align: center;
+	position: relative;
+	top: 2px;
+	left: 2px;
+	z-index: 2;
+	color: green;
 	display: block;
 }
 

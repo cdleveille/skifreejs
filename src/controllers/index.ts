@@ -129,6 +129,10 @@ app.post('/api/updatepassword', validate, async (req: Request, res: Response, ne
 			throw 'missing password / new password';
 		}
 
+		if (newPassword.length < 8) {
+			throw 'password must be at least 8 characters';
+		}
+
 		const updated = await _User.UpdatePassword({
 			password: password,
 			newPassword: newPassword,
