@@ -33,6 +33,7 @@
 			<img src="../img/logged_out.png" id="user-profile-img">
 			<button id="user-settings-btn" class="button-invis"></button>
 			<img src="../img/gear.png" id="user-settings-img">
+			<div id="logged-in-username"></div>
 			<div id="sign-in-or-register" class="user-panel-signed-out visible">
 				<div>
 					<button id="leaderboard-btn-signed-out" class="button" type="button">Top 10</button>
@@ -43,6 +44,7 @@
 				<div>
 					<button id="register-btn" class="button" type="button">Register</button>
 				</div>
+				<div id="sign-in-or-register-info-message" class="info-message"></div>
 				<div id="leaderboard-signed-out" class="leaderboard"></div>
 			</div>
 			<div id="sign-in-form-section" class="user-panel-signed-out">
@@ -54,7 +56,20 @@
 						<input id="sign-in-password" class="text-input" name="sign-in-password" placeholder="password" type="password" required>
 					</div>
 					<button type="submit" class="button submit">Sign In</button>
-					<div id="sign-in-error" class="form-error"></div>
+				</form>
+				<button id="forgot-password-btn" class="button submit">Forgot Password</button>
+				<div id="sign-in-error" class="form-error"></div>
+			</div>
+			<div id="recover-form-section" class="user-panel-signed-out">
+				<form id="recover-form" spellcheck="false">
+					<div>
+						<input id="recover-email" class="text-input" name="email" placeholder="email" type="email" required>
+					</div>
+					<div>
+						<input id="recover-username" class="text-input" name="username" placeholder="username" type="text" required>
+					</div>
+					<button type="submit" class="button submit">Send</button>
+					<div id="recover-error" class="form-error"></div>
 				</form>
 			</div>
 			<div id="register-form-section" class="user-panel-signed-out">
@@ -72,7 +87,6 @@
 					<div id="register-error" class="form-error"></div>
 				</form>
 			</div>
-			<div id="logged-in-username"></div>
 			<div id="logged-in-info-section" class="user-panel-signed-in">
 				<div>
 					<button id="leaderboard-btn-signed-in" class="button" type="button"></button>

@@ -208,7 +208,7 @@ export default class Skier {
 
 					if (this.trick1StartTime != null && this.trick1EndTime != null) {
 						let duration = this.trick1EndTime - this.trick1StartTime;
-						styleToAdd += ((duration / 80.0) + 5);
+						if (this.yv > 0) styleToAdd += ((duration / 80.0) + 5);
 						this.trick1StartTime = null;
 						this.trick1EndTime = null;
 					}
@@ -247,7 +247,7 @@ export default class Skier {
 		}
 	}
 
-	// decelerate the skier until he is stopped
+	// decelerate the skier until stopped
 	decelerateToStop(vVectors) {
 		if (!this.isStopped && !this.isJumping) {
 			let xDecelAmt = this.decel * vVectors[0];

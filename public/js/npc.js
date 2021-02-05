@@ -174,7 +174,7 @@ export default class NPCHandler {
 			} else {
 				// recover from crash after 1 sec
 				if (this.game.util.timestamp() - snowboarder.crashTimestamp >= snowboarder.recoveryTime) {
-					snowboarder.y += 20;
+					snowboarder.y += 30;
 					snowboarder.isCrashed = false;
 					snowboarder.hasCollided = false;
 				}

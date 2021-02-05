@@ -82,7 +82,7 @@ class UserRepository extends Base {
 	public async SendRecovery(email: string, username: string): Promise<void> {
 		try {
 			const exists = await User.findOne({ username: username, email: email });
-			if (!exists) throw 'username / email not found';
+			if (!exists) throw 'invalid email or username';
 
 			const newPass = await bytes();
 

@@ -28,6 +28,7 @@ export default class User {
 		this.profileButton.onmouseup = () => { this.profileImage.src = this.isLoggedIn ? this.logged_in.src : this.logged_out.src; };
 
 		this.signInOrRegister = document.getElementById('sign-in-or-register');
+		this.signInOrRegisterInfoMessage = document.getElementById('sign-in-or-register-info-message');
 
 		this.signInButton = document.getElementById('sign-in-btn');
 		this.signInButton.onclick = () => {this.signInButton.blur(); this.signInButtonClickHandler(); };
@@ -77,6 +78,15 @@ export default class User {
 		this.currentPassword = document.getElementById('current-password');
 		this.newPassword = document.getElementById('new-password');
 		this.changePasswordError = document.getElementById('change-password-error');
+
+		this.forgotPasswordButton = document.getElementById('forgot-password-btn');
+		this.forgotPasswordButton.onclick = () => { this.forgotPasswordButtonClickHandler(); };
+		this.forgotPasswordButton.disabled = true;
+		this.recoverFormSection = document.getElementById('recover-form-section');
+		this.recoverForm = document.getElementById('recover-form');
+		this.recoverEmail = document.getElementById('recover-email');
+		this.recoverUsername = document.getElementById('recover-username');
+		this.recoverError = document.getElementById('recover-error');
 	}
 
 	// authenticate the current locally-stored login token with the server, which responds with user data
@@ -89,7 +99,6 @@ export default class User {
 				'Authorization': `Bearer ${loginToken}`
 			};
 			let body = {};
-			// post request to validate api route
 			let method = 'POST', route = '/api/validate';
 			this.game.util.request(method, route, headers, body).then(res => {
 				console.log(method, route, res);
@@ -122,7 +131,6 @@ export default class User {
 					username: this.signInUsername.value,
 					password: this.signInPassword.value
 				};
-				// post request to login api route
 				let method = 'POST', route = '/api/login';
 				this.game.util.request(method, route, headers, body).then(res => {
 					console.log(method, route, res);
@@ -168,7 +176,6 @@ export default class User {
 					username: this.registerUsername.value,
 					password: this.registerPassword.value
 				};
-				// post request to register api route
 				let method = 'POST', route = '/api/register';
 				this.game.util.request(method, route, headers, body).then(res => {
 					console.log(method, route, res);
@@ -206,7 +213,6 @@ export default class User {
 						password: this.currentPassword.value,
 						newPassword: this.newPassword.value
 					};
-					// post request to update password api route
 					let method = 'POST', route = '/api/updatepassword';
 					this.game.util.request(method, route, headers, body).then(res => {
 						console.log(method, route, res);
@@ -228,6 +234,31 @@ export default class User {
 				}
 			}
 		});
+
+		this.recoverForm.addEventListener('submit', (e) => {
+			e.preventDefault();
+			let messages = [];
+
+			let headers = {
+				'Content-Type': 'application/json'
+			};
+			let body = {
+				email: this.recoverEmail.value,
+				username: this.recoverUsername.value
+			};
+			let method = 'POST', route = '/api/sendrecovery';
+			this.game.util.request(method, route, headers, body).then(res => {
+				console.log(method, route, res);
+				if (res.ok) {
+					this.hideRecoverFormSection();
+					this.showSignInOrRegister();
+					this.signInOrRegisterInfoMessage.innerText = 'recovery email sent';
+				} else {
+					messages.push(res.data.replace(/error: /gi, ''));
+					this.recoverError.innerText = messages.join('\n');
+				}
+			}).catch(err => console.log(err));
+		});
 	}
 
 	userProfileButtonClickHandler() {
@@ -247,7 +278,12 @@ export default class User {
 				this.hideRegisterForm();
 				this.hideSignInOrRegister();
 			}
+			if (this.recoverFormSection.style.display == 'block') {
+				this.hideRecoverFormSection();
+				this.hideSignInOrRegister();
+			}
 			this.hideLeaderboardSignedOut();
+			
 		} else {
 			if (this.userSettingsButton.style.display == 'block') {
 				this.hideLoggedInUsername();
@@ -259,8 +295,8 @@ export default class User {
 				this.showUserSettingsButton();
 			}
 			this.hideUserInfoSection();
-			this.hideLeaderboardSignedIn();
 			this.hideChangePasswordFormSection();
+			this.hideLeaderboardSignedIn();
 		}
 	}
 
@@ -328,6 +364,11 @@ export default class User {
 		this.changePasswordError.innerText = '';
 	}
 
+	forgotPasswordButtonClickHandler() {
+		this.hideSignInForm();
+		this.showRecoverFormSection();
+	}
+
 	refreshLeaderboard(numToRetrieve) {
 		let headers = {
 			'Content-Type': 'application/json'
@@ -388,10 +429,12 @@ export default class User {
 
 	showSignInOrRegister() {
 		this.signInOrRegister.style.display = 'block';
+		this.signInOrRegisterInfoMessage.innerText = '';
 	}
 
 	hideSignInOrRegister() {
 		this.signInOrRegister.style.display = 'none';
+		this.signInOrRegisterInfoMessage.innerText = '';
 	}
 
 	showLoggedInInfo() {
@@ -456,10 +499,25 @@ export default class User {
 		this.changePasswordFormSection.style.display = 'none';
 	}
 
+	showRecoverFormSection() {
+		this.recoverFormSection.style.display = 'block';
+		this.recoverEmail.value = '';
+		this.recoverUsername.value = '';
+		this.recoverError.innerText = '';
+	}
+
+	hideRecoverFormSection() {
+		this.recoverFormSection.style.display = 'none';
+		this.recoverEmail.value = '';
+		this.recoverUsername.value = '';
+		this.recoverError.innerText = '';
+	}
+
 	isTextInputActive() {
 		return this.signInUsername === document.activeElement || this.signInPassword === document.activeElement ||
 			this.registerUsername === document.activeElement || this.registerPassword === document.activeElement ||
 			this.registerEmail === document.activeElement || this.currentPassword === document.activeElement ||
-			this.newPassword === document.activeElement;
+			this.newPassword === document.activeElement || this.recoverEmail === document.activeElement ||
+			this.recoverUsername === document.activeElement;
 	}
 }
