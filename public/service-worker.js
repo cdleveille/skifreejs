@@ -31,7 +31,6 @@ self.addEventListener('install', function (event) {
 				'./icons/icon-224x224.png',
 				'./icons/icon-384x384.png',
 				'./icons/icon-512x512.png',
-				'./img/boarder_bro.png',
 				'./img/bump_group.png',
 				'./img/bump_large.png',
 				'./img/bump_small.png',
@@ -108,14 +107,21 @@ self.addEventListener('install', function (event) {
 self.addEventListener('fetch', (event) => {
 	event.respondWith(async function() {
 		try {
+			const url = event.request.url;
 			const cache = await caches.open('v1');
 			const networkResponse = await fetch(event.request);
 			if (event.request.method !== 'POST') {
 				event.waitUntil(cache.put(event.request, networkResponse.clone()));
 			}
-			return networkResponse;
+			if (url.endsWith('.png') || url.endsWith('ico')) {
+				return caches.match(event.request) || networkResponse;
+			} else {
+				return networkResponse || caches.match(event.request);
+			}
+				
 		} catch (err) {
-			return caches.match(event.request);
+			console.log(err);
+			return caches.match(event.request) || networkResponse;
 		}
 	}());
 });
