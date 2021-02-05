@@ -57,6 +57,7 @@ export default class Game {
 		this.stylePointsToAwardOnLanding = 0;
 		this.style = 0;
 		this.util.newPoint(0);
+		this.logo = { x: -130, y: -20 };
 	}
 
 	// restart the gamestate
@@ -82,6 +83,7 @@ export default class Game {
 		this.offlineImg = this.util.loadImage('/img/offline.png', this);
 		this.restart_img = this.util.loadImage('/img/restart.png', this);
 		this.restart_inverted = this.util.loadImage('/img/restart_inverted.png', this);
+		this.logoImg = this.util.loadImage('/img/skifreejs.png', this);
 
 		this.user.loadAssets();
 		this.skier.loadAssets();
@@ -177,7 +179,7 @@ export default class Game {
 
 	// determine whether or not a game object is occupying the specified location
 	isLocationOccupiedByGameObject(xy, getDistanceBetweenPointsFunc) {
-		let gameObjectsListsToCheck = [[{ x: 0, y: 0 }], this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.jumps, this.stumps, this.lift.liftTowers, this.slalom.gates];
+		let gameObjectsListsToCheck = [[{ x: 0, y: 0 }], this.treesSmall, this.treesLarge, this.treesBare, this.rocks, this.jumps, this.stumps, this.lift.liftTowers, this.slalom.gates, [this.logo]];
 		for (let i = 0; i < gameObjectsListsToCheck.length; i++) {
 			let gameObjectList = gameObjectsListsToCheck[i];
 			if (locationOccupiedHelper(gameObjectList)) return true;
@@ -305,6 +307,7 @@ export default class Game {
 		this.lift.update(step);
 		this.npcHandler.update(step);
 		this.updateSkierTrail(step);
+		this.updateLogo(step);
 		this.slalom.update(step);
 
 		this.updateGameObjects(this.bumpsGroup, step);
@@ -398,6 +401,12 @@ export default class Game {
 				this.skierTrail.splice(i, 1);
 			}
 		}
+	}
+
+	// update the position of the game logo
+	updateLogo(step) {
+		this.logo.x -= this.skier.xv * step;
+		this.logo.y -= this.skier.yv * step;
 	}
 
 	// delete the game object and spawn a new game object of random type off screen
@@ -603,6 +612,9 @@ export default class Game {
 			let bump = this.bumpsLarge[i];
 			ctx.drawImage(bump.img, this.skier.x + bump.x, this.skier.y + bump.y);
 		}
+
+		// draw logo
+		ctx.drawImage(this.logoImg, Math.floor(this.logo.x + this.skier.x), Math.floor(this.logo.y + this.skier.y));
 
 		// draw skier trail
 		for (let i = 0; i < this.skierTrail.length; i++) {
