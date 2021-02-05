@@ -173,8 +173,8 @@ export default class NPCHandler {
 
 			} else {
 				// recover from crash after 1 sec
-				if (this.game.util.timestamp() - snowboarder.crashTimestamp >= 1000) {
-					snowboarder.y += 30;
+				if (this.game.util.timestamp() - snowboarder.crashTimestamp >= snowboarder.recoveryTime) {
+					snowboarder.y += 20;
 					snowboarder.isCrashed = false;
 					snowboarder.hasCollided = false;
 				}
@@ -221,6 +221,7 @@ export default class NPCHandler {
 		if (!snowboarder.isCrashed) {
 			snowboarder.isCrashed = true;
 			snowboarder.crashTimestamp = this.game.util.timestamp();
+			snowboarder.recoveryTime = this.game.util.randomInt(1000, 2001);
 			snowboarder.xv = 0;
 			snowboarder.yv = 0;
 			snowboarder.img = this.snowboarder_crash;
