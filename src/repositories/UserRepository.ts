@@ -17,7 +17,7 @@ class UserRepository extends Base {
 					{ username: user.username },
 					{ email: user.email }
 				]
-			});
+			}).lean();
 			if (exists) throw Error('username or email taken');
 
 			const newUser: IUser = new User();
@@ -36,7 +36,7 @@ class UserRepository extends Base {
 
 	public async Login(user: IUser): Promise<IUser> {
 		try {
-			const query: IUser = await User.findOne({ username: user.username });
+			const query: IUser = await User.findOne({ username: user.username }).lean();
 			if (!query) throw Error('username not found');
 
 			const pass: boolean = await Password.compare(user.password, query.password);
@@ -50,7 +50,7 @@ class UserRepository extends Base {
 
 	public async UpdateScore(user: INewScore): Promise<IUser> {
 		try {
-			const exists = await User.findOne({ username: user.username, _id: user._id });
+			const exists: IUser = await User.findOne({ username: user.username, _id: user._id }).lean();
 			if (!exists) throw Error('user not found');
 
 			if (user.score <= exists.score) {
@@ -81,7 +81,7 @@ class UserRepository extends Base {
 
 	public async SendRecovery(email: string, username: string): Promise<void> {
 		try {
-			const exists = await User.findOne({ username: username, email: email });
+			const exists: IUser = await User.findOne({ username: username, email: email }).lean();
 			if (!exists) throw 'invalid email or username';
 
 			const newPass = await bytes();
@@ -105,7 +105,7 @@ class UserRepository extends Base {
 
 	public async UpdatePassword(newPass: INewPassword): Promise<IUser> {
 		try {
-			const exists = await User.findOne({ username: newPass.username, email: newPass.email });
+			const exists: IUser = await User.findOne({ username: newPass.username, email: newPass.email }).lean();
 			if (!exists) throw 'username / email not found';
 
 			const pass: boolean = await Password.compare(newPass.password, exists.password);
@@ -128,13 +128,13 @@ class UserRepository extends Base {
 
 	public async UpdateEmail(newEmail: INewEmail): Promise<IUser> {
 		try {
-			const exists = await User.findOne({ username: newEmail.username, email: newEmail.email });
+			const exists: IUser = await User.findOne({ username: newEmail.username, email: newEmail.email }).lean();
 			if (!exists) throw 'username / email not found';
 
 			const pass: boolean = await Password.compare(newEmail.password, exists.password);
 			if (!pass) throw Error('incorrect password');
 
-			const taken = await User.findOne({ email: newEmail.newEmail });
+			const taken: IUser = await User.findOne({ email: newEmail.newEmail }).lean();
 			if (taken) throw 'email taken';
 
 			exists.isNew = false;
@@ -146,13 +146,13 @@ class UserRepository extends Base {
 	}
 
 	public async UpdateUsername(newUsername: INewUsername): Promise<IUser> {
-		const exists = await User.findOne({ username: newUsername.username, email: newUsername.email });
+		const exists: IUser = await User.findOne({ username: newUsername.username, email: newUsername.email }).lean();
 		if (!exists) throw 'username / email not found';
 
 		const pass: boolean = await Password.compare(newUsername.password, exists.password);
 		if (!pass) throw Error('incorrect password');
 
-		const taken = await User.findOne({ username: newUsername.newUsername });
+		const taken: IUser = await User.findOne({ username: newUsername.newUsername }).lean();
 		if (taken) throw 'username taken';
 
 		exists.isNew = false;
