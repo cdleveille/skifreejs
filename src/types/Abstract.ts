@@ -50,5 +50,19 @@ export interface INewPassword {
 	username: string
 }
 
+export interface INewEmail {
+	password: string,
+	newEmail: string,
+	email: string,
+	username: string
+}
+
+export interface INewUsername {
+	password: string,
+	newUsername: string,
+	email: string,
+	username: string
+}
+
 
 export default IGeneric;

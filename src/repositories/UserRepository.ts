@@ -2,7 +2,7 @@ import User, { IUser } from '../models/User';
 import Password from '../helpers/password';
 import { INewScore } from '../types/ISocket';
 import Base from './abstract/UserRepositoryBase';
-import { ILeaderBoard, INewPassword } from '../types/Abstract';
+import { ILeaderBoard, INewEmail, INewPassword, INewUsername } from '../types/Abstract';
 import { Nums } from '../types/Constants';
 import Mail from '../services/mailer';
 import bytes from '../helpers/bytes';
@@ -124,6 +124,40 @@ class UserRepository extends Base {
 		} catch (e) {
 			throw Error(e);
 		}
+	}
+
+	public async UpdateEmail(newEmail: INewEmail): Promise<IUser> {
+		try {
+			const exists = await User.findOne({ username: newEmail.username, email: newEmail.email });
+			if (!exists) throw 'username / email not found';
+
+			const pass: boolean = await Password.compare(newEmail.password, exists.password);
+			if (!pass) throw Error('incorrect password');
+
+			const taken = await User.findOne({ email: newEmail.newEmail });
+			if (taken) throw 'email taken';
+
+			exists.isNew = false;
+			exists.email = newEmail.newEmail;
+			return await exists.save();
+		} catch (e) {
+			throw Error(e);
+		}
+	}
+
+	public async UpdateUsername(newUsername: INewUsername): Promise<IUser> {
+		const exists = await User.findOne({ username: newUsername.username, email: newUsername.email });
+		if (!exists) throw 'username / email not found';
+
+		const pass: boolean = await Password.compare(newUsername.password, exists.password);
+		if (!pass) throw Error('incorrect password');
+
+		const taken = await User.findOne({ username: newUsername.newUsername });
+		if (taken) throw 'username taken';
+
+		exists.isNew = false;
+		exists.username = newUsername.newUsername;
+		return await exists.save();
 	}
 }
 
