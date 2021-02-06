@@ -4,8 +4,6 @@ import Mail from 'nodemailer/lib/mailer';
 import config from '../helpers/config';
 import log from '../services/logger';
 
-const transporter: Mail = nodemailer.createTransport(config.MAIL_TRANSPORTER);
-
 export interface IDevMail {
 	preview: string | false,
 	raw: any
@@ -19,6 +17,8 @@ export interface IMailOptions {
 }
 
 export default class Mailer {
+
+	private static readonly transporter: Mail = nodemailer.createTransport(config.MAIL_TRANSPORTER);
 
 	private static async DevMailer(options: IMailOptions): Promise<IDevMail | Error> {
 
@@ -52,7 +52,7 @@ export default class Mailer {
 		}
 
 		return new Promise((resolve, reject) => {
-			transporter.sendMail(options, (error: Error, info: any) => {
+			Mailer.transporter.sendMail(options, (error: Error, info: any) => {
 				if (error) return reject(error);
 				return resolve(info);
 			});

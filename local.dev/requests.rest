@@ -11,9 +11,9 @@ POST http://localhost:3000/api/register HTTP/1.1
 Content-Type: application/json
 
 {
-	"username": "Sk8terBoi",
-	"email": "mail@mail.com",
-	"password": "Test1234!",
+	"username": "judeboy",
+	"email": "judegiordano@gmail.com",
+	"password": "test1234",
 	"score": 420
 }
 
@@ -48,6 +48,6 @@ POST http://localhost:3000/api/sendrecovery HTTP/1.1
 Content-Type: application/json
 
 {
-	"username": "Sk8terBoi",
-	"email": "mail@mail.com"
+	"username": "judeboy",
+	"email": "judegiordano@gmail.com"
 }
