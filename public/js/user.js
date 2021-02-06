@@ -81,7 +81,6 @@ export default class User {
 
 		this.forgotPasswordButton = document.getElementById('forgot-password-btn');
 		this.forgotPasswordButton.onclick = () => { this.forgotPasswordButtonClickHandler(); };
-		this.forgotPasswordButton.disabled = true;
 		this.recoverFormSection = document.getElementById('recover-form-section');
 		this.recoverForm = document.getElementById('recover-form');
 		this.recoverEmail = document.getElementById('recover-email');
