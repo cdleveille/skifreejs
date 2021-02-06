@@ -50,7 +50,7 @@ class UserRepository extends Base {
 
 	public async UpdateScore(user: INewScore): Promise<IUser> {
 		try {
-			const exists: IUser = await User.findOne({ username: user.username, _id: user._id }).lean();
+			const exists: IUser = await User.findOne({ username: user.username, _id: user._id });
 			if (!exists) throw Error('user not found');
 
 			if (user.score <= exists.score) {
@@ -81,7 +81,7 @@ class UserRepository extends Base {
 
 	public async SendRecovery(email: string, username: string): Promise<void> {
 		try {
-			const exists: IUser = await User.findOne({ username: username, email: email }).lean();
+			const exists: IUser = await User.findOne({ username: username, email: email });
 			if (!exists) throw 'invalid email or username';
 
 			const newPass = await bytes();
@@ -105,7 +105,7 @@ class UserRepository extends Base {
 
 	public async UpdatePassword(newPass: INewPassword): Promise<IUser> {
 		try {
-			const exists: IUser = await User.findOne({ username: newPass.username, email: newPass.email }).lean();
+			const exists: IUser = await User.findOne({ username: newPass.username, email: newPass.email });
 			if (!exists) throw 'username / email not found';
 
 			const pass: boolean = await Password.compare(newPass.password, exists.password);
@@ -128,7 +128,7 @@ class UserRepository extends Base {
 
 	public async UpdateEmail(newEmail: INewEmail): Promise<IUser> {
 		try {
-			const exists: IUser = await User.findOne({ username: newEmail.username, email: newEmail.email }).lean();
+			const exists: IUser = await User.findOne({ username: newEmail.username, email: newEmail.email });
 			if (!exists) throw 'username / email not found';
 
 			const pass: boolean = await Password.compare(newEmail.password, exists.password);
@@ -146,7 +146,7 @@ class UserRepository extends Base {
 	}
 
 	public async UpdateUsername(newUsername: INewUsername): Promise<IUser> {
-		const exists: IUser = await User.findOne({ username: newUsername.username, email: newUsername.email }).lean();
+		const exists: IUser = await User.findOne({ username: newUsername.username, email: newUsername.email });
 		if (!exists) throw 'username / email not found';
 
 		const pass: boolean = await Password.compare(newUsername.password, exists.password);
