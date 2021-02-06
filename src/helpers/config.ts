@@ -16,6 +16,7 @@ const config = {
 	APPTOKEN: <string>process.env.APPTOKEN || undefined,
 	ORIGIN_DOMAIN: <string>process.env.ORIGIN_DOMAIN || undefined,
 	IS_COMPILED: <boolean>(process.env.NODE_ENV == Env.dev ? false : true),
+	EMAIL_FROM: <string>process.env.EMAIL,
 	MAIL_TRANSPORTER: {
 		service: 'gmail',
 		auth: {

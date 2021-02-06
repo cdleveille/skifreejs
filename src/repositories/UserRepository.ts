@@ -88,7 +88,7 @@ class UserRepository extends Base {
 
 			const template = {
 				to: email,
-				from: '',
+				from: config.EMAIL_FROM,
 				subject: 'Forgot Password (DO NOT REPLY)',
 				text: `your new temporary password is ${newPass}`
 			};
