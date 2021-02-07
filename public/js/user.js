@@ -463,6 +463,7 @@ export default class User {
 		this.newEmail.value = '';
 		this.changeEmailPassword.value = '';
 		this.changeEmailError.innerText = '';
+		this.newEmail.focus();
 	}
 
 	changeUsernameButtonClickHandler() {
@@ -472,6 +473,7 @@ export default class User {
 		this.newUsername.value = '';
 		this.changeUsernamePassword.value = '';
 		this.changeUsernameError.innerText = '';
+		this.newUsername.focus();
 	}
 
 	changePasswordButtonClickHandler() {
@@ -481,6 +483,7 @@ export default class User {
 		this.currentPassword.value = '';
 		this.newPassword.value = '';
 		this.changePasswordError.innerText = '';
+		this.currentPassword.focus();
 	}
 
 	forgotPasswordButtonClickHandler() {
