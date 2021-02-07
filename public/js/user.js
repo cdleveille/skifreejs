@@ -104,7 +104,6 @@ export default class User {
 				if (res.ok) {
 					this.userData = res.data;
 					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
-					this.hideLoggedInUsername();
 					this.profileImage.src = this.logged_in.src;
 					this.isLoggedIn = true;
 				}
