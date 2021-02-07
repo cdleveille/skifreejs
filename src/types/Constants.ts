@@ -10,6 +10,8 @@ export const enum Environment {
 	prod = 'production'
 }
 
+export const Extentions = ['.png', '.jpg', '.jpeg', '.svg'];
+
 export const enum Nums {
 	oneDay = 86400000 // 24 * 60 * 60 * 1000
 }

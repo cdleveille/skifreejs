@@ -13,6 +13,7 @@ import { INewScore } from './types/ISocket';
 import { IJwtPayload, IResponse } from './types/Abstract';
 import { IUser } from './models/User';
 import Jwt from './helpers/jwt';
+import cache from './helpers/cache';
 import { Environment as Env } from './types/Constants';
 
 const http = require('http').Server(app);
@@ -34,9 +35,6 @@ app.get('/websocket-client', async (req: Request, res: Response): Promise<void> 
 app.get('*', async (req: Request, res: Response): Promise<Response> => {
 	return res.status(404).send('404 not found');
 });
-
-// new websocket connection
-import cache from './helpers/cache';
 
 io.on('connection', (socket: any) => {
 	cache.set(`player_${socket.id}_score`, { score: 0 });

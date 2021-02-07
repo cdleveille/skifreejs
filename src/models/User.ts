@@ -6,7 +6,8 @@ export interface IUser extends Document {
 	email: string,
 	password: string,
 	score: number,
-	lastUpdated: Date
+	lastUpdated: Date,
+	profilePicture: string
 }
 
 const User = new mongoose.Schema(
@@ -30,6 +31,10 @@ const User = new mongoose.Schema(
 		lastUpdated: {
 			type: Date,
 			required: true
+		},
+		profilePicture: {
+			type: String,
+			required: false
 		}
 	},
 	{

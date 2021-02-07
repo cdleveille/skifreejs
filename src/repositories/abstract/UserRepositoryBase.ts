@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { IUser } from '../../models/User';
 import { INewScore } from '../../types/ISocket';
-import { ILeaderBoard, INewPassword, INewUsername, INewEmail } from '../../types/Abstract';
+import { ILeaderBoard, INewPassword, INewUsername, INewEmail, INewProfile, IGetProfile } from '../../types/Abstract';
 
 export default abstract class UserRepositoryBase {
 	public abstract Register(user: IUser): Promise<IUser>;
@@ -12,4 +12,6 @@ export default abstract class UserRepositoryBase {
 	public abstract UpdatePassword(newPass: INewPassword): Promise<IUser>;
 	public abstract UpdateEmail(newEmail: INewEmail): Promise<IUser>;
 	public abstract UpdateUsername(newUsername: INewUsername): Promise<IUser>;
+	public abstract UploadPicture(newProfile: INewProfile): Promise<IUser>;
+	public abstract GetProfile(user: IGetProfile): Promise<String>;
 }

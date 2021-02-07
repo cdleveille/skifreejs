@@ -42,3 +42,5 @@ __pycache__/
 
 # minified/obfuscated js
 public.min
+
+profiles/
