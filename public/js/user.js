@@ -71,6 +71,23 @@ export default class User {
 		this.signOutButton = document.getElementById('sign-out-btn');
 		this.signOutButton.onclick = () => { this.signOutButton.blur(); this.signOut(); };
 
+		this.changeEmailButton = document.getElementById('change-email-btn');
+		this.changeEmailButton.onclick = () => { this.changeEmailButtonClickHandler(); };
+		this.changeEmailForm = document.getElementById('change-email-form');
+		this.changeEmailFormSection = document.getElementById('change-email-form-section');
+		this.currentEmail = document.getElementById('current-email');
+		this.newEmail = document.getElementById('new-email');
+		this.changeEmailPassword = document.getElementById('change-email-password');
+		this.changeEmailError = document.getElementById('change-email-error');
+
+		this.changeUsernameButton = document.getElementById('change-username-btn');
+		this.changeUsernameButton.onclick = () => { this.changeUsernameButtonClickHandler(); };
+		this.changeUsernameForm = document.getElementById('change-username-form');
+		this.changeUsernameFormSection = document.getElementById('change-username-form-section');
+		this.newUsername = document.getElementById('new-username');
+		this.changeUsernamePassword = document.getElementById('change-username-password');
+		this.changeUsernameError = document.getElementById('change-username-error');
+
 		this.changePasswordButton = document.getElementById('change-password-btn');
 		this.changePasswordButton.onclick = () => { this.changePasswordButtonClickHandler(); };
 		this.changePasswordForm = document.getElementById('change-password-form');
@@ -118,30 +135,26 @@ export default class User {
 			e.preventDefault();
 			let messages = [];
 
-			// show any validation errors
-			if (messages.length > 0) {
-				this.signInError.innerText = messages.join('\n');
-			} else {
-				let headers = {
-					'Content-Type': 'application/json'
-				};
-				let body = {
-					username: this.signInUsername.value,
-					password: this.signInPassword.value
-				};
-				let method = 'POST', route = '/api/login';
-				this.game.util.request(method, route, headers, body).then(res => {
-					console.log(method, route, res);
-					if (res.ok) {
-						window.localStorage.setItem('loginToken', res.data.token);
-						this.validateLoginToken();
-						this.hideSignInForm();
-					} else {
-						messages.push(res.data.replace(/error: /gi, ''));
-						this.signInError.innerText = messages.join('\n');
-					}
-				}).catch(err => console.log(err));
-			}
+			let headers = {
+				'Content-Type': 'application/json'
+			};
+			let body = {
+				username: this.signInUsername.value,
+				password: this.signInPassword.value
+			};
+			let method = 'POST', route = '/api/login';
+			this.game.util.request(method, route, headers, body).then(res => {
+				console.log(method, route, res);
+				if (res.ok) {
+					window.localStorage.setItem('loginToken', res.data.token);
+					this.validateLoginToken();
+					this.hideSignInForm();
+					this.hideLoggedInUsername();
+				} else {
+					messages.push(res.data.replace(/error: /gi, ''));
+					this.signInError.innerText = messages.join('\n');
+				}
+			}).catch(err => console.log(err));
 		});
 
 		this.registerForm.addEventListener('submit', (e) => {
@@ -181,11 +194,99 @@ export default class User {
 						window.localStorage.setItem('loginToken', res.data.token);
 						this.validateLoginToken();
 						this.hideRegisterForm();
+						this.hideLoggedInUsername();
 					} else {
 						messages.push(res.data.replace(/error: /gi, ''));
 						this.registerError.innerText = messages.join('\n');
 					}
 				}).catch(err => console.log(err));
+			}
+		});
+
+		this.changeEmailForm.addEventListener('submit', (e) => {
+			e.preventDefault();
+			let messages = [];
+			
+			let loginToken = window.localStorage.getItem('loginToken');
+			if (loginToken) {
+				let headers = {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${loginToken}`
+				};
+				let body = {
+					newEmail: this.newEmail.value,
+					password: this.changeEmailPassword.value
+				};
+				let method = 'POST', route = '/api/updateemail';
+				this.game.util.request(method, route, headers, body).then(res => {
+					console.log(method, route, res);
+					if (res.ok) {
+						window.localStorage.removeItem('loginToken');
+						window.localStorage.setItem('loginToken', res.data.token);
+						this.validateLoginToken();
+						this.hideChangeEmailFormSection();
+						this.showLoggedInUsername();
+						this.showUserInfoSection();
+						this.userInfoMessage.innerText = 'email updated';
+							
+					} else {
+						messages.push(res.data.replace(/error: /gi, ''));
+						this.changeEmailError.innerText = messages.join('\n');
+					}
+				}).catch(err => console.log(err));
+			} else {
+				this.isLoggedIn = false;
+			}
+		});
+
+		this.changeUsernameForm.addEventListener('submit', (e) => {
+			e.preventDefault();
+			let messages = [];
+
+			if (!this.game.util.isAlphaNumeric(this.newUsername.value)) {
+				messages.push('username must be alphanumeric only');
+			}
+
+			if (this.newUsername.value.length < 3) {
+				messages.push('username must be at least 3 characters');
+			} else if (this.newUsername.value.length > 16) {
+				messages.push('username must be no more than 16 characters');
+			}
+
+			// show any validation errors
+			if (messages.length > 0) {
+				this.changeUsernameError.innerText = messages.join('\n');
+			} else {
+				let loginToken = window.localStorage.getItem('loginToken');
+				if (loginToken) {
+					let headers = {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${loginToken}`
+					};
+					let body = {
+						newUsername: this.newUsername.value,
+						password: this.changeUsernamePassword.value
+					};
+					let method = 'POST', route = '/api/updateusername';
+					this.game.util.request(method, route, headers, body).then(res => {
+						console.log(method, route, res);
+						if (res.ok) {
+							window.localStorage.removeItem('loginToken');
+							window.localStorage.setItem('loginToken', res.data.token);
+							this.validateLoginToken();
+							this.hideChangeUsernameFormSection();
+							this.showLoggedInUsername();
+							this.showUserInfoSection();
+							this.userInfoMessage.innerText = 'username updated';
+								
+						} else {
+							messages.push(res.data.replace(/error: /gi, ''));
+							this.changeUsernameError.innerText = messages.join('\n');
+						}
+					}).catch(err => console.log(err));
+				} else {
+					this.isLoggedIn = false;
+				}
 			}
 		});
 
@@ -221,7 +322,6 @@ export default class User {
 							this.showLoggedInUsername();
 							this.showUserInfoSection();
 							this.userInfoMessage.innerText = 'password updated';
-							
 						} else {
 							messages.push(res.data.replace(/error: /gi, ''));
 							this.changePasswordError.innerText = messages.join('\n');
@@ -293,6 +393,8 @@ export default class User {
 				this.showUserSettingsButton();
 			}
 			this.hideUserInfoSection();
+			this.hideChangeEmailFormSection();
+			this.hideChangeUsernameFormSection();
 			this.hideChangePasswordFormSection();
 			this.hideLeaderboardSignedIn();
 		}
@@ -336,21 +438,42 @@ export default class User {
 	}
 
 	userSettingsButtonClickHandler() {
-		if (this.changePasswordFormSection.style.display != 'block') {
-			if (this.loggedInInfoSection.style.display != 'block') {
-				this.showLoggedInInfo();
-				this.hideUserInfoSection();
-			} else {
-				this.hideLoggedInInfo();
-				this.hideLeaderboardSignedIn();
-				this.showUserInfoSection();
-			}
-		} else {
-			this.hideChangePasswordFormSection();
+		if (this.loggedInInfoSection.style.display == 'block') {
 			this.hideLoggedInInfo();
+			this.hideLeaderboardSignedIn();
+			this.showUserInfoSection();
+		} else if (this.userInfoSection.style.display == 'block') {
+			this.hideUserInfoSection();
+			this.showLoggedInInfo();
+		} else if (this.changeEmailFormSection.style.display == 'block' ||
+			this.changePasswordFormSection.style.display == 'block' ||
+			this.changeUsernameFormSection.style.display == 'block') {
+			this.hideChangeEmailFormSection();
+			this.hideChangeUsernameFormSection();
+			this.hideChangePasswordFormSection();
 			this.showUserInfoSection();
 		}
-		
+	}
+
+	changeEmailButtonClickHandler() {
+		this.hideLoggedInInfo();
+		this.hideUserInfoSection();
+		this.showChangeEmailFormSection();
+		this.currentEmail.innerText = this.userData.email;
+		this.newEmail.value = '';
+		this.changeEmailPassword.value = '';
+		this.changeEmailError.innerText = '';
+		this.newEmail.focus();
+	}
+
+	changeUsernameButtonClickHandler() {
+		this.hideLoggedInInfo();
+		this.hideUserInfoSection();
+		this.showChangeUsernameFormSection();
+		this.newUsername.value = '';
+		this.changeUsernamePassword.value = '';
+		this.changeUsernameError.innerText = '';
+		this.newUsername.focus();
 	}
 
 	changePasswordButtonClickHandler() {
@@ -360,11 +483,15 @@ export default class User {
 		this.currentPassword.value = '';
 		this.newPassword.value = '';
 		this.changePasswordError.innerText = '';
+		this.currentPassword.focus();
 	}
 
 	forgotPasswordButtonClickHandler() {
 		this.hideSignInForm();
 		this.showRecoverFormSection();
+		this.recoverEmail.value = '';
+		this.recoverUsername.value = '';
+		this.recoverError.innerText = '';
 	}
 
 	refreshLeaderboard(numToRetrieve) {
@@ -489,6 +616,22 @@ export default class User {
 		this.userInfoMessage.innerText = '';
 	}
 
+	showChangeEmailFormSection() {
+		this.changeEmailFormSection.style.display = 'block';
+	}
+
+	hideChangeEmailFormSection() {
+		this.changeEmailFormSection.style.display = 'none';
+	}
+
+	showChangeUsernameFormSection() {
+		this.changeUsernameFormSection.style.display = 'block';
+	}
+
+	hideChangeUsernameFormSection() {
+		this.changeUsernameFormSection.style.display = 'none';
+	}
+
 	showChangePasswordFormSection() {
 		this.changePasswordFormSection.style.display = 'block';
 	}
@@ -499,23 +642,21 @@ export default class User {
 
 	showRecoverFormSection() {
 		this.recoverFormSection.style.display = 'block';
-		this.recoverEmail.value = '';
-		this.recoverUsername.value = '';
-		this.recoverError.innerText = '';
 	}
 
 	hideRecoverFormSection() {
 		this.recoverFormSection.style.display = 'none';
-		this.recoverEmail.value = '';
-		this.recoverUsername.value = '';
-		this.recoverError.innerText = '';
 	}
 
 	isTextInputActive() {
-		return this.signInUsername === document.activeElement || this.signInPassword === document.activeElement ||
-			this.registerUsername === document.activeElement || this.registerPassword === document.activeElement ||
-			this.registerEmail === document.activeElement || this.currentPassword === document.activeElement ||
-			this.newPassword === document.activeElement || this.recoverEmail === document.activeElement ||
-			this.recoverUsername === document.activeElement;
+		let textInputFields = [this.signInUsername, this.signInPassword, this.registerUsername, this.registerPassword, this.registerEmail, 
+			this.currentPassword, this.newPassword, this.recoverEmail, this.recoverUsername, this.newEmail, this.changeEmailPassword, 
+			this.newUsername, this.changeUsernamePassword];
+		for (let field of textInputFields) {
+			if (field === document.activeElement) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
