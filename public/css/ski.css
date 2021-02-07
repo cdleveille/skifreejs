@@ -18,13 +18,19 @@
 #logged-in-username {
 	z-index: 2;
 	position: absolute;
-	top: 2px;
+	top: 4px;
 	left: 50px;
 	width: 250px;
 	display: none;
 	margin: 2px;
 	margin-top: 4px;
-	margin-bottom: 5px;
+	margin-bottom: 4px;
+}
+
+#current-email {
+	margin: 3px;
+	margin-left: 4px;
+	margin-bottom: 4px;
 }
 
 #user-profile-img {
@@ -74,6 +80,11 @@
 
 #user-settings-btn:hover + #user-settings-img {
 	transform: rotate(90deg);
+    transition: all 0.2s ease-in-out 0s;
+}
+
+#user-settings-btn:active + #user-settings-img {
+	transform: rotate(360deg);
     transition: all 0.2s ease-in-out 0s;
 }
 
@@ -295,7 +306,7 @@ html, body {
 		url(../font/ModernDOS8x16.ttf) format('truetype');
 }
 
-.animate-flicker {
+.animate-pulse {
 	-webkit-animation: flickerAnimation 1s infinite;
 	-moz-animation: flickerAnimation 1s infinite;
 	-o-animation: flickerAnimation 1s infinite;

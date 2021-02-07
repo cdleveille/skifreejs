@@ -17,10 +17,10 @@
 	<body>
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
-		<div id="game-paused-text" class="animate-flicker">GAME PAUSED</div>
+		<div id="game-paused-text" class="animate-pulse">GAME PAUSED</div>
 		<button id="restart-btn" class="button-invis"></button>
 		<img src="../img/restart.png" id="restart-img">
-		<img src="../img/offline.png" id="offline-ind" class="animate-flicker">
+		<img src="../img/offline.png" id="offline-ind" class="animate-pulse">
 		<button id="game-info-btn" class="button-invis"></button>
 		<div id="game-info">
 			<div id="game-info-time" class="game-info-item">Time:</div>
@@ -95,12 +95,43 @@
 			</div>
 			<div id="user-info-section" class="user-panel-signed-in">
 				<div>
+					<button id="change-email-btn" class="button" type="button">Change Email</button>
+				</div>
+				<div>
+					<button id="change-username-btn" class="button" type="button">Change Username</button>
+				</div>
+				<div>
 					<button id="change-password-btn" class="button" type="button">Change Password</button>
 				</div>
 				<div>
 					<button id="sign-out-btn" class="button" type="button">Sign Out</button>
 				</div>
 				<div id="user-info-message" class="info-message"></div>
+			</div>
+			<div id="change-email-form-section" class="user-panel-signed-in">
+				<form id="change-email-form" spellcheck="false">
+					<div id="current-email"></div>
+					<div>
+						<input id="new-email" class="text-input" name="newEmail" placeholder="new email" type="email" required>
+					</div>
+					<div>
+						<input id="change-email-password" class="text-input" name="password" placeholder="password" type="password" required>
+					</div>
+					<button type="submit" class="button submit">Submit</button>
+					<div id="change-email-error" class="form-error"></div>
+				</form>
+			</div>
+			<div id="change-username-form-section" class="user-panel-signed-in">
+				<form id="change-username-form" spellcheck="false">
+					<div>
+						<input id="new-username" class="text-input" name="newUsername" placeholder="new username" type="text" required>
+					</div>
+					<div>
+						<input id="change-username-password" class="text-input" name="password" placeholder="password" type="password" required>
+					</div>
+					<button type="submit" class="button submit">Submit</button>
+					<div id="change-username-error" class="form-error"></div>
+				</form>
 			</div>
 			<div id="change-password-form-section" class="user-panel-signed-in">
 				<form id="change-password-form" spellcheck="false">

@@ -57,7 +57,7 @@ export default class Game {
 		this.stylePointsToAwardOnLanding = 0;
 		this.style = 0;
 		this.util.newPoint(0);
-		this.logo = { x: -130, y: -20 };
+		this.logo = { x: -50, y: -40 };
 	}
 
 	// restart the gamestate

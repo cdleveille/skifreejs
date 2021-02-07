@@ -205,6 +205,16 @@ app.post('/api/updateusername', validate, async (req: Request, res: Response, ne
 			throw 'missing password / new username';
 		}
 
+		if (!checks.isAlphaNumeric(newUsername)) {
+			throw 'username must be alphanumeric only';
+		}
+
+		if (newUsername.length < 3) {
+			throw 'username must be at least 3 characters';
+		} else if (newUsername.length > 16) {
+			throw 'username must be no more than 16 characters';
+		}
+
 		const updated = await _User.UpdateUsername({
 			password: password,
 			newUsername: newUsername,
