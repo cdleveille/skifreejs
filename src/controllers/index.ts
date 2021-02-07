@@ -160,4 +160,76 @@ app.post('/api/updatepassword', validate, async (req: Request, res: Response, ne
 	}
 });
 
+app.post('/api/updateemail', validate, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+
+	const { password, newEmail } = req.body;
+
+	try {
+		if (password == undefined || newEmail == undefined) {
+			throw 'missing password / new email';
+		}
+
+		const updated = await _User.UpdateEmail({
+			password: password,
+			newEmail: newEmail,
+			email: res.locals.jwt.email,
+			username: res.locals.jwt.username
+		});
+
+		const token: string = await Jwt.SignUser({
+			_id: updated._id,
+			email: updated.email,
+			username: updated.username,
+			score: updated.score
+		} as IJwtPayload);
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: {
+				token: token,
+				score: updated.score
+			}
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
+});
+
+app.post('/api/updateusername', validate, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+
+	const { password, newUsername } = req.body;
+
+	try {
+		if (password == undefined || newUsername == undefined) {
+			throw 'missing password / new username';
+		}
+
+		const updated = await _User.UpdateUsername({
+			password: password,
+			newUsername: newUsername,
+			email: res.locals.jwt.email,
+			username: res.locals.jwt.username
+		});
+
+		const token: string = await Jwt.SignUser({
+			_id: updated._id,
+			email: updated.email,
+			username: updated.username,
+			score: updated.score
+		} as IJwtPayload);
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: {
+				token: token,
+				score: updated.score
+			}
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
+});
+
 export default app;
