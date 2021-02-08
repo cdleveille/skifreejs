@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 export default class InputHandler {
 	constructor(canvas, game) {
-		document.oncontextmenu = (e) => {
+		canvas.oncontextmenu = (e) => {
 			e.preventDefault();
 		};
 
