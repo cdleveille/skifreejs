@@ -88,3 +88,4 @@ Languages/technologies used include:
 - [response-time](https://github.com/expressjs/response-time)
 - [socketio](https://github.com/socketio/socket.io)
 - [winston](https://github.com/winstonjs/winston)
+- [multer](https://github.com/expressjs/multer)

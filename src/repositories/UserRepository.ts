@@ -2,7 +2,7 @@ import User, { IUser } from '../models/User';
 import Password from '../helpers/password';
 import { INewScore } from '../types/ISocket';
 import Base from './abstract/UserRepositoryBase';
-import { ILeaderBoard, INewEmail, INewPassword, INewUsername } from '../types/Abstract';
+import { IGetProfile, ILeaderBoard, INewEmail, INewPassword, INewProfile, INewUsername } from '../types/Abstract';
 import { Nums } from '../types/Constants';
 import Mail from '../services/mailer';
 import bytes from '../helpers/bytes';
@@ -25,6 +25,7 @@ class UserRepository extends Base {
 			newUser.email = user.email;
 			newUser.password = await Password.hash(user.password);
 			newUser.score = 0;
+			newUser.profilePicture = '';
 			newUser.lastUpdated = new Date;
 			newUser.isNew = true;
 
@@ -158,6 +159,33 @@ class UserRepository extends Base {
 		exists.isNew = false;
 		exists.username = newUsername.newUsername;
 		return await exists.save();
+	}
+
+	public async UploadPicture(newProfile: INewProfile): Promise<IUser> {
+		try {
+			const exists: IUser = await User.findOne({ username: newProfile.username });
+			if (!exists) throw Error('username not found');
+
+			const pass: boolean = await Password.compare(newProfile.password, exists.password);
+			if (!pass) throw Error('incorrect password');
+
+			exists.profilePicture = newProfile.profile;
+			exists.isNew = false;
+			return await exists.save();
+		} catch (e) {
+			throw Error(e);
+		}
+	}
+
+	public async GetProfile(user: IGetProfile): Promise<String> {
+		try {
+			const exists: IUser = await User.findOne({ username: user.username, email: user.email });
+			if (!exists) throw Error('user not found');
+
+			return exists.profilePicture;
+		} catch (e) {
+			throw Error(e);
+		}
 	}
 }
 

@@ -64,5 +64,15 @@ export interface INewUsername {
 	username: string
 }
 
+export interface INewProfile {
+	username: string,
+	password: string,
+	profile: string
+}
+
+export interface IGetProfile {
+	username: string,
+	email: string,
+}
 
 export default IGeneric;

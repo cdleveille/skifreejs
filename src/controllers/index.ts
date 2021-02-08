@@ -1,12 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
+import { cwd } from 'process';
+
 import app from '../services/server';
 import { _User } from '../repositories/UserRepository';
 import IResponse from '../types/IResponse';
+import upload from '../middleware/multer';
+import encode from '../services/encode';
 import { IUser } from '../models/User';
 import T, { IJwtPayload, ILeaderBoard } from '../types/Abstract';
 import validate from '../middleware/jwt';
 import * as checks from '../helpers/checks';
-import { Errors } from '../types/Constants';
+import { Errors, Extentions } from '../types/Constants';
 import Jwt from '../helpers/jwt';
 
 app.post('/api/register', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
@@ -236,6 +242,63 @@ app.post('/api/updateusername', validate, async (req: Request, res: Response, ne
 				token: token,
 				score: updated.score
 			}
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
+});
+
+app.post('/api/uploadprofile', validate, upload.single('file'), async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+	const { password } = req.body;
+	const { file } = req;
+	try {
+		if (password == undefined || file == undefined) {
+			throw 'missing password / file';
+		}
+		const ext: string = file.originalname.substring(file.originalname.lastIndexOf('.'));
+
+		if (!Extentions.includes(ext)) {
+			fs.unlinkSync(path.join(cwd(), `profiles/${file.originalname}`));
+			throw 'file type not supported';
+		}
+
+		if (file.size * 0.001 > 40) {
+			fs.unlinkSync(path.join(cwd(), `profiles/${file.originalname}`));
+			throw 'file size larger than 40 kilabytes';
+		}
+
+		const base: string = await encode(file.originalname);
+
+		const user: IUser = await _User.UploadPicture({ username: res.locals.jwt.username, password: password, profile: base });
+
+		const token: string = await Jwt.SignUser({
+			_id: user._id,
+			email: user.email,
+			username: user.username,
+			score: user.score
+		} as IJwtPayload);
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: token
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
+});
+
+app.post('/api/profile', validate, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+	try {
+		const base64: String = await _User.GetProfile({
+			username: res.locals.jwt.username,
+			email: res.locals.jwt.email
+		});
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: base64
 		} as IResponse);
 	} catch (error) {
 		next(error);
