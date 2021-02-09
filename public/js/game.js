@@ -630,8 +630,7 @@ export default class Game {
 
 		this.slalom.draw(ctx);
 
-		this.npcHandler.drawOtherSkiers(ctx);
-		this.npcHandler.drawSnowboarders(ctx);
+		this.npcHandler.draw(ctx);
 
 		// draw rocks
 		for (let i = 0; i < this.rocks.length; i++) {

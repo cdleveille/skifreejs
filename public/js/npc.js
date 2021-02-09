@@ -4,6 +4,7 @@ export default class NPCHandler {
 	constructor(game) {
 		this.game = game;
 		this.resCoefficient = 1 / 200000;
+		this.maxDogCount = 1;
 		this.images = [];
 	}
 
@@ -15,17 +16,25 @@ export default class NPCHandler {
 		this.snowboarder_left = this.game.util.loadImage('/img/snowboarder_left.png', this);
 		this.snowboarder_right = this.game.util.loadImage('/img/snowboarder_right.png', this);
 		this.snowboarder_crash = this.game.util.loadImage('/img/snowboarder_crash.png', this);
+		this.dog1 = this.game.util.loadImage('/img/dog1.png', this);
+		this.dog2 = this.game.util.loadImage('/img/dog2.png', this);
+		this.dog_woof1 = this.game.util.loadImage('/img/dog_woof1.png', this);
+		this.dog_woof2 = this.game.util.loadImage('/img/dog_woof2.png', this);
 	}
 
 	setUpNPCs() {
 		this.otherSkiers = [];
 		this.snowboarders = [];
+		this.dogs = [];
 
 		this.calculateNPCCount();
 		for (let n = 0; n < this.npcCount; n++) {
 			let type = n < this.npcCount / 2 ? 'other_skier' : 'snowboarder';
 			this.spawnNewNPCAtStart(type);
 		}
+
+		this.timeUntilSpawnNewDog = this.game.util.randomInt(5000, 10000);
+		this.timeLastDogDeleted = this.game.util.timestamp();
 	}
 
 	calculateNPCCount() {
@@ -37,7 +46,7 @@ export default class NPCHandler {
 
 	spawnNewNPCAtStart(type) {
 		let xy = this.game.getRandomCoordinateAtStart();
-		return this.spawnNewNPC(type, xy.x, xy.y);
+		this.spawnNewNPC(type, xy.x, xy.y);
 	}
 
 	spawnNewNPC(type, x, y) {
@@ -46,19 +55,27 @@ export default class NPCHandler {
 		case 'other_skier':
 			newNPC = { x: x, y: y, xv: 0, yv: 0.1, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 13, hbWidth: 11, hbHeight: 11, hasCollided: false, isCrashed: false, timestamp: this.game.util.timestamp() + this.game.util.randomInt(0, 1000), img: this.otherSkier3 };
 			this.otherSkiers.push(newNPC);
-			return newNPC;
+			return;
 		case 'snowboarder':
 			newNPC = { x: x, y: y, xv: -0.25, yv: 0.75, xSpeed: 0.15, hbXOffset: 7, hbYOffset: 16, hbWidth: 13, hbHeight: 9, hasCollided: false, isCrashed: false, timestamp: this.game.util.timestamp() + this.game.util.randomInt(0, 1000), img: this.snowboarder_left };
 			this.snowboarders.push(newNPC);
-			return newNPC;
+			return;
 		default:
 			console.log('invalid npc type: ' + type);
 		}
 	}
 
+	spawnNewDog() {
+		let x = -window.innerWidth / 2 - 40;
+		let y = this.game.util.randomInt(window.innerHeight / 3, window.innerHeight * 2);
+		let dog = { x: x, y: y, xv: 0.3, yv: 0, hbXOffset: -5, hbYOffset: -5, hbWidth: 31, hbHeight: 25, isCrashed: false, timestamp: this.game.util.timestamp(), img: this.dog1 };
+		this.dogs.push(dog);
+	}
+
 	update(step) {
 		this.updateOtherSkiers(step);
 		this.updateSnowboarders(step);
+		this.updateDogs(step);
 	}
 
 	updateOtherSkiers(step) {
@@ -70,7 +87,7 @@ export default class NPCHandler {
 				let now = this.game.util.timestamp();
 				if (now - otherSkier.timestamp >= 1000) {
 					let newXV = this.game.util.randomInt(0, 3);
-					switch(newXV) {
+					switch (newXV) {
 					case 0:
 						otherSkier.xv = -otherSkier.xSpeed;
 						otherSkier.img = this.otherSkier1;
@@ -139,7 +156,7 @@ export default class NPCHandler {
 				let now = this.game.util.timestamp();
 				if (now - snowboarder.timestamp >= 500) {
 					let newXV = this.game.util.randomInt(0, 2);
-					switch(newXV){
+					switch (newXV) {
 					case 0:
 						snowboarder.xv = -snowboarder.xSpeed;
 						snowboarder.img = this.snowboarder_left;
@@ -198,6 +215,62 @@ export default class NPCHandler {
 		}
 	}
 
+	updateDogs(step) {
+		let now = this.game.util.timestamp();
+
+		// spawn new dog if below max count and enough time has passed
+		if (this.dogs.length < this.maxDogCount && now - this.timeLastDogDeleted > this.timeUntilSpawnNewDog) {
+			this.spawnNewDog();
+		}
+
+		for (let i = 0; i < this.dogs.length; i++) {
+			let dog = this.dogs[i];
+
+			// delete dog if out of bounds
+			if (dog.y < -window.innerHeight / 3 - 80 || dog.x > window.innerWidth / 2 + 1000) {
+				this.dogs.splice(i, 1);
+				this.timeLastDogDeleted = now;
+				this.timeUntilSpawnNewDog = this.game.util.randomInt(5000, 10000);
+				return;
+			}
+
+			// change dog image every 50ms
+			if (now - dog.timestamp >= 50) {
+				if (dog.isCrashed) {
+					dog.xv = 0, dog.yv = 0;
+					dog.img = dog.img == this.dog_woof1 ? this.dog_woof2 : this.dog_woof1;
+					if (now - dog.crashTimestamp > 2000) {
+						dog.isCrashed = false;
+					}
+				} else {
+					dog.img = dog.img == this.dog1 ? this.dog2 : this.dog1;
+					let newYV = this.game.util.randomInt(0, 3);
+					switch (newYV) {
+					case 0:
+						dog.yv = -0.05;
+						break;
+					case 1:
+						dog.yv = 0.05;
+						break;
+					default:
+						dog.yv = 0;
+						break;
+					}
+					dog.xv = 0.3;
+
+					if (this.game.isGameObjectCollidingWithSkier(dog)) {
+						this.crashDogOnCollision(dog);
+					}
+				}
+
+				dog.timestamp = now;
+			}
+			
+			dog.x -= this.game.skier.xv * step - dog.xv;
+			dog.y -= this.game.skier.yv * step - dog.yv;
+		}
+	}
+
 	// determine if the game object is colliding with an other skier
 	isGameObjectCollidingWithNPC(otherSkier, object) {
 		if (!this.game.collisionsEnabled) return false;
@@ -228,6 +301,14 @@ export default class NPCHandler {
 		}
 	}
 
+	// make the dog crash
+	crashDogOnCollision(dog) {
+		if (!dog.isCrashed) {
+			dog.isCrashed = true;
+			dog.crashTimestamp = this.game.util.timestamp();
+		}
+	}
+
 	recycleNPCPosition(npc) {
 		npc.isCrashed = false;
 		npc.hasCollided = false;
@@ -251,6 +332,7 @@ export default class NPCHandler {
 	draw(ctx) {
 		this.drawOtherSkiers(ctx);
 		this.drawSnowboarders(ctx);
+		this.drawDogs(ctx);
 	}
 
 	drawOtherSkiers(ctx) {
@@ -264,6 +346,12 @@ export default class NPCHandler {
 		for (let i = 0; i < this.snowboarders.length; i++) {
 			let snowboarder = this.snowboarders[i];
 			ctx.drawImage(snowboarder.img, this.game.skier.x + snowboarder.x, this.game.skier.y + snowboarder.y);
+		}
+	}
+
+	drawDogs(ctx) {
+		for (let dog of this.dogs) {
+			ctx.drawImage(dog.img, Math.floor(this.game.skier.x + dog.x), Math.floor(this.game.skier.y + dog.y));
 		}
 	}
 }

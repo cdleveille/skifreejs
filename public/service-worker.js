@@ -35,7 +35,10 @@ self.addEventListener('install', function (event) {
 				'./img/bump_large.png',
 				'./img/bump_small.png',
 				'./img/crown.png',
-				'./img/dog.png',
+				'./img/dog_woof1.png',
+				'./img/dog_woof2.png',
+				'./img/dog1.png',
+				'./img/dog2.png',
 				'./img/finish_left.png',
 				'./img/finish_right.png',
 				'./img/gate_fail.png',
@@ -121,7 +124,6 @@ self.addEventListener('fetch', (event) => {
 			}
 				
 		} catch (err) {
-			console.log(err);
 			return caches.match(event.request) || networkResponse;
 		}
 	}());
