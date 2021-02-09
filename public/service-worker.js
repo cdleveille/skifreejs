@@ -111,20 +111,14 @@ self.addEventListener('install', function (event) {
 self.addEventListener('fetch', (event) => {
 	event.respondWith(async function() {
 		try {
-			const url = event.request.url;
 			const cache = await caches.open('v1');
 			const networkResponse = await fetch(event.request);
 			if (event.request.method !== 'POST') {
 				event.waitUntil(cache.put(event.request, networkResponse.clone()));
 			}
-			if (url.endsWith('.png') || url.endsWith('ico')) {
-				return caches.match(event.request) || networkResponse;
-			} else {
-				return networkResponse || caches.match(event.request);
-			}
-				
+			return networkResponse;
 		} catch (err) {
-			return caches.match(event.request) || networkResponse;
+			return caches.match(event.request);
 		}
 	}());
 });
