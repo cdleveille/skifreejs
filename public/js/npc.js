@@ -33,7 +33,7 @@ export default class NPCHandler {
 			this.spawnNewNPCAtStart(type);
 		}
 
-		this.timeUntilSpawnNewDog = this.game.util.randomInt(5000, 10000);
+		this.timeUntilSpawnNewDog = this.game.util.randomInt(5000, 15000);
 		this.timeLastDogDeleted = this.game.util.timestamp();
 	}
 
@@ -230,7 +230,7 @@ export default class NPCHandler {
 			if (dog.y < -window.innerHeight / 3 - 80 || dog.x > window.innerWidth / 2 + 1000) {
 				this.dogs.splice(i, 1);
 				this.timeLastDogDeleted = now;
-				this.timeUntilSpawnNewDog = this.game.util.randomInt(5000, 10000);
+				this.timeUntilSpawnNewDog = this.game.util.randomInt(5000, 15000);
 				return;
 			}
 
