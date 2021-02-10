@@ -594,7 +594,7 @@ export default class Game {
 				this.doImageLoadCheck = false;
 				this.user.profileImage.style.display = 'block';
 				this.gameInfo.style.display = 'block';
-				this.chat.chatArea.style.display = 'block';
+				if (!this.util.hasTouch()) this.chat.chatArea.style.display = 'block';
 
 			} else return;
 		}
