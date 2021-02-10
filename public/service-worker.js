@@ -66,9 +66,7 @@ self.addEventListener('install', function (event) {
 				'./img/other_skier2.png',
 				'./img/other_skier3.png',
 				'./img/restart.png',
-				'./img/restart_inverted.png',
 				'./img/rock.png',
-				'./img/ski.png',
 				'./img/skier_down_left.png',
 				'./img/skier_down_right.png',
 				'./img/skier_down.png',
@@ -103,6 +101,7 @@ self.addEventListener('install', function (event) {
 				'./img/tree_small.png',
 				'./img/tree_small_moving_left.png',
 				'./img/tree_small_moving_right.png',
+				'./img/users.png',
 				'./img/yeti1.png',
 				'./img/yeti2.png',
 			]);

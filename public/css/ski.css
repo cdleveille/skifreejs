@@ -8,25 +8,6 @@
 	z-index: 1;
 }
 
-#chat-btn {
-	position: absolute;
-	top: 20px;
-	right: 160px;
-	width: 30px;
-	height: 26px;
-	border-radius: 50%;
-	z-index: 3;
-	display: none;
-}
-
-#chat-img {
-	position: absolute;
-	top: 20px;
-	right: 160px;
-	z-index: 2;
-	display: none;
-}
-
 #chat-area {
 	position: relative;
 	width: 33%;
@@ -110,8 +91,8 @@
 #user-settings-img {
 	position: absolute;
 	z-index: 2;
-	top: 51px;
-	left: 16px;
+	top: 59px;
+	left: 12px;
 	transition: all 0.2s ease-in-out 0s;
 	display: none;
 }
@@ -119,22 +100,42 @@
 #user-settings-btn {
 	position: absolute;
 	z-index: 3;
-	top: 48px;
-	left: 13px;
-	width: 23px;
-	height: 23px;
+	top: 58px;
+	left: 11px;
+	width: 26px;
+	height: 26px;
 	border-radius: 50%;
 	display: none;
 }
 
 #user-settings-btn:hover + #user-settings-img {
-	transform: rotate(90deg);
-    transition: all 0.2s ease-in-out 0s;
+	transform: rotate(360deg);
+	transition: all 0.2s ease-in-out 0s;
 }
 
-#user-settings-btn:active + #user-settings-img {
+#chat-img {
+	position: absolute;
+	z-index: 2;
+	top: 90px;
+	left: 12px;
+	transition: all 0.2s ease-in-out 0s;
+	display: none;
+}
+
+#chat-btn {
+	position: absolute;
+	z-index: 3;
+	top: 89px;
+	left: 11px;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	display: none;
+}
+
+#chat-btn:hover + #chat-img {
 	transform: rotate(360deg);
-    transition: all 0.2s ease-in-out 0s;
+	transition: all 0.2s ease-in-out 0s;
 }
 
 #game-paused-text {
@@ -149,32 +150,29 @@
 	display: none;
 }
 
-#restart-img{
+#restart-img {
 	position: absolute;
 	z-index: 2;
 	top: 98px;
-	right: 67px;
-	background-color: white;
+	right: 70px;
 	transition-duration: 0.2s;
 	display: none;
 }
 
 #restart-btn {
 	position: absolute;
-	top: 98px;
-	right: 67px;
-	width: 24px;
-	height: 24px;
+	top: 97px;
+	right: 71px;
+	width: 26px;
+	height: 26px;
 	z-index: 3;
 	display: none;
+	border-radius: 50%;
 }
 
 #restart-btn:hover + #restart-img {
-	background-color: #DDDDDD;
-}
-
-#restart-btn:active + #restart-img {
-	background-color: #666666;
+	transform: rotate(360deg);
+	transition: all 0.2s ease-in-out 0s;
 }
 
 #game-info {

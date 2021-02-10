@@ -17,7 +17,6 @@ export default class User {
 		this.logged_out = this.game.util.loadImage('/img/logged_out.png', this);
 		this.logged_out_inverted = this.game.util.loadImage('/img/logged_out_inverted.png', this);
 		this.crown = this.game.util.loadImage('/img/crown.png', this);
-		this.gear = this.game.util.loadImage('/img/gear.png', this);
 	}
 
 	getHTMLElements() {
@@ -104,6 +103,10 @@ export default class User {
 		this.recoverEmail = document.getElementById('recover-email');
 		this.recoverUsername = document.getElementById('recover-username');
 		this.recoverError = document.getElementById('recover-error');
+
+		this.chatButton = document.getElementById('chat-btn');
+		this.chatButton.onclick = () => { this.chatButtonClickHandler(); };
+		this.chatImage = document.getElementById('chat-img');
 	}
 
 	// authorize the current locally-stored login token with the server, which responds with user data
@@ -499,6 +502,14 @@ export default class User {
 		this.recoverError.innerText = '';
 	}
 
+	chatButtonClickHandler() {
+		if (this.game.chat.chatArea.style.display == 'none') {
+			this.game.chat.chatArea.style.display = 'block';
+		} else {
+			this.game.chat.chatArea.style.display = 'none';
+		}
+	}
+
 	refreshLeaderboard(numToRetrieve) {
 		let headers = {
 			'Content-Type': 'application/json'
@@ -597,11 +608,15 @@ export default class User {
 	showUserSettingsButton() {
 		this.userSettingsImage.style.display = 'block';
 		this.userSettingsButton.style.display = 'block';
+		this.chatImage.style.display = 'block';
+		this.chatButton.style.display = 'block';
 	}
 
 	hideUserSettingsButton() {
 		this.userSettingsImage.style.display = 'none';
 		this.userSettingsButton.style.display = 'none';
+		this.chatImage.style.display = 'none';
+		this.chatButton.style.display = 'none';
 	}
 
 	showLoggedInUsername() {

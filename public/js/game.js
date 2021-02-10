@@ -84,7 +84,6 @@ export default class Game {
 		this.jump = this.util.loadImage('/img/jump.png', this);
 		this.offlineImg = this.util.loadImage('/img/offline.png', this);
 		this.restart_img = this.util.loadImage('/img/restart.png', this);
-		this.restart_inverted = this.util.loadImage('/img/restart_inverted.png', this);
 		this.logoImg = this.util.loadImage('/img/skifreejs.png', this);
 
 		this.user.loadAssets();
@@ -100,8 +99,6 @@ export default class Game {
 		this.restartImg = document.getElementById('restart-img');
 		this.restartBtn = document.getElementById('restart-btn');
 		this.restartBtn.onclick = () => { this.restart(); };
-		this.restartBtn.onmousedown = () => { this.restartImg.src = this.restart_inverted.src; };
-		this.restartBtn.onmouseup = () => { this.restartImg.src = this.restart_img.src; };
 		this.gameInfo = document.getElementById('game-info');
 		this.gameInfoBtn = document.getElementById('game-info-btn');
 		this.gameInfoBtn.onclick = () => { this.gameInfoBtn.blur(); this.togglePause(); };
