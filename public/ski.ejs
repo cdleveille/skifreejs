@@ -22,6 +22,8 @@
 		<img src="../img/restart.png" id="restart-img">
 		<img src="../img/offline.png" id="offline-ind" class="animate-pulse">
 		<button id="game-info-btn" class="button-invis"></button>
+		<button id="chat-btn" class="button-invis"></button>
+		<img src="../img/chat.png" id="chat-img">
 		<div id="game-info">
 			<div id="game-info-time" class="game-info-item">Time:</div>
 			<div id="game-info-dist" class="game-info-item">Dist:</div>
@@ -145,6 +147,13 @@
 					<div id="change-password-error" class="form-error"></div>
 				</form>
 			</div>
+		</div>
+		<div id="chat-area">
+			<form id="send-container" autocomplete="off">
+				<input type="text" id="message-input" class="text-input" placeholder="message">
+				<button type="submit" id="send-button" class="button">Send</button>
+			</form>
+			<div id="message-container"></div>
 		</div>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="./js/socket.js" type="module"></script>

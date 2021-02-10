@@ -5,6 +5,7 @@ self.addEventListener('install', function (event) {
 		caches.open('v1').then(function (cache) {
 			return cache.addAll([
 				'./css/ski.css',
+				'./js/chat.js',
 				'./js/game.js',
 				'./js/input.js',
 				'./js/lift.js',
@@ -34,6 +35,7 @@ self.addEventListener('install', function (event) {
 				'./img/bump_group.png',
 				'./img/bump_large.png',
 				'./img/bump_small.png',
+				'./img/chat.png',
 				'./img/crown.png',
 				'./img/dog_woof1.png',
 				'./img/dog_woof2.png',

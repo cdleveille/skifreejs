@@ -8,6 +8,55 @@
 	z-index: 1;
 }
 
+#chat-btn {
+	position: absolute;
+	top: 20px;
+	right: 160px;
+	width: 30px;
+	height: 26px;
+	border-radius: 50%;
+	z-index: 3;
+	display: none;
+}
+
+#chat-img {
+	position: absolute;
+	top: 20px;
+	right: 160px;
+	z-index: 2;
+	display: none;
+}
+
+#chat-area {
+	position: relative;
+	width: 33%;
+	max-width: 500px;
+	z-index: 2;
+	font-family: 'ModernDOS';
+	margin: 1px auto;
+	display: none;
+}
+
+#send-container {
+	position: relative;
+}
+
+#message-input {
+	font-family: 'ModernDOS';
+	width: calc(100% - 90px);
+}
+
+#send-button {
+	width: 55px;
+}
+
+#message-container {
+	max-height: 80px;
+	margin: 2px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
 #user-section {
 	position: absolute;
 	display: block;

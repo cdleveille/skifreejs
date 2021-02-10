@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import socket from './socket.js';
 export default class Skier {
 	constructor(game) {
 		this.game = game;
@@ -221,7 +222,7 @@ export default class Skier {
 					styleToAdd = Math.floor(styleToAdd);
 					if (styleToAdd > 0) {
 						this.game.style = Math.floor(this.game.style + styleToAdd);
-						this.game.util.newPoint(this.game.style);
+						socket.emit('new_point', this.game.style);
 					}
 				}
 

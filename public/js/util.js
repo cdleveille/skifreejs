@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-import socket from './socket.js';
 export default class Util {
 	// load a single image from the specified url and add it to the images array in its owner class
 	loadImage(url, ownerClass) {
@@ -124,9 +123,5 @@ export default class Util {
 			}
 		}
 		return true;
-	}
-
-	newPoint(score) {
-		socket.emit('new_point', score);
 	}
 }

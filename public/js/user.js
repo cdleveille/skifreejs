@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import socket from './socket.js';
 export default class User {
 	constructor(game) {
 		this.game = game;
@@ -105,7 +106,7 @@ export default class User {
 		this.recoverError = document.getElementById('recover-error');
 	}
 
-	// authenticate the current locally-stored login token with the server, which responds with user data
+	// authorize the current locally-stored login token with the server, which responds with user data
 	validateLoginToken() {
 		let loginToken = window.localStorage.getItem('loginToken');
 
@@ -122,6 +123,9 @@ export default class User {
 					this.userData = res.data;
 					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
 					this.profileImage.src = this.logged_in.src;
+					if (!this.isLoggedIn) {
+						socket.emit('user-connected', this.userData.username);
+					}
 					this.isLoggedIn = true;
 				}
 			}).catch(err => console.log(err));
@@ -278,6 +282,7 @@ export default class User {
 							this.showLoggedInUsername();
 							this.showUserInfoSection();
 							this.userInfoMessage.innerText = 'username updated';
+							socket.emit('user-changed-username', this.newUsername.value);
 								
 						} else {
 							messages.push(res.data.replace(/error: /gi, ''));
@@ -525,6 +530,7 @@ export default class User {
 	}
 
 	signOut() {
+		socket.emit('user-disconnected');
 		window.localStorage.removeItem('loginToken');
 		this.loggedInUsername.innerText = '';
 		this.leaderboardSignedIn.innerHTML = '';
@@ -651,7 +657,7 @@ export default class User {
 	isTextInputActive() {
 		let textInputFields = [this.signInUsername, this.signInPassword, this.registerUsername, this.registerPassword, this.registerEmail, 
 			this.currentPassword, this.newPassword, this.recoverEmail, this.recoverUsername, this.newEmail, this.changeEmailPassword, 
-			this.newUsername, this.changeUsernamePassword];
+			this.newUsername, this.changeUsernamePassword, this.game.chat.messageInput];
 		for (let field of textInputFields) {
 			if (field === document.activeElement) {
 				return true;

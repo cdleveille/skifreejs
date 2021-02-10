@@ -36,12 +36,42 @@ app.get('*', async (req: Request, res: Response): Promise<Response> => {
 	return res.status(404).send('404 not found');
 });
 
+const loggedInUsers: { [key: string]: string; } = {};
+
 io.on('connection', (socket: any) => {
 	cache.set(`player_${socket.id}_score`, { score: 0 });
 
 	socket.on('disconnect', () => {
 		cache.del(`player_${socket.id}_score`);
-		//console.log(cache.keys());
+
+		if (loggedInUsers[socket.id]) {
+			socket.broadcast.emit('user-disconnected', loggedInUsers[socket.id]);
+			delete loggedInUsers[socket.id];
+		}
+	});
+
+	socket.on('user-connected', (username: string) => {
+		loggedInUsers[socket.id] = username;
+		socket.broadcast.emit('user-connected', username);
+	});
+
+	socket.on('user-disconnected', () => {
+		if (loggedInUsers[socket.id]) {
+			socket.broadcast.emit('user-disconnected', loggedInUsers[socket.id]);
+			delete loggedInUsers[socket.id];
+		}
+	});
+
+	socket.on('user-changed-username', (newUsername: string) => {
+		if (loggedInUsers[socket.id]) {
+			let oldUsername = loggedInUsers[socket.id];
+			loggedInUsers[socket.id] = newUsername;
+			socket.broadcast.emit('user-changed-username', oldUsername, newUsername);
+		}
+	});
+
+	socket.on('chat-message', (message: string) => {
+		socket.broadcast.emit('chat-message', { username: loggedInUsers[socket.id], message: message });
 	});
 
 	socket.on('new_point', (curScore: number) => {

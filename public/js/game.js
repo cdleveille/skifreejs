@@ -8,6 +8,7 @@ import Util from './util.js';
 import socket from './socket.js';
 import NPCHandler from './npc.js';
 import Slalom from './slalom.js';
+import Chat from './chat.js';
 
 export default class Game {
 	constructor() {
@@ -17,6 +18,7 @@ export default class Game {
 		this.lift = new Lift(this);
 		this.npcHandler = new NPCHandler(this);
 		this.slalom = new Slalom(this);
+		this.chat = new Chat(this);
 		this.resCoefficient = 1 / 18000;
 		this.objectFreq = {
 			treeSmallFreq: [24, 'tree_small'],
@@ -56,7 +58,7 @@ export default class Game {
 		this.currentTreeFireImg = this.tree_bare_fire1;
 		this.stylePointsToAwardOnLanding = 0;
 		this.style = 0;
-		this.util.newPoint(0);
+		socket.emit('new_point', 0);
 		this.logo = { x: -50, y: -40 };
 	}
 
@@ -553,6 +555,7 @@ export default class Game {
 		this.user.signInButton.disabled = true;
 		this.user.registerButton.disabled = true;
 		this.offlineInd.style.display = 'block';
+		if (this.user.isLoggedIn) this.user.signOut();
 	}
 
 	togglePause() {
@@ -594,6 +597,7 @@ export default class Game {
 				this.doImageLoadCheck = false;
 				this.user.profileImage.style.display = 'block';
 				this.gameInfo.style.display = 'block';
+				this.chat.chatArea.style.display = 'block';
 
 			} else return;
 		}

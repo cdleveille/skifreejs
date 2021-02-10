@@ -98,12 +98,14 @@ export default class InputHandler {
 							game.gameInfo.style.display = 'none';
 							game.restartBtn.style.display = 'none';
 							game.restartImg.style.display = 'none';
+							game.chat.chatArea.style.display = 'none';
 						} else {
 							game.user.userSection.style.display = 'block';
 							game.gamePausedText.style.display = 'block';
 							game.gameInfo.style.display = 'block';
 							game.restartBtn.style.display = 'block';
 							game.restartImg.style.display = 'block';
+							game.chat.chatArea.style.display = 'block';
 						}
 					}
 					break;
