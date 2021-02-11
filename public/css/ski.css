@@ -350,9 +350,15 @@
 
 .user-list {
 	position: relative;
+	top: 2px;
+	left: 4px;
 	display: block;
 	width: 250px;
 	display: none;
+}
+
+.online-ind {
+	margin-right: 4px;
 }
 
 html, body {

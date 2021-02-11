@@ -61,6 +61,7 @@ self.addEventListener('install', function (event) {
 				'./img/logged_out.png',
 				'./img/logged_out_inverted.png',
 				'./img/offline.png',
+				'./img/online.png',
 				'./img/other_skier_crash.png',
 				'./img/other_skier1.png',
 				'./img/other_skier2.png',

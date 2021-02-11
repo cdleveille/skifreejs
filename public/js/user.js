@@ -18,6 +18,7 @@ export default class User {
 		this.logged_out = this.game.util.loadImage('/img/logged_out.png', this);
 		this.logged_out_inverted = this.game.util.loadImage('/img/logged_out_inverted.png', this);
 		this.crown = this.game.util.loadImage('/img/crown.png', this);
+		this.onlineInd = this.game.util.loadImage('/img/online.png', this);
 	}
 
 	getHTMLElements() {
@@ -114,6 +115,7 @@ export default class User {
 		this.usersImage = document.getElementById('users-img');
 
 		this.activeUsersSignedIn = document.getElementById('active-users-signed-in');
+		this.activeUsersSignedOut = document.getElementById('active-users-signed-out');
 	}
 
 	// authorize the current locally-stored login token with the server, which responds with user data
@@ -374,39 +376,25 @@ export default class User {
 
 	createSocketEventListeners() {
 		socket.on('get-active-users', users => {
-			this.hideLeaderboardSignedIn();
-			this.hideLeaderboardSignedOut();
-			this.hideUserInfoSection();
-			this.hideChangeEmailFormSection();
-			this.hideChangeUsernameFormSection();
-			this.hideChangePasswordFormSection();
-			this.hideSignInForm();
-			this.hideRegisterForm();
-
-			// if signed in
-			if (this.isLoggedIn) {
-				this.showLoggedInInfo();
-				this.activeUsersSignedIn.innerHTML = '';
-			} else {
-				//todo
-			}
-			
-
-			if (this.isVisible(this.activeUsersSignedIn)) {
-				this.hideActiveUsersSignedIn();
-			} else {
-				this.showActiveUsersSignedIn();
-				users = Object.values(users);
-				users.sort();
-				if (users.length > 0) {
-					for (let user of users) {
-						let userDiv = document.createElement('div');
-						userDiv.innerText = user;
-						this.activeUsersSignedIn.append(userDiv);
-					}
-				} else {
-					this.activeUsersSignedIn.innerText = '[no signed in users]';
+			let usernames = Object.values(users).sort();
+			usernames = [...new Set(usernames)]; // remove duplicates
+			let onlineInd = `<img src="${this.onlineInd.src}" class="online-ind">`;
+			this.activeUsersSignedIn.innerHTML = '';
+			this.activeUsersSignedOut.innerHTML = '';
+			this.activeUsersSignedIn.innerText = '';
+			this.activeUsersSignedOut.innerText = '';
+			if (usernames.length > 0) {
+				for (let username of usernames) {
+					let userDiv = document.createElement('div');
+					userDiv.style.marginBottom = '1px';
+					userDiv.style.marginTop = '1px';
+					userDiv.innerHTML = onlineInd + username;
+					this.isLoggedIn ? this.activeUsersSignedIn.append(userDiv)
+						: this.activeUsersSignedOut.append(userDiv);
 				}
+			} else {
+				this.isLoggedIn ? this.activeUsersSignedIn.innerText = '* no users signed in *'
+					: this.activeUsersSignedOut.innerText = '* no users signed in *';
 			}
 		});
 	}
@@ -420,6 +408,7 @@ export default class User {
 				this.showChatButton();
 				this.showUsersButton();
 			}
+			this.hideActiveUsersSignedOut();
 		} else {
 			if (this.isVisible(this.userSettingsButton)) {
 				this.hideAll();
@@ -435,8 +424,9 @@ export default class User {
 	}
 
 	signInButtonClickHandler() {
-		this.signInOrRegister.style.display = 'none';
-		this.signInFormSection.style.display = 'block';
+		this.hideSignInOrRegister();
+		this.hideActiveUsersSignedOut();
+		this.showSignInForm();
 		this.signInUsername.value = '';
 		this.signInPassword.value = '';
 		this.signInError.innerText = '';
@@ -444,8 +434,9 @@ export default class User {
 	}
 
 	registerButtonClickHandler() {
-		this.signInOrRegister.style.display = 'none';
-		this.registerFormSection.style.display = 'block';
+		this.hideSignInOrRegister();
+		this.hideActiveUsersSignedOut();
+		this.showRegisterForm();
 		this.registerEmail.value = '';
 		this.registerUsername.value = '';
 		this.registerPassword.value = '';
@@ -467,6 +458,7 @@ export default class User {
 		if (this.isVisible(this.leaderboardSignedOut)) {
 			this.hideLeaderboardSignedOut();
 		} else {
+			this.hideActiveUsersSignedOut();
 			this.showLeaderboardSignedOut();
 			this.refreshLeaderboard(this.leaderboardScoreCount);
 		}
@@ -541,7 +533,35 @@ export default class User {
 	}
 
 	usersButtonClickHandler() {
-		socket.emit('get-active-users');
+		// if signed in
+		if (this.isLoggedIn) {
+			this.hideLeaderboardSignedIn();
+			this.hideUserInfoSection();
+			this.hideChangeEmailFormSection();
+			this.hideChangeUsernameFormSection();
+			this.hideChangePasswordFormSection();
+			this.showLoggedInInfo();
+
+			if (this.isVisible(this.activeUsersSignedIn)) {
+				this.hideActiveUsersSignedIn();
+			} else {
+				this.showActiveUsersSignedIn();
+				socket.emit('get-active-users');
+			}
+
+		} else {
+			this.hideLeaderboardSignedOut();
+			this.hideSignInForm();
+			this.hideRegisterForm();
+			this.showSignInOrRegister();
+
+			if (this.isVisible(this.activeUsersSignedOut)) {
+				this.hideActiveUsersSignedOut();
+			} else {
+				this.showActiveUsersSignedOut();
+				socket.emit('get-active-users');
+			}
+		}
 	}
 
 	refreshLeaderboard(numToRetrieve) {
@@ -757,6 +777,15 @@ export default class User {
 	hideActiveUsersSignedIn() {
 		this.activeUsersSignedIn.style.display = 'none';
 		this.activeUsersSignedIn.innerHTML = '';
+	}
+
+	showActiveUsersSignedOut() {
+		this.activeUsersSignedOut.style.display = 'block';
+	}
+
+	hideActiveUsersSignedOut() {
+		this.activeUsersSignedOut.style.display = 'none';
+		this.activeUsersSignedOut.innerHTML = '';
 	}
 
 	isTextInputActive() {

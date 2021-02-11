@@ -47,18 +47,21 @@ io.on('connection', (socket: any) => {
 		if (loggedInUsers[socket.id]) {
 			socket.broadcast.emit('user-disconnected', loggedInUsers[socket.id]);
 			delete loggedInUsers[socket.id];
+			io.emit('get-active-users', loggedInUsers);
 		}
 	});
 
 	socket.on('user-connected', (username: string) => {
 		loggedInUsers[socket.id] = username;
 		socket.broadcast.emit('user-connected', username);
+		io.emit('get-active-users', loggedInUsers);
 	});
 
 	socket.on('user-disconnected', () => {
 		if (loggedInUsers[socket.id]) {
 			socket.broadcast.emit('user-disconnected', loggedInUsers[socket.id]);
 			delete loggedInUsers[socket.id];
+			io.emit('get-active-users', loggedInUsers);
 		}
 	});
 
@@ -67,6 +70,7 @@ io.on('connection', (socket: any) => {
 			let oldUsername = loggedInUsers[socket.id];
 			loggedInUsers[socket.id] = newUsername;
 			socket.broadcast.emit('user-changed-username', oldUsername, newUsername);
+			io.emit('get-active-users', loggedInUsers);
 		}
 	});
 
