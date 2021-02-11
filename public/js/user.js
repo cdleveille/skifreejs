@@ -377,10 +377,20 @@ export default class User {
 			this.hideLeaderboardSignedIn();
 			this.hideLeaderboardSignedOut();
 			this.hideUserInfoSection();
+			this.hideChangeEmailFormSection();
+			this.hideChangeUsernameFormSection();
+			this.hideChangePasswordFormSection();
+			this.hideSignInForm();
+			this.hideRegisterForm();
 
 			// if signed in
-			this.showLoggedInInfo();
-			this.activeUsersSignedIn.innerHTML = '';
+			if (this.isLoggedIn) {
+				this.showLoggedInInfo();
+				this.activeUsersSignedIn.innerHTML = '';
+			} else {
+				//todo
+			}
+			
 
 			if (this.isVisible(this.activeUsersSignedIn)) {
 				this.hideActiveUsersSignedIn();
