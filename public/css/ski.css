@@ -88,19 +88,19 @@
 	background-color: #666666;
 }
 
-#chat-img {
+#leaderboard-img {
 	position: absolute;
 	z-index: 2;
-	top: 59px;
+	top: 58px;
 	left: 12px;
 	transition: all 0.2s ease-in-out 0s;
 	display: none;
 }
 
-#chat-btn {
+#leaderboard-btn {
 	position: absolute;
 	z-index: 3;
-	top: 58px;
+	top: 57px;
 	left: 11px;
 	width: 26px;
 	height: 26px;
@@ -108,7 +108,7 @@
 	display: none;
 }
 
-#chat-btn:hover + #chat-img {
+#leaderboard-btn:hover + #leaderboard-img {
 	transform: rotate(360deg);
 	transition: all 0.2s ease-in-out 0s;
 }
@@ -138,10 +138,35 @@
 	transition: all 0.2s ease-in-out 0s;
 }
 
+#chat-img {
+	position: absolute;
+	z-index: 2;
+	top: 122px;
+	left: 12px;
+	transition: all 0.2s ease-in-out 0s;
+	display: none;
+}
+
+#chat-btn {
+	position: absolute;
+	z-index: 3;
+	top: 121px;
+	left: 11px;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	display: none;
+}
+
+#chat-btn:hover + #chat-img {
+	transform: rotate(360deg);
+	transition: all 0.2s ease-in-out 0s;
+}
+
 #user-settings-img {
 	position: absolute;
 	z-index: 2;
-	top: 121px;
+	top: 154px;
 	left: 12px;
 	transition: all 0.2s ease-in-out 0s;
 	display: none;
@@ -150,7 +175,7 @@
 #user-settings-btn {
 	position: absolute;
 	z-index: 3;
-	top: 120px;
+	top: 153px;
 	left: 11px;
 	width: 26px;
 	height: 26px;

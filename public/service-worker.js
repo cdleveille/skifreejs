@@ -50,6 +50,7 @@ self.addEventListener('install', function (event) {
 				'./img/gear.png',
 				'./img/hourglass.png',
 				'./img/jump.png',
+				'./img/leaderboard.png',
 				'./img/lift_chair_down.png',
 				'./img/lift_chair_up1.png',
 				'./img/lift_chair_up2.png',

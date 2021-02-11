@@ -18,7 +18,7 @@
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
 		<div id="game-paused-text" class="animate-pulse">GAME PAUSED</div>
-		<button id="restart-btn" class="button-invis"></button>
+		<button id="restart-btn" class="button-invis" title="Restart"></button>
 		<img src="../img/restart.png" id="restart-img">
 		<img src="../img/offline.png" id="offline-ind" class="animate-pulse">
 		<button id="game-info-btn" class="button-invis"></button>
@@ -29,19 +29,18 @@
 			<div id="game-info-style" class="game-info-item">Style:</div>
 		</div>
 		<div id="user-section">
-			<button id="user-profile-btn" class="button-invis"></button>
+			<button id="user-profile-btn" class="button-invis" title="User Menu"></button>
 			<img src="../img/logged_out.png" id="user-profile-img">
-			<button id="chat-btn" class="button-invis"></button>
+			<button id="leaderboard-btn" class="button-invis" title="Leaderboard"></button>
+			<img src="../img/leaderboard.png" id="leaderboard-img">
+			<button id="chat-btn" class="button-invis" title="Show/Hide Chat"></button>
 			<img src="../img/chat.png" id="chat-img">
-			<button id="users-btn" class="button-invis"></button>
+			<button id="users-btn" class="button-invis" title="Active Users"></button>
 			<img src="../img/users.png" id="users-img">
-			<button id="user-settings-btn" class="button-invis"></button>
+			<button id="user-settings-btn" class="button-invis" title="User Settings"></button>
 			<img src="../img/gear.png" id="user-settings-img">
 			<div id="logged-in-username"></div>
 			<div id="sign-in-or-register" class="user-panel-signed-out">
-				<div>
-					<button id="leaderboard-btn-signed-out" class="button" type="button">Top 10</button>
-				</div>
 				<div>
 					<button id="sign-in-btn" class="button" type="button">Sign In</button>
 				</div>
@@ -93,9 +92,6 @@
 				</form>
 			</div>
 			<div id="logged-in-info-section" class="user-panel-signed-in">
-				<div>
-					<button id="leaderboard-btn-signed-in" class="button" type="button"></button>
-				</div>
 				<div id="leaderboard-signed-in" class="leaderboard"></div>
 				<div id="active-users-signed-in" class="user-list"></div>
 			</div>
