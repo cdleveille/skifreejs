@@ -31,12 +31,14 @@
 		<div id="user-section">
 			<button id="user-profile-btn" class="button-invis"></button>
 			<img src="../img/logged_out.png" id="user-profile-img">
-			<button id="user-settings-btn" class="button-invis"></button>
-			<img src="../img/gear.png" id="user-settings-img">
 			<button id="chat-btn" class="button-invis"></button>
 			<img src="../img/chat.png" id="chat-img">
+			<button id="users-btn" class="button-invis"></button>
+			<img src="../img/users.png" id="users-img">
+			<button id="user-settings-btn" class="button-invis"></button>
+			<img src="../img/gear.png" id="user-settings-img">
 			<div id="logged-in-username"></div>
-			<div id="sign-in-or-register" class="user-panel-signed-out visible">
+			<div id="sign-in-or-register" class="user-panel-signed-out">
 				<div>
 					<button id="leaderboard-btn-signed-out" class="button" type="button">Top 10</button>
 				</div>
@@ -94,6 +96,7 @@
 					<button id="leaderboard-btn-signed-in" class="button" type="button"></button>
 				</div>
 				<div id="leaderboard-signed-in" class="leaderboard"></div>
+				<div id="active-users-signed-in" class="user-list"></div>
 			</div>
 			<div id="user-info-section" class="user-panel-signed-in">
 				<div>
@@ -150,8 +153,7 @@
 		</div>
 		<div id="chat-area">
 			<form id="send-container" autocomplete="off">
-				<input type="text" id="message-input" class="text-input" placeholder="message">
-				<button type="submit" id="send-button" class="button">Send</button>
+				<input type="text" id="message-input" class="text-input" placeholder="message"><button type="submit" id="send-button" class="button">Chat</button>
 			</form>
 			<div id="message-container"></div>
 		</div>

@@ -105,7 +105,7 @@ export default class InputHandler {
 							game.gameInfo.style.display = 'block';
 							game.restartBtn.style.display = 'block';
 							game.restartImg.style.display = 'block';
-							game.chat.chatArea.style.display = 'block';
+							if (!game.chat.hideChat) game.chat.chatArea.style.display = 'block';
 						}
 					}
 					break;

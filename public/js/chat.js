@@ -8,6 +8,7 @@ export default class Chat {
 		this.createSocketEventListeners();
 		this.nextMessageColor = '#000000';
 		this.lastMessageSentTime = -9999;
+		this.hideChat = false;
 	}
 
 	getHTMLElements() {

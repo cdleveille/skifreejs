@@ -8,6 +8,7 @@ export default class User {
 		this.getHTMLElements();
 		this.validateLoginToken();
 		this.createFormSubmitEventListeners();
+		this.createSocketEventListeners();
 		this.refreshLeaderboard(this.leaderboardScoreCount);
 	}
 
@@ -107,6 +108,12 @@ export default class User {
 		this.chatButton = document.getElementById('chat-btn');
 		this.chatButton.onclick = () => { this.chatButtonClickHandler(); };
 		this.chatImage = document.getElementById('chat-img');
+
+		this.usersButton = document.getElementById('users-btn');
+		this.usersButton.onclick = () => { this.usersButtonClickHandler(); };
+		this.usersImage = document.getElementById('users-img');
+
+		this.activeUsersSignedIn = document.getElementById('active-users-signed-in');
 	}
 
 	// authorize the current locally-stored login token with the server, which responds with user data
@@ -155,8 +162,7 @@ export default class User {
 				if (res.ok) {
 					window.localStorage.setItem('loginToken', res.data.token);
 					this.validateLoginToken();
-					this.hideSignInForm();
-					this.hideLoggedInUsername();
+					this.hideAll();
 				} else {
 					messages.push(res.data.replace(/error: /gi, ''));
 					this.signInError.innerText = messages.join('\n');
@@ -200,8 +206,7 @@ export default class User {
 					if (res.ok) {
 						window.localStorage.setItem('loginToken', res.data.token);
 						this.validateLoginToken();
-						this.hideRegisterForm();
-						this.hideLoggedInUsername();
+						this.hideAll();
 					} else {
 						messages.push(res.data.replace(/error: /gi, ''));
 						this.registerError.innerText = messages.join('\n');
@@ -367,44 +372,55 @@ export default class User {
 		});
 	}
 
+	createSocketEventListeners() {
+		socket.on('get-active-users', users => {
+			this.hideLeaderboardSignedIn();
+			this.hideLeaderboardSignedOut();
+			this.hideUserInfoSection();
+
+			// if signed in
+			this.showLoggedInInfo();
+			this.activeUsersSignedIn.innerHTML = '';
+
+			if (this.isVisible(this.activeUsersSignedIn)) {
+				this.hideActiveUsersSignedIn();
+			} else {
+				this.showActiveUsersSignedIn();
+				users = Object.values(users);
+				users.sort();
+				if (users.length > 0) {
+					for (let user of users) {
+						let userDiv = document.createElement('div');
+						userDiv.innerText = user;
+						this.activeUsersSignedIn.append(userDiv);
+					}
+				} else {
+					this.activeUsersSignedIn.innerText = '[no signed in users]';
+				}
+			}
+		});
+	}
+
 	userProfileButtonClickHandler() {
 		if (!this.isLoggedIn) {
-			if (this.signInOrRegister.style.display == 'block') {
-				this.hideSignInOrRegister();
+			if (this.isVisible(this.chatButton)) {
+				this.hideAll();
 			} else {
 				this.showSignInOrRegister();
+				this.showChatButton();
+				this.showUsersButton();
 			}
-
-			if (this.signInFormSection.style.display == 'block') {
-				this.hideSignInForm();
-				this.hideSignInOrRegister();
-			}
-
-			if (this.registerFormSection.style.display == 'block') {
-				this.hideRegisterForm();
-				this.hideSignInOrRegister();
-			}
-			if (this.recoverFormSection.style.display == 'block') {
-				this.hideRecoverFormSection();
-				this.hideSignInOrRegister();
-			}
-			this.hideLeaderboardSignedOut();
-			
 		} else {
-			if (this.userSettingsButton.style.display == 'block') {
-				this.hideLoggedInUsername();
-				this.hideLoggedInInfo();
-				this.hideUserSettingsButton();
+			if (this.isVisible(this.userSettingsButton)) {
+				this.hideAll();
 			} else {
 				this.showLoggedInUsername();
 				this.showLoggedInInfo();
 				this.showUserSettingsButton();
+				this.showChatButton();
+				this.showUsersButton();
 			}
-			this.hideUserInfoSection();
-			this.hideChangeEmailFormSection();
-			this.hideChangeUsernameFormSection();
-			this.hideChangePasswordFormSection();
-			this.hideLeaderboardSignedIn();
+			this.hideActiveUsersSignedIn();
 		}
 	}
 
@@ -428,39 +444,41 @@ export default class User {
 	}
 
 	leaderboardButtonSignedInClickHandler() {
-		if (this.leaderboardSignedIn.style.display != 'block') {
+		if (this.isVisible(this.leaderboardSignedIn)) {
+			this.hideLeaderboardSignedIn();
+		} else {
+			this.hideActiveUsersSignedIn();
 			this.showLeaderboardSignedIn();
 			this.refreshLeaderboard(this.leaderboardScoreCount);
-		} else {
-			this.hideLeaderboardSignedIn();
 		}
 	}
 
 	leaderboardButtonSignedOutClickHandler() {
-		if (this.leaderboardSignedOut.style.display != 'block') {
+		if (this.isVisible(this.leaderboardSignedOut)) {
+			this.hideLeaderboardSignedOut();
+		} else {
 			this.showLeaderboardSignedOut();
 			this.refreshLeaderboard(this.leaderboardScoreCount);
-		} else {
-			this.hideLeaderboardSignedOut();
 		}
 	}
 
 	userSettingsButtonClickHandler() {
-		if (this.loggedInInfoSection.style.display == 'block') {
+		if (this.isVisible(this.loggedInInfoSection)) {
 			this.hideLoggedInInfo();
 			this.hideLeaderboardSignedIn();
 			this.showUserInfoSection();
-		} else if (this.userInfoSection.style.display == 'block') {
+		} else if (this.isVisible(this.userInfoSection)) {
 			this.hideUserInfoSection();
 			this.showLoggedInInfo();
-		} else if (this.changeEmailFormSection.style.display == 'block' ||
-			this.changePasswordFormSection.style.display == 'block' ||
-			this.changeUsernameFormSection.style.display == 'block') {
+		} else if (this.isVisible(this.changeEmailFormSection) ||
+			this.isVisible(this.changePasswordFormSection) ||
+			this.isVisible(this.changeUsernameFormSection)) {
 			this.hideChangeEmailFormSection();
 			this.hideChangeUsernameFormSection();
 			this.hideChangePasswordFormSection();
 			this.showUserInfoSection();
 		}
+		this.hideActiveUsersSignedIn();
 	}
 
 	changeEmailButtonClickHandler() {
@@ -503,11 +521,17 @@ export default class User {
 	}
 
 	chatButtonClickHandler() {
-		if (this.game.chat.chatArea.style.display == 'none') {
-			this.game.chat.chatArea.style.display = 'block';
-		} else {
+		if (this.isVisible(this.game.chat.chatArea)) {
 			this.game.chat.chatArea.style.display = 'none';
+			this.game.chat.hideChat = true;
+		} else {
+			this.game.chat.chatArea.style.display = 'block';
+			this.game.chat.hideChat = false;
 		}
+	}
+
+	usersButtonClickHandler() {
+		socket.emit('get-active-users');
 	}
 
 	refreshLeaderboard(numToRetrieve) {
@@ -547,10 +571,29 @@ export default class User {
 		this.leaderboardSignedIn.innerHTML = '';
 		this.leaderboardSignedOut.innerHTML = '';
 		this.isLoggedIn = false;
+		this.hideAll();
+		this.profileImage.src = this.logged_out.src;
+	}
+
+	isVisible(component) {
+		return component.style.display == 'block';
+	}
+
+	hideAll() {
+		this.hideSignInForm();
+		this.hideRegisterForm();
+		this.hideSignInOrRegister();
+		this.hideLoggedInInfo();
+		this.hideLeaderboardSignedIn();
+		this.hideLeaderboardSignedOut();
+		this.hideIconButtons();
+		this.hideLoggedInUsername();
 		this.hideLoggedInInfo();
 		this.hideUserInfoSection();
-		this.hideUserSettingsButton();
-		this.profileImage.src = this.logged_out.src;
+		this.hideRecoverFormSection();
+		this.hideChangeEmailFormSection();
+		this.hideChangeUsernameFormSection();
+		this.hideChangePasswordFormSection();
 	}
 
 	showSignInForm() {
@@ -608,15 +651,43 @@ export default class User {
 	showUserSettingsButton() {
 		this.userSettingsImage.style.display = 'block';
 		this.userSettingsButton.style.display = 'block';
-		this.chatImage.style.display = 'block';
-		this.chatButton.style.display = 'block';
+	}
+
+	showIconButtons() {
+		this.showUserSettingsButton();
+		this.showChatButton();
+		this.showUsersButton();
+	}
+
+	hideIconButtons() {
+		this.hideUserSettingsButton();
+		this.hideChatButton();
+		this.hideUsersButton();
 	}
 
 	hideUserSettingsButton() {
 		this.userSettingsImage.style.display = 'none';
 		this.userSettingsButton.style.display = 'none';
+	}
+
+	showChatButton() {
+		this.chatImage.style.display = 'block';
+		this.chatButton.style.display = 'block';
+	}
+
+	hideChatButton() {
 		this.chatImage.style.display = 'none';
 		this.chatButton.style.display = 'none';
+	}
+
+	showUsersButton() {
+		this.usersImage.style.display = 'block';
+		this.usersButton.style.display = 'block';
+	}
+
+	hideUsersButton() {
+		this.usersImage.style.display = 'none';
+		this.usersButton.style.display = 'none';
 	}
 
 	showLoggedInUsername() {
@@ -667,6 +738,15 @@ export default class User {
 
 	hideRecoverFormSection() {
 		this.recoverFormSection.style.display = 'none';
+	}
+
+	showActiveUsersSignedIn() {
+		this.activeUsersSignedIn.style.display = 'block';
+	}
+
+	hideActiveUsersSignedIn() {
+		this.activeUsersSignedIn.style.display = 'none';
+		this.activeUsersSignedIn.innerHTML = '';
 	}
 
 	isTextInputActive() {

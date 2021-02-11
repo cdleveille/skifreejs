@@ -74,6 +74,10 @@ io.on('connection', (socket: any) => {
 		socket.broadcast.emit('chat-message', { username: loggedInUsers[socket.id], message: message });
 	});
 
+	socket.on('get-active-users', () => {
+		io.to(socket.id).emit('get-active-users', loggedInUsers);
+	});
+
 	socket.on('new_point', (curScore: number) => {
 		const cacheScore = cache.get(`player_${socket.id}_score`);
 
