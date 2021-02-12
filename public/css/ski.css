@@ -48,13 +48,17 @@
 #logged-in-username {
 	z-index: 2;
 	position: absolute;
-	top: 4px;
+	top: 2px;
 	left: 50px;
 	width: 250px;
 	display: none;
 	margin: 2px;
 	margin-top: 4px;
 	margin-bottom: 4px;
+}
+
+#logged-in-username-line-2 {
+	margin-top: 4px;
 }
 
 #current-email {
@@ -383,7 +387,7 @@
 
 .user-panel-signed-in {
 	position: absolute;
-	top: 25px;
+	top: 48px;
 	left: 48px;
 	z-index: 2;
 	display: none;

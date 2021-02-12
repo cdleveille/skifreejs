@@ -112,7 +112,6 @@ export default class User {
 		this.leaderboard = document.getElementById('leaderboard');
 
 		this.controlsButton = document.getElementById('controls-btn');
-		this.controlsButton.onclick = () => { this.controlsButtonClickHandler(); };
 		this.controlsImage = document.getElementById('controls-img');
 
 		this.aboutButton = document.getElementById('about-btn');
@@ -136,7 +135,7 @@ export default class User {
 				console.log(method, route, res);
 				if (res.ok) {
 					this.userData = res.data;
-					this.loggedInUsername.innerText = this.userData.username + ' ' + this.userData.score;
+					this.loggedInUsername.innerHTML = `<div>${this.userData.username}</div><div id="logged-in-username-line-2">${this.userData.score}</div>`;
 					this.profileImage.src = this.logged_in.src;
 					if (!this.isLoggedIn) {
 						socket.emit('user-connected', this.userData.username);
@@ -423,6 +422,7 @@ export default class User {
 		this.hideSignInOrRegister();
 		this.hideActiveUsers();
 		this.hideLeaderboard();
+		this.hideAbout();
 		this.showSignInForm();
 		this.signInUsername.value = '';
 		this.signInPassword.value = '';
@@ -434,6 +434,7 @@ export default class User {
 		this.hideSignInOrRegister();
 		this.hideActiveUsers();
 		this.hideLeaderboard();
+		this.hideAbout();
 		this.showRegisterForm();
 		this.registerEmail.value = '';
 		this.registerUsername.value = '';
@@ -582,10 +583,6 @@ export default class User {
 		}
 	}
 
-	controlsButtonClickHandler() {
-		console.log('controls');
-	}
-
 	aboutButtonClickHandler() {
 		if (this.isVisible(this.about)) {
 			this.hideAbout();
@@ -606,7 +603,7 @@ export default class User {
 	signOut() {
 		socket.emit('user-disconnected');
 		window.localStorage.removeItem('loginToken');
-		this.loggedInUsername.innerText = '';
+		this.loggedInUsername.innerHTML = '';
 		this.leaderboard.innerHTML = '';
 		this.isLoggedIn = false;
 		this.hideAll();
