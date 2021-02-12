@@ -36,7 +36,6 @@ export default class Game {
 		this.collisionsEnabled = true;
 		this.doImageLoadCheck = true;
 		this.hideHUD = false;
-		this.hideControls = true;
 		this.images = [];
 		this.getHTMLElements();
 		this.loadAssets();

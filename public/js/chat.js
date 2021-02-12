@@ -6,9 +6,9 @@ export default class Chat {
 		this.getHTMLElements();
 		this.createFormSubmitEventListeners();
 		this.createSocketEventListeners();
-		this.nextMessageColor = '#000000';
+		this.nextMessageBackground = 'rgba(0, 0, 0, 0)';
 		this.lastMessageSentTime = -9999;
-		this.hideChat = false;
+		this.isChatHidden = false;
 	}
 
 	getHTMLElements() {
@@ -66,10 +66,20 @@ export default class Chat {
 		if (isError) {
 			messageElement.style.color = 'red';
 		} else {
-			messageElement.style.color = this.nextMessageColor;
-			this.nextMessageColor = this.nextMessageColor == '#000000' ? '#777777' : '#000000';
+			messageElement.style.background = this.nextMessageBackground;
+			this.nextMessageBackground = this.nextMessageBackground == 'rgba(0, 0, 0, 0)' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0)';
 		}
 		
 		this.messageContainer.prepend(messageElement);
+	}
+
+	showChat(a) {
+		this.chatArea.style.display = 'block';
+		if (!a) this.isChatHidden = false;
+	}
+
+	hideChat() {
+		this.chatArea.style.display = 'none';
+		this.isChatHidden = true;
 	}
 }

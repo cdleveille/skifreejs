@@ -89,23 +89,13 @@
 }
 
 #leaderboard-img {
-	position: absolute;
-	z-index: 2;
 	top: 58px;
 	left: 12px;
-	transition: all 0.2s ease-in-out 0s;
-	display: none;
 }
 
 #leaderboard-btn {
-	position: absolute;
-	z-index: 3;
 	top: 57px;
 	left: 11px;
-	width: 26px;
-	height: 26px;
-	border-radius: 50%;
-	display: none;
 }
 
 #leaderboard-btn:hover + #leaderboard-img {
@@ -114,23 +104,13 @@
 }
 
 #users-img {
-	position: absolute;
-	z-index: 2;
 	top: 90px;
 	left: 12px;
-	transition: all 0.2s ease-in-out 0s;
-	display: none;
 }
 
 #users-btn {
-	position: absolute;
-	z-index: 3;
 	top: 89px;
 	left: 11px;
-	width: 26px;
-	height: 26px;
-	border-radius: 50%;
-	display: none;
 }
 
 #users-btn:hover + #users-img {
@@ -139,23 +119,13 @@
 }
 
 #chat-img {
-	position: absolute;
-	z-index: 2;
 	top: 122px;
 	left: 12px;
-	transition: all 0.2s ease-in-out 0s;
-	display: none;
 }
 
 #chat-btn {
-	position: absolute;
-	z-index: 3;
 	top: 121px;
 	left: 11px;
-	width: 26px;
-	height: 26px;
-	border-radius: 50%;
-	display: none;
 }
 
 #chat-btn:hover + #chat-img {
@@ -163,24 +133,44 @@
 	transition: all 0.2s ease-in-out 0s;
 }
 
-#user-settings-img {
-	position: absolute;
-	z-index: 2;
+#controls-img {
 	top: 154px;
 	left: 12px;
+}
+
+#controls-btn {
+	top: 153px;
+	left: 11px;
+}
+
+#controls-btn:hover + #controls-img {
+	transform: rotate(360deg);
 	transition: all 0.2s ease-in-out 0s;
-	display: none;
+}
+
+#about-img {
+	top: 186px;
+	left: 12px;
+}
+
+#about-btn {
+	top: 185px;
+	left: 11px;
+}
+
+#about-btn:hover + #about-img {
+	transform: rotate(360deg);
+	transition: all 0.2s ease-in-out 0s;
+}
+
+#user-settings-img {
+	top: 218px;
+	left: 12px;
 }
 
 #user-settings-btn {
-	position: absolute;
-	z-index: 3;
-	top: 153px;
+	top: 217px;
 	left: 11px;
-	width: 26px;
-	height: 26px;
-	border-radius: 50%;
-	display: none;
 }
 
 #user-settings-btn:hover + #user-settings-img {
@@ -188,31 +178,102 @@
 	transition: all 0.2s ease-in-out 0s;
 }
 
-#game-paused-text {
+#about {
+	font-size: 14px;
+}
+
+#about-title {
+	font-size: 18px;
+}
+
+.menu-content-panel {
 	position: absolute;
-	right: 38px;
-	top: 75px;
+	top: 54px;
+	left: 54px;
+	width: 250px;
+	z-index: 3;
+	font-family: 'ModernDOS';
+	font-size: 16;
+	display: none;
+}
+
+.icon-img {
+	position: absolute;
 	z-index: 2;
-	display: block;
+	transition: all 0.2s ease-in-out 0s;
+	display: none;
+}
+
+.icon-btn {
+	position: absolute;
+	z-index: 3;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	display: none;
+}
+
+#game-info {
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	background-color: white;
+	z-index: 2;
+	display: none;
+}
+
+#game-info-stats {
 	font-family: 'ModernDOS';
 	font-size: 16px;
+	color: black;
+	border: 1px solid black;
+	transition-duration: 0.2s;
+}
+
+#game-info-btn {
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	width: 154px;
+	height: 66px;
+	z-index: 3;
+}
+
+#game-info-btn:hover + #game-info-stats {
+	background-color: #DDDDDD;
+}
+
+#game-info-btn:active + #game-info-stats {
+	background-color: #666666;
+	color: white;
+}
+
+#game-paused-text {
+	position: relative;
+	text-align: center;
+	z-index: 2;
+	font-family: 'ModernDOS';
+	font-size: 16px;
+	margin-top: 10px;
 	color: black;
 	display: none;
 }
 
 #restart-img {
 	position: absolute;
+	top: 102px;
+	right: 64px;
 	z-index: 2;
-	top: 98px;
-	right: 70px;
 	transition-duration: 0.2s;
+	margin: 0px auto;
+	margin-top: 4px;
 	display: none;
 }
 
 #restart-btn {
 	position: absolute;
-	top: 97px;
-	right: 71px;
+	top: 104px;
+	right: 64px;
 	width: 26px;
 	height: 26px;
 	z-index: 3;
@@ -225,45 +286,17 @@
 	transition: all 0.2s ease-in-out 0s;
 }
 
-#game-info {
-	position: absolute;
-	right: 2px;
-	top: 2px;
-	background-color: white;
-	color: black;
-	border: 1px solid black;
-	font-family: 'ModernDOS';
-	font-size: 16px;
-	display: block;
-	z-index: 2;
-	transition-duration: 0.2s;
-	display: none;
-}
-
-#game-info-btn {
-	position: absolute;
-	right: 2px;
-	top: 2px;
-	width: 154px;
-	height: 66px;
-	z-index: 3;
-}
-
-#game-info-btn:hover + #game-info {
-	background-color: #DDDDDD;
-}
-
-#game-info-btn:active + #game-info {
-	background-color: #666666;
-	color: white;
-}
-
 #offline-ind {
 	position: absolute;
 	right: 170px;
 	top: 20px;
 	z-index: 2;
 	display: none;
+}
+
+#leaderboard {
+	margin-top: -20px;
+	margin-left: -12px;
 }
 
 .game-info-item {
@@ -364,24 +397,6 @@
 	display: none;
 }
 
-.leaderboard {
-	position: relative;
-	left: -12px;
-	top: -12px;
-	display: block;
-	width: 250px;
-	display: none;
-}
-
-.user-list {
-	position: relative;
-	top: 2px;
-	left: 4px;
-	display: block;
-	width: 250px;
-	display: none;
-}
-
 .online-ind {
 	margin-right: 4px;
 }
@@ -435,4 +450,8 @@ html, body {
 	0%   { opacity:0; }
 	50%  { opacity:1; }
 	100% { opacity:0; }
+}
+
+a, a:visited, a:hover, a:active {
+	color: blue;
 }

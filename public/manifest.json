@@ -1,7 +1,7 @@
 {
 	"name": "skifreejs",
 	"short_name": "skifreejs",
-	"description": "Fan remake of the classic game from Windows Entertainment Pack 3",
+	"description": "Fan remake of the classic PC game from Windows Entertainment Pack 3",
 	"theme_color": "#317EFB",
 	"background_color": "#fff",
 	"display": "standalone",

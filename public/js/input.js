@@ -85,9 +85,7 @@ export default class InputHandler {
 					game.restart();
 					break;
 				case c:
-					if (!game.user.isTextInputActive()) {
-						game.hideControls = !game.hideControls;
-					}
+					if (!game.user.isTextInputActive()) game.user.chatButtonClickHandler();
 					break;
 				case h:
 					if (!game.user.isTextInputActive()) {
@@ -105,7 +103,7 @@ export default class InputHandler {
 							game.gameInfo.style.display = 'block';
 							game.restartBtn.style.display = 'block';
 							game.restartImg.style.display = 'block';
-							if (!game.chat.hideChat) game.chat.chatArea.style.display = 'block';
+							if (!game.chat.isChatHidden) game.chat.showChat(true);
 						}
 					}
 					break;

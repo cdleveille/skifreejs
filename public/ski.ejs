@@ -17,28 +17,36 @@
 	<body>
 		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<canvas id="gameScreen" width="0" height="0"></canvas>
-		<div id="game-paused-text" class="animate-pulse">GAME PAUSED</div>
-		<button id="restart-btn" class="button-invis" title="Restart"></button>
-		<img src="../img/restart.png" id="restart-img">
 		<img src="../img/offline.png" id="offline-ind" title="Offline">
 		<button id="game-info-btn" class="button-invis" title="Play/Pause"></button>
 		<div id="game-info">
-			<div id="game-info-time" class="game-info-item">Time:</div>
-			<div id="game-info-dist" class="game-info-item">Dist:</div>
-			<div id="game-info-speed" class="game-info-item">Speed:</div>
-			<div id="game-info-style" class="game-info-item">Style:</div>
+			<div id="game-info-stats">
+				<div id="game-info-time" class="game-info-item">Time:</div>
+				<div id="game-info-dist" class="game-info-item">Dist:</div>
+				<div id="game-info-speed" class="game-info-item">Speed:</div>
+				<div id="game-info-style" class="game-info-item">Style:</div>
+			</div>
+			<div>
+				<div id="game-paused-text" class="animate-pulse">GAME PAUSED</div>
+				<button id="restart-btn" class="button-invis" title="Restart"></button>
+				<img src="../img/restart.png" id="restart-img">
+			</div>
 		</div>
 		<div id="user-section">
 			<button id="user-profile-btn" class="button-invis" title="User Menu"></button>
 			<img src="../img/logged_out.png" id="user-profile-img">
-			<button id="leaderboard-btn" class="button-invis" title="Leaderboard"></button>
-			<img src="../img/leaderboard.png" id="leaderboard-img">
-			<button id="chat-btn" class="button-invis" title="Show/Hide Chat"></button>
-			<img src="../img/chat.png" id="chat-img">
-			<button id="users-btn" class="button-invis" title="Active Users"></button>
-			<img src="../img/users.png" id="users-img">
-			<button id="user-settings-btn" class="button-invis" title="User Settings"></button>
-			<img src="../img/gear.png" id="user-settings-img">
+			<button id="leaderboard-btn" class="button-invis icon-btn" title="Leaderboard"></button>
+			<img src="../img/leaderboard.png" id="leaderboard-img" class="icon-img">
+			<button id="users-btn" class="button-invis icon-btn" title="Active Users"></button>
+			<img src="../img/users.png" id="users-img" class="icon-img">
+			<button id="chat-btn" class="button-invis icon-btn" title="Show/Hide Chat"></button>
+			<img src="../img/chat.png" id="chat-img" class="icon-img">
+			<button id="controls-btn" class="button-invis icon-btn" title="Controls" disabled></button>
+			<img src="../img/mouse.png" id="controls-img" class="icon-img">
+			<button id="about-btn" class="button-invis icon-btn" title="About"></button>
+			<img src="../img/about.png" id="about-img" class="icon-img">
+			<button id="user-settings-btn" class="button-invis icon-btn" title="User Settings"></button>
+			<img src="../img/gear.png" id="user-settings-img" class="icon-img">
 			<div id="logged-in-username"></div>
 			<div id="sign-in-or-register" class="user-panel-signed-out">
 				<div>
@@ -48,8 +56,6 @@
 					<button id="register-btn" class="button" type="button">Register</button>
 				</div>
 				<div id="sign-in-or-register-info-message" class="info-message"></div>
-				<div id="leaderboard-signed-out" class="leaderboard"></div>
-				<div id="active-users-signed-out" class="user-list"></div>
 			</div>
 			<div id="sign-in-form-section" class="user-panel-signed-out">
 				<form id="sign-in-form" spellcheck="false">
@@ -91,10 +97,7 @@
 					<div id="register-error" class="form-error"></div>
 				</form>
 			</div>
-			<div id="logged-in-info-section" class="user-panel-signed-in">
-				<div id="leaderboard-signed-in" class="leaderboard"></div>
-				<div id="active-users-signed-in" class="user-list"></div>
-			</div>
+			<div id="logged-in-info-section" class="user-panel-signed-in"></div>
 			<div id="user-info-section" class="user-panel-signed-in">
 				<div>
 					<button id="change-email-btn" class="button" type="button">Change Email</button>
@@ -154,6 +157,15 @@
 			</form>
 			<div id="message-container"></div>
 		</div>
+		<div id="about" class="menu-content-panel">
+			<div id="about-title"><a href="https://github.com/cdleveille/skifreejs" target="_blank">skifreejs</a></div>
+			<br>
+			<div>Created by Chris Leveille<br>and Jude Giordano</div>
+			<br>
+			<div>Inspired by <a href="https://ski.ihoc.net/" target="_blank">the original</a><br>by Chris Pirih</div>
+		</div>
+		<div id="active-users" class="menu-content-panel"></div>
+		<div id="leaderboard" class="menu-content-panel"></div>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="./js/socket.js" type="module"></script>
 		<script src="./js/ski.js" type="module" defer></script>
