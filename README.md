@@ -1,7 +1,7 @@
 # skifreejs
 Fan remake of the classic game from Windows Entertainment Pack 3, written in JavaScript/HTML5 Canvas backed by Node.js
 
-![screenshot](https://user-images.githubusercontent.com/1410481/107135872-63af9300-68cc-11eb-89fd-2b20e111f48d.png)
+![screenshot](https://user-images.githubusercontent.com/1410481/107723050-3be67380-6cae-11eb-9cf6-32e21a840cb4.png)
 
 Languages/technologies used include:
 - HTML5 Canvas
