@@ -30,7 +30,7 @@ export default class Chat {
 					this.messageInput.value = '';
 					this.lastMessageSentTime = now;
 				} else if (!this.alreadyWarned) {
-					this.prependMessage('* please sign in to chat *', true);
+					this.prependMessage('* please sign in to chat *');
 					this.alreadyWarned = true;
 				}
 				this.messageInput.focus();
@@ -58,10 +58,9 @@ export default class Chat {
 		});
 	}
 
-	prependMessage(message, isError) {
+	prependMessage(message) {
 		let messageElement = document.createElement('div');
 		messageElement.innerText = message;
-		if (isError) messageElement.style.color = 'red';
 		this.messageContainer.prepend(messageElement);
 	}
 
