@@ -59,6 +59,7 @@ export default class Game {
 		this.style = 0;
 		socket.emit('new_point', 0);
 		this.logo = { x: -50, y: -40 };
+		this.gameInfoBtn.title = 'Pause';
 	}
 
 	// restart the gamestate
@@ -562,12 +563,14 @@ export default class Game {
 				this.gamePausedText.style.display = 'none';
 				this.restartBtn.style.display = 'none';
 				this.restartImg.style.display = 'none';
+				this.gameInfoBtn.title = 'Pause';
 			} else {
 				this.timePausedAt = this.util.timestamp();
 				this.isPaused = true;
 				this.gamePausedText.style.display = 'block';
 				this.restartBtn.style.display = 'block';
 				this.restartImg.style.display = 'block';
+				this.gameInfoBtn.title = 'Play';
 			}
 		}
 	}
@@ -593,7 +596,7 @@ export default class Game {
 				this.doImageLoadCheck = false;
 				this.user.profileImage.style.display = 'block';
 				this.gameInfo.style.display = 'block';
-				if (!this.util.hasTouch()) this.chat.chatArea.style.display = 'block';
+				this.util.hasTouch() ? this.chat.hideChat() : this.chat.showChat();
 
 			} else return;
 		}

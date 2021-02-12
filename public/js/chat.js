@@ -6,7 +6,6 @@ export default class Chat {
 		this.getHTMLElements();
 		this.createFormSubmitEventListeners();
 		this.createSocketEventListeners();
-		this.nextMessageBackground = 'rgba(0, 0, 0, 0)';
 		this.lastMessageSentTime = -9999;
 		this.isChatHidden = false;
 	}
@@ -62,24 +61,19 @@ export default class Chat {
 	prependMessage(message, isError) {
 		let messageElement = document.createElement('div');
 		messageElement.innerText = message;
-
-		if (isError) {
-			messageElement.style.color = 'red';
-		} else {
-			messageElement.style.background = this.nextMessageBackground;
-			this.nextMessageBackground = this.nextMessageBackground == 'rgba(0, 0, 0, 0)' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0)';
-		}
-		
+		if (isError) messageElement.style.color = 'red';
 		this.messageContainer.prepend(messageElement);
 	}
 
 	showChat(a) {
 		this.chatArea.style.display = 'block';
+		this.game.user.chatButton.title = 'Hide Chat';
 		if (!a) this.isChatHidden = false;
 	}
 
 	hideChat() {
 		this.chatArea.style.display = 'none';
 		this.isChatHidden = true;
+		this.game.user.chatButton.title = 'Show Chat';
 	}
 }
