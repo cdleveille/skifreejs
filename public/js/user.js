@@ -444,6 +444,7 @@ export default class User {
 	}
 
 	userSettingsButtonClickHandler() {
+		this.pulse(this.userSettingsButton.offsetTop, this.userSettingsButton.offsetLeft);
 		if (this.isVisible(this.loggedInInfoSection)) {
 			this.hideLoggedInInfo();
 			this.showUserInfoSection();
@@ -503,6 +504,8 @@ export default class User {
 	}
 
 	leaderboardButtonClickHandler() {
+		this.pulse(this.leaderboardButton.offsetTop, this.leaderboardButton.offsetLeft);
+
 		if (this.isVisible(this.leaderboard)) {
 			this.hideLeaderboard();
 		} else {
@@ -551,6 +554,7 @@ export default class User {
 	}
 
 	usersButtonClickHandler() {
+		this.pulse(this.usersButton.offsetTop, this.usersButton.offsetLeft);
 		if (this.isLoggedIn) {
 			this.hideLeaderboard();
 			this.hideUserInfoSection();
@@ -576,6 +580,7 @@ export default class User {
 	}
 
 	chatButtonClickHandler() {
+		this.pulse(this.chatButton.offsetTop, this.chatButton.offsetLeft);
 		if (this.isVisible(this.game.chat.chatArea)) {
 			this.game.chat.hideChat();
 		} else {
@@ -584,6 +589,7 @@ export default class User {
 	}
 
 	aboutButtonClickHandler() {
+		this.pulse(this.aboutButton.offsetTop, this.aboutButton.offsetLeft);
 		if (this.isVisible(this.about)) {
 			this.hideAbout();
 		} else {
@@ -830,4 +836,14 @@ export default class User {
 		}
 		return false;
 	}
+
+	pulse(top, left) {
+		let e = document.createElement('div');
+		e.setAttribute('class', 'pulse-circle'),
+		document.body.appendChild(e),
+		e.style.top = `${top + 12}px`,
+		e.style.left = `${left + 12}px`,
+		setTimeout(() => { document.body.removeChild(e); }, 200);
+	}
+
 }
