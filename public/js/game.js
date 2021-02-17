@@ -37,9 +37,12 @@ export default class Game {
 		this.doImageLoadCheck = true;
 		this.hideHUD = false;
 		this.images = [];
+		this.skierTrailColor = '#DDDDDD';
 		this.getHTMLElements();
 		this.loadAssets();
+		this.darkModeOff();
 		this.init();
+		
 	}
 
 	// initialize game settings and generate game objects for start of game
@@ -575,6 +578,128 @@ export default class Game {
 		}
 	}
 
+	toggleDarkMode() {
+		this.darkMode ? this.darkModeOff() : this.darkModeOn();
+	}
+
+	darkModeOff() {
+		this.darkMode = false;
+		document.body.style.backgroundColor = 'white';
+		this.gamePausedText.style.color = 'black';
+
+		let gameInfoStats = document.getElementById('game-info-stats');
+		gameInfoStats.style.background = 'white';
+		gameInfoStats.style.color = 'black';
+		this.gameInfoBtn.onmouseenter = () => { gameInfoStats.style.background = '#DDDDDD'; };
+		this.gameInfoBtn.onmouseleave = () => { gameInfoStats.style.background = 'white'; gameInfoStats.style.color = 'black'; };
+		this.gameInfoBtn.onmousedown = () => { gameInfoStats.style.background = '#666666'; gameInfoStats.style.color = 'white'; };
+		this.gameInfoBtn.onmouseup = () => { gameInfoStats.style.background = '#DDDDDD'; gameInfoStats.style.color = 'black'; };
+		gameInfoStats.style.transitionDuration = '0.2s';
+		gameInfoStats.style.border = '1px solid black';
+
+		this.user.profileImage.style.background = 'white';
+		this.user.profileImage.style.border = '1px solid black';
+		this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src;
+		this.user.profileButton.onmouseenter = () => { this.user.profileImage.style.background = '#DDDDDD'; };
+		this.user.profileButton.onmouseleave = () => { this.user.profileImage.style.background = 'white'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
+		this.user.profileButton.onmousedown = () => { this.user.profileImage.style.background = '#666666'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
+		this.user.profileButton.onmouseup = () => { this.user.profileImage.style.background = '#DDDDDD'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
+
+		document.getElementById('user-section').style.color = 'black';
+		document.getElementById('logged-in-username').style.color = 'black';
+		document.getElementById('active-users').style.color = 'black';
+		document.getElementById('leaderboard').style.color = 'black';
+		document.getElementById('about').style.color = 'black';
+		document.getElementById('message-container').style.color = 'black';
+
+		let iconImages = document.getElementsByClassName('icon-img');
+		for (let img of iconImages) {
+			img.style.filter = 'invert(0)';
+		}
+		this.restartImg.style.filter = 'invert(0)';
+
+		let buttons = document.getElementsByClassName('button');
+		for (let button of buttons) {
+			button.style.background = 'white';
+			button.style.color = 'black';
+			button.style.border = '1px solid black';
+			button.onmouseenter = () => { button.style.background = '#DDDDDD'; };
+			button.onmouseleave = () => { button.style.background = 'white'; button.style.color = 'black'; };
+			button.onmousedown = () => { button.style.background = '#666666'; button.style.color = 'white'; };
+			button.onmouseup = () => { button.style.background = '#DDDDDD'; button.style.color = 'black'; };
+		}
+
+		let textInputs = document.getElementsByClassName('text-input');
+		for (let textInput of textInputs) {
+			textInput.style.background = 'white';
+			textInput.style.color = 'black';
+			textInput.style.border = '1px solid black';
+			textInput.addEventListener('focus', () => { textInput.style.background = '#DDDDDD'; });
+			textInput.addEventListener('blur', () => { textInput.style.background = 'white'; });
+		}
+
+		this.skierTrailColor = '#DDDDDD';
+	}
+
+	darkModeOn() {
+		this.darkMode = true;
+		document.body.style.backgroundColor = '#11161f';
+		this.gamePausedText.style.color = 'white';
+
+		let gameInfoStats = document.getElementById('game-info-stats');
+		gameInfoStats.style.background = '#444444';
+		gameInfoStats.style.color = 'white';
+		this.gameInfoBtn.onmouseenter = () => { gameInfoStats.style.background = '#666666'; };
+		this.gameInfoBtn.onmouseleave = () => { gameInfoStats.style.background = '#444444'; gameInfoStats.style.color = 'white'; };
+		this.gameInfoBtn.onmousedown = () => { gameInfoStats.style.background = 'white'; gameInfoStats.style.color = 'black'; };
+		this.gameInfoBtn.onmouseup = () => { gameInfoStats.style.background = '#666666'; gameInfoStats.style.color = 'white'; };
+		gameInfoStats.style.transitionDuration = '0.2s';
+		gameInfoStats.style.border = '1px solid white';
+
+		this.user.profileImage.style.background = '#444444';
+		this.user.profileImage.style.border = '1px solid white';
+		this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src;
+		this.user.profileButton.onmouseenter = () => { this.user.profileImage.style.background = '#666666'; };
+		this.user.profileButton.onmouseleave = () => { this.user.profileImage.style.background = '#444444'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
+		this.user.profileButton.onmousedown = () => { this.user.profileImage.style.background = 'white'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
+		this.user.profileButton.onmouseup = () => { this.user.profileImage.style.background = '#666666'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
+
+		document.getElementById('user-section').style.color = 'white';
+		document.getElementById('logged-in-username').style.color = 'white';
+		document.getElementById('active-users').style.color = 'white';
+		document.getElementById('leaderboard').style.color = 'white';
+		document.getElementById('about').style.color = 'white';
+		document.getElementById('message-container').style.color = 'white';
+
+		let iconImages = document.getElementsByClassName('icon-img');
+		for (let img of iconImages) {
+			img.style.filter = 'invert(1)';
+		}
+		this.restartImg.style.filter = 'invert(1)';
+
+		let buttons = document.getElementsByClassName('button');
+		for (let button of buttons) {
+			button.style.background = '#444444';
+			button.style.color = 'white';
+			button.style.border = '1px solid white';
+			button.onmouseenter = () => { button.style.background = '#666666'; };
+			button.onmouseleave = () => { button.style.background = '#444444'; button.style.color = 'white'; };
+			button.onmousedown = () => { button.style.background = 'white'; button.style.color = 'black'; };
+			button.onmouseup = () => { button.style.background = '#666666'; button.style.color = 'white'; };
+		}
+
+		let textInputs = document.getElementsByClassName('text-input');
+		for (let textInput of textInputs) {
+			textInput.style.background = '#444444';
+			textInput.style.color = 'white';
+			textInput.style.border = '1px solid white';
+			textInput.addEventListener('focus', () => { textInput.style.background = '#666666'; });
+			textInput.addEventListener('blur', () => { textInput.style.background = '#444444'; });
+		}
+
+		this.skierTrailColor = '#222222';
+	}
+
 	// check to see if all images have been loaded and are ready to render
 	confirmImagesAreAllLoaded() {
 		for (let i = 0; i < this.images.length; i++) {
@@ -620,7 +745,7 @@ export default class Game {
 
 		// draw skier trail
 		for (let i = 0; i < this.skierTrail.length; i++) {
-			ctx.fillStyle = '#DDDDDD';
+			ctx.fillStyle = this.skierTrailColor;
 			ctx.fillRect(this.skier.x + this.skierTrail[i].x, this.skier.y + this.skierTrail[i].y, 2, 1);
 			ctx.fillRect(this.skier.x + this.skierTrail[i].x + 8, this.skier.y + this.skierTrail[i].y, 2, 1);
 		}

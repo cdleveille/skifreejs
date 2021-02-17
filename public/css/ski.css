@@ -43,6 +43,7 @@
 	display: block;
 	font-size: 16px;
 	font-family: 'ModernDOS';
+	color: black;
 }
 
 #logged-in-username {
@@ -71,7 +72,6 @@
 	margin: 2px;
 	position: absolute;
 	z-index: 2;
-	background-color: white;
 	transition-duration: 0.2s;
 	display: none;
 }
@@ -82,14 +82,6 @@
 	width: 45px;
 	height: 45px;
 	z-index: 3;
-}
-
-#user-profile-btn:hover + #user-profile-img {
-	background-color: #DDDDDD;
-}
-
-#user-profile-btn:active + #user-profile-img {
-	background-color: #666666;
 }
 
 #leaderboard-img {
@@ -220,7 +212,6 @@
 .pulse-circle {
 	position: absolute;
 	transform: translate(-50%, -50%);
-	background: #000;
 	width: 48px;
 	height: 48px;
 	border-radius: 50%;
@@ -252,9 +243,10 @@
 	font-family: 'ModernDOS';
 	font-size: 16px;
 	color: black;
-	background-color: white;
+	background: white;
 	border: 1px solid black;
 	transition-duration: 0.2s;
+	z-index: 2;
 }
 
 #game-info-btn {
@@ -264,15 +256,6 @@
 	width: 154px;
 	height: 66px;
 	z-index: 3;
-}
-
-#game-info-btn:hover + #game-info-stats {
-	background-color: #DDDDDD;
-}
-
-#game-info-btn:active + #game-info-stats {
-	background-color: #666666;
-	color: white;
 }
 
 #game-paused-text {
@@ -352,7 +335,7 @@
 	height: 21px;
 	margin: 1px;
 	margin-bottom: 1px;
-	background-color: white;
+	background: white;
 	border: 1px solid black;
 	text-align: center;
 	text-decoration: none;
@@ -371,15 +354,6 @@
 	left: 50%;
 	-ms-transform: translate(-50%, 0%);
 	transform: translate(-50%, 0%);
-}
-
-.button:hover {
-	background-color: #DDDDDD;
-}
-
-.button:active {
-	background-color: #666666;
-	color: white;
 }
 
 .button-invis {
@@ -415,6 +389,7 @@
 	left: 48px;
 	z-index: 2;
 	display: none;
+	color: inherit;
 }
 
 .user-panel-signed-out {
@@ -423,10 +398,71 @@
 	left: 48px;
 	z-index: 2;
 	display: none;
+	color: inherit;
 }
 
 .online-ind {
 	margin-right: 4px;
+}
+
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+}
+
+.switch input { 
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+#dark-mode-section {
+	margin-left: 3px;
+	height: 33px;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 15px;
+	background-color: #ccc;
+	-webkit-transition: 0.2s;
+	transition: 0.2s;
+	border: 1px solid black;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 13px;
+	width: 25px;
+	left: 1px;
+	top: 1px;
+	bottom: 2px;
+	background-color: white;
+	-webkit-transition: 0.2s;
+	transition: 0.2s;
+}
+
+input:checked + .slider {
+	background-color: #777777;
+	border: 1px solid white;
+}
+
+input:focus + .slider {
+	box-shadow: 0 0 1px #777777;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(31px);
+	-ms-transform: translateX(31px);
+	transform: translateX(31px);
 }
 
 html, body {
@@ -442,6 +478,8 @@ html, body {
 	-webkit-user-select: none;
 	user-select: none;
 	touch-action: none;
+	-webkit-transition: 0.2s;
+	transition: 0.2s;
 }
 
 @font-face {

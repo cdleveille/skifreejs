@@ -33,8 +33,8 @@ export default class Chat {
 					this.prependMessage('* please sign in to chat *');
 					this.alreadyWarned = true;
 				}
-				this.messageInput.focus();
 			}
+			this.messageInput.focus();
 		});
 	}
 

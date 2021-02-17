@@ -6,7 +6,11 @@ export default class InputHandler {
 		};
 
 		document.addEventListener('mouseup', () => {
-			game.user.profileImage.src = game.user.isLoggedIn ? game.user.logged_in.src : game.user.logged_out.src;
+			if (game.darkMode) {
+				game.user.profileImage.src = game.user.isLoggedIn ? game.user.logged_in_inverted.src : game.user.logged_out_inverted.src;
+			} else {
+				game.user.profileImage.src = game.user.isLoggedIn ? game.user.logged_in.src : game.user.logged_out.src;
+			}
 			game.restartImg.src = game.restart_img.src;
 		});
 		

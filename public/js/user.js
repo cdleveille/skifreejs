@@ -26,8 +26,6 @@ export default class User {
 		this.profileImage = document.getElementById('user-profile-img');
 		this.profileButton = document.getElementById('user-profile-btn');
 		this.profileButton.onclick = () => { this.profileButton.blur(); this.userProfileButtonClickHandler(); };
-		this.profileButton.onmousedown = () => { this.profileImage.src = this.isLoggedIn ? this.logged_in_inverted.src : this.logged_out_inverted.src; };
-		this.profileButton.onmouseup = () => { this.profileImage.src = this.isLoggedIn ? this.logged_in.src : this.logged_out.src; };
 
 		this.signInOrRegister = document.getElementById('sign-in-or-register');
 		this.signInOrRegisterInfoMessage = document.getElementById('sign-in-or-register-info-message');
@@ -118,6 +116,9 @@ export default class User {
 		this.aboutButton.onclick = () => { this.aboutButtonClickHandler(); };
 		this.aboutImage = document.getElementById('about-img');
 		this.about = document.getElementById('about');
+
+		this.darkModeSwitch = document.getElementById('dark-mode-switch');
+		this.darkModeSwitch.onchange = () => { this.darkModeSwitchChangeHandler(); };
 	}
 
 	// authorize the current locally-stored login token with the server, which responds with user data
@@ -136,7 +137,7 @@ export default class User {
 				if (res.ok) {
 					this.userData = res.data;
 					this.loggedInUsername.innerHTML = `<div>${this.userData.username}</div><div id="logged-in-username-line-2">${this.userData.score}</div>`;
-					this.profileImage.src = this.logged_in.src;
+					this.profileImage.src = this.game.darkMode ? this.logged_in_inverted.src : this.logged_in.src;
 					if (!this.isLoggedIn) {
 						socket.emit('user-connected', this.userData.username);
 					}
@@ -606,6 +607,10 @@ export default class User {
 		}
 	}
 
+	darkModeSwitchChangeHandler() {
+		this.game.toggleDarkMode();
+	}
+
 	signOut() {
 		socket.emit('user-disconnected');
 		window.localStorage.removeItem('loginToken');
@@ -613,7 +618,8 @@ export default class User {
 		this.leaderboard.innerHTML = '';
 		this.isLoggedIn = false;
 		this.hideAll();
-		this.profileImage.src = this.logged_out.src;
+		this.profileImage.src = this.game.darkMode ? this.logged_out_inverted.src : this.logged_out.src;
+		
 	}
 
 	isVisible(component) {
@@ -843,6 +849,7 @@ export default class User {
 		document.body.appendChild(e),
 		e.style.top = `${top + 12}px`,
 		e.style.left = `${left + 12}px`,
+		e.style.background = this.game.darkMode ? 'white' : 'black',
 		setTimeout(() => { document.body.removeChild(e); }, 200);
 	}
 
