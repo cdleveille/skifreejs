@@ -7,6 +7,7 @@ self.addEventListener('install', function (event) {
 				'./css/ski.css',
 				'./js/chat.js',
 				'./js/game.js',
+				'./js/gamepad.js',
 				'./js/input.js',
 				'./js/lift.js',
 				'./js/npc.js',

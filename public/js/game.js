@@ -9,6 +9,7 @@ import socket from './socket.js';
 import NPCHandler from './npc.js';
 import Slalom from './slalom.js';
 import Chat from './chat.js';
+import Gamepad from './gamepad.js';
 
 export default class Game {
 	constructor() {
@@ -19,6 +20,7 @@ export default class Game {
 		this.npcHandler = new NPCHandler(this);
 		this.slalom = new Slalom(this);
 		this.chat = new Chat(this);
+		this.gamepad = new Gamepad(this);
 		this.resCoefficient = 1 / 18000;
 		this.objectFreq = {
 			treeSmallFreq: [24, 'tree_small'],
@@ -302,9 +304,10 @@ export default class Game {
 
 	// update the gamestate
 	update(now, step) {
+		let gamepadInfo = this.gamepad.update();
 		if (this.isPaused) return;
 		this.currentTime = now;
-		this.skier.update(this.getMouseAndVelocityInfo());
+		this.skier.update(this.getMouseAndVelocityInfo(), gamepadInfo);
 		this.lift.update(step);
 		this.npcHandler.update(step);
 		this.updateSkierTrail(step);

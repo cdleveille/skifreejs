@@ -26,8 +26,8 @@ export default class InputHandler {
 						if (!game.skier.isCrashed && game.skier.isJumping) {
 							game.skier.rotateJumpStage();
 						}
-					} else if (event.button == 2 && !game.skier.trick1Disabled) {
-						if (!game.skier.isCrashed && game.skier.isJumping) {
+					} else if (event.button == 2) {
+						if (!game.skier.trick1Disabled && !game.skier.isCrashed && game.skier.isJumping) {
 							game.skier.isDoingTrick1 = true;
 							game.skier.trick1Disabled = true;
 							game.skier.trick1StartTime = game.util.timestamp();
