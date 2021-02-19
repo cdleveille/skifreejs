@@ -137,7 +137,7 @@ export default class User {
 				if (res.ok) {
 					this.userData = res.data;
 					let slalomTimeHTML = '';
-					if (this.userData.slalomScore) slalomTimeHTML = ` &bull; ${this.game.util.timeToString((1000000000 - this.userData.slalomScore) * 10)}`;
+					if (this.userData.slalomScore) slalomTimeHTML = ` &bull; ${this.game.util.timeToString((1000000000 - this.userData.slalomScore))}`;
 					this.loggedInUsername.innerHTML = `<div>${this.userData.username}</div><div id="logged-in-username-line-2">${this.userData.score + slalomTimeHTML}`;
 					this.loggedInUsername.innerHTML += '</div>';
 
@@ -566,7 +566,7 @@ export default class User {
 					let username = res.data[i].username, score = res.data[i].slalomScore, crownImg = '';
 					if (i == 0) crownImg = ' <img src="' + this.crown.src + '">' ;
 					htmlSlalom += '<li>';
-					if (score > 0) htmlSlalom += username + ' ' + this.game.util.timeToString((1000000000 - score) * 10) + crownImg;
+					if (score > 0) htmlSlalom += username + ' ' + this.game.util.timeToString((1000000000 - score)) + crownImg;
 					htmlSlalom += '</li>';
 				}
 
