@@ -25,6 +25,7 @@ class UserRepository extends Base {
 			newUser.email = user.email;
 			newUser.password = await Password.hash(user.password);
 			newUser.score = 0;
+			newUser.slalomScore = 0;
 			newUser.profilePicture = '';
 			newUser.lastUpdated = new Date;
 			newUser.isNew = true;

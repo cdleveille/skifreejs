@@ -136,7 +136,11 @@ export default class User {
 				console.log(method, route, res);
 				if (res.ok) {
 					this.userData = res.data;
-					this.loggedInUsername.innerHTML = `<div>${this.userData.username}</div><div id="logged-in-username-line-2">${this.userData.score} &bull; ${this.game.util.timeToString((1000000000 - this.userData.slalomScore) * 10)}</div>`;
+					let slalomTimeHTML = '';
+					if (this.userData.slalomScore) slalomTimeHTML = ` &bull; ${this.game.util.timeToString((1000000000 - this.userData.slalomScore) * 10)}`;
+					this.loggedInUsername.innerHTML = `<div>${this.userData.username}</div><div id="logged-in-username-line-2">${this.userData.score + slalomTimeHTML}`;
+					this.loggedInUsername.innerHTML += '</div>';
+
 					this.profileImage.src = this.game.darkMode ? this.logged_in_inverted.src : this.logged_in.src;
 					if (!this.isLoggedIn) {
 						socket.emit('user-connected', this.userData.username);
