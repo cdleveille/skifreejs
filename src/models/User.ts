@@ -6,6 +6,7 @@ export interface IUser extends Document {
 	email: string,
 	password: string,
 	score: number,
+	slalomScore: number,
 	lastUpdated: Date,
 	profilePicture: string
 }
@@ -25,6 +26,10 @@ const User = new mongoose.Schema(
 			required: true
 		},
 		score: {
+			type: Number,
+			required: true
+		},
+		slalomScore: {
 			type: Number,
 			required: true
 		},

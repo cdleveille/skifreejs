@@ -51,7 +51,7 @@ export default class Util {
 		return num.toString().padStart(2, '0');
 	}
 
-	// format the current time (milliseconds) to hh:mm:ss.ms
+	// format the given time (milliseconds) to hh:mm:ss.hs
 	timeToString(time) {
 		let diffInHrs = time / 3600000;
 		let hh = Math.floor(diffInHrs);
@@ -71,6 +71,11 @@ export default class Util {
 		let formattedMS = ms.toString().padStart(2, '0');
 
 		return `${formattedHH}:${formattedMM}:${formattedSS}.${formattedMS}`;
+	}
+
+	// format the given time (hundredths-of-a-second) to hh:mm:ss.hs
+	timeToStringSlalom() {
+
 	}
 
 	// log every half-second

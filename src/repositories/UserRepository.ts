@@ -1,6 +1,6 @@
 import User, { IUser } from '../models/User';
 import Password from '../helpers/password';
-import { INewScore } from '../types/ISocket';
+import { INewScore, INewScoreSlalom } from '../types/ISocket';
 import Base from './abstract/UserRepositoryBase';
 import { IGetProfile, ILeaderBoard, INewEmail, INewPassword, INewProfile, INewUsername } from '../types/Abstract';
 import { Nums } from '../types/Constants';
@@ -66,6 +66,25 @@ class UserRepository extends Base {
 		}
 	}
 
+	public async UpdateScoreSlalom(user: INewScoreSlalom): Promise<IUser> {
+		try {
+			const exists: IUser = await User.findOne({ username: user.username, _id: user._id });
+			if (!exists) throw Error('user not found');
+
+			user.slalomScore = 1000000000 - user.slalomScore;
+
+			if (user.slalomScore <= exists.slalomScore) {
+				return exists;
+			}
+
+			exists.slalomScore = user.slalomScore;
+			exists.isNew = false;
+			return await exists.save();
+		} catch (e) {
+			throw Error(e);
+		}
+	}
+
 	public async LeaderBoard(limit: number): Promise<ILeaderBoard> {
 		try {
 			let lim: number;
@@ -75,6 +94,20 @@ class UserRepository extends Base {
 			else lim = limit;
 
 			return await User.find({}, { username: 1, score: 1, _id: 0 }).sort({ score: -1 }).limit(lim);
+		} catch (e) {
+			throw Error(e);
+		}
+	}
+
+	public async LeaderBoardSlalom(limit: number): Promise<ILeaderBoard> {
+		try {
+			let lim: number;
+			if (limit > 10 || !limit || limit == undefined) {
+				lim = 10;
+			}
+			else lim = limit;
+
+			return await User.find({}, { username: 1, slalomScore: 1, _id: 0 }).sort({ slalomScore: -1 }).limit(lim);
 		} catch (e) {
 			throw Error(e);
 		}

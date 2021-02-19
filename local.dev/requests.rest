@@ -51,3 +51,6 @@ Content-Type: application/json
 	"username": "judeboy",
 	"email": "judegiordano@gmail.com"
 }
+
+###
+GET http://localhost:3000/api/leaderboardslalom/10

@@ -9,7 +9,7 @@ import logger from './services/logger';
 import log from './services/logger';
 import { _User } from './repositories/UserRepository';
 import errorHandler from './middleware/errorHandler';
-import { INewScore } from './types/ISocket';
+import { INewScore, INewScoreSlalom } from './types/ISocket';
 import { IJwtPayload, IResponse } from './types/Abstract';
 import { IUser } from './models/User';
 import Jwt from './helpers/jwt';
@@ -113,18 +113,32 @@ io.on('connection', (socket: any) => {
 
 		try {
 			const newScore: IUser = await _User.UpdateScore(payload);
-
 			const token: string = await Jwt.SignUser({
 				_id: newScore._id,
 				email: newScore.email,
 				username: newScore.username,
-				score: newScore.score
+				score: newScore.score,
+				slalomScore: newScore.slalomScore
 			} as IJwtPayload);
-			// there should be a handler here on the client
-			// which does something with their new high score
 			await socket.emit('updated_score', { ok: true, status: 200, data: token } as IResponse);
 		} catch (error) {
 			await socket.emit('updated_score', { ok: false, status: 403, data: error } as IResponse);
+		}
+	});
+
+	socket.on('new_score_slalom', async (payload: INewScoreSlalom) => {
+		try {
+			const newScore: IUser = await _User.UpdateScoreSlalom(payload);
+			const token: string = await Jwt.SignUser({
+				_id: newScore._id,
+				email: newScore.email,
+				username: newScore.username,
+				score: newScore.score,
+				slalomScore: newScore.slalomScore
+			} as IJwtPayload);
+			await socket.emit('updated_score_slalom', { ok: true, status: 200, data: token } as IResponse);
+		} catch (error) {
+			await socket.emit('updated_score_ slalom', { ok: false, status: 403, data: error } as IResponse);
 		}
 	});
 });

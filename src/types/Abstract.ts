@@ -22,7 +22,8 @@ export interface IJwtPayload {
 	_id: string,
 	email: string,
 	username: string,
-	score: number
+	score: number,
+	slalomScore: number
 }
 
 export interface IJWT {
@@ -30,6 +31,7 @@ export interface IJWT {
 	email: string,
 	username: string,
 	score: number,
+	slalomScore: number,
 	iat: string,
 	exp: string,
 	issued: string,

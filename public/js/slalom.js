@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+import socket from './socket.js';
+
 export default class Slalom {
 	constructor(game) {
 		this.game = game;
@@ -102,6 +105,21 @@ export default class Slalom {
 					} else if (gate.type == 'finish_left') {
 						this.courseIsActive = false;
 						this.courseCompleted = true;
+						this.time = this.game.currentTime - this.game.startTime;
+						let time = Math.floor(this.time / 10);
+
+						if (!this.game.isOffline && this.game.user.isLoggedIn) {
+							socket.emit('new_score_slalom', { _id: this.game.user.userData._id, username: this.game.user.userData.username, slalomScore: time });
+							socket.once('updated_score_slalom', (res) => {
+								console.log('socket: updated_score_slalom', res);
+								if (res.ok) {
+									window.localStorage.removeItem('loginToken');
+									window.localStorage.setItem('loginToken', res.data);
+									this.game.user.validateLoginToken();
+									this.game.user.refreshLeaderboard(this.game.user.leaderboardScoreCount);
+								} else this.game.user.signOut();
+							});
+						}
 					}
 				}
 

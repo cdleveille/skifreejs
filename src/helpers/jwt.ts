@@ -23,6 +23,7 @@ export default class Jwt {
 				username: data.username,
 				email: data.email,
 				score: data.score,
+				slalomScore: data.slalomScore,
 				iat: data.iat,
 				exp: data.exp,
 				issued: dateFormat(new Date(parseInt(data.iat) * 1000), 'yyyy-mm-dd h:MM:ss'),
@@ -38,7 +39,8 @@ export default class Jwt {
 			_id: user._id,
 			email: user.email,
 			username: user.username,
-			score: user.score
+			score: user.score,
+			slalomScore: user.slalomScore
 		} as IJwtPayload);
 		return token;
 	}

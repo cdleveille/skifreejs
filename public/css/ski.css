@@ -305,11 +305,6 @@
 	display: none;
 }
 
-#leaderboard {
-	margin-top: -20px;
-	margin-left: -12px;
-}
-
 .game-info-item {
 	margin-left: 4px;
 	margin-right: 4px;
@@ -328,6 +323,11 @@
 
 .text-input:focus {
 	background-color: #DDDDDD;
+}
+
+ol {
+	margin-top: 2px;
+    padding-left: 24px;
 }
 
 .button {

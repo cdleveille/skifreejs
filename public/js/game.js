@@ -844,6 +844,8 @@ export default class Game {
 			if ((typeof this.startTime === 'undefined' || !this.slalom.courseIsActive) && !this.slalom.courseCompleted) this.startTime = this.currentTime;
 			if (!this.slalom.courseCompleted) {
 				this.slalomTime = this.currentTime - this.startTime;
+			} else {
+				this.slalomTime = this.slalom.time;
 			}
 			let timeText = 'Time:\xa0\xa0' + this.util.timeToString(this.slalomTime);
 			this.gameInfoTime.innerText = timeText;

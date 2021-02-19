@@ -43,7 +43,8 @@ app.post('/api/register', async (req: Request, res: Response, next: NextFunction
 			_id: user._id,
 			email: user.email,
 			username: user.username,
-			score: user.score
+			score: user.score,
+			slalomScore: user.slalomScore
 		} as IJwtPayload);
 
 		return res.status(200).send({
@@ -66,7 +67,8 @@ app.post('/api/login', async (req: Request, res: Response, next: NextFunction): 
 			_id: user._id,
 			email: user.email,
 			username: user.username,
-			score: user.score
+			score: user.score,
+			slalomScore: user.slalomScore
 		} as IJwtPayload);
 
 		return res.status(200).send({
@@ -74,7 +76,8 @@ app.post('/api/login', async (req: Request, res: Response, next: NextFunction): 
 			status: 200,
 			data: {
 				token: token,
-				score: user.score
+				score: user.score,
+				slalomScore: user.slalomScore
 			}
 		} as IResponse);
 	} catch (error) {
@@ -94,6 +97,21 @@ app.get('/api/leaderboard/:limit', async (req: Request, res: Response, next: Nex
 	const limit: number = parseInt(req.params.limit);
 	try {
 		const leaderboard: ILeaderBoard = await _User.LeaderBoard(limit);
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: leaderboard
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
+});
+
+app.get('/api/leaderboardslalom/:limit', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+	const limit: number = parseInt(req.params.limit);
+	try {
+		const leaderboard: ILeaderBoard = await _User.LeaderBoardSlalom(limit);
 
 		return res.status(200).send({
 			ok: true,

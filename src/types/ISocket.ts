@@ -4,7 +4,14 @@ export interface INewScore {
 	score: number
 }
 
+export interface INewScoreSlalom {
+	_id: string,
+	username: string,
+	slalomScore: number
+}
+
 export interface IPlayer {
 	id: string,
-	score: number
+	score: number,
+	slalomScore: number
 }

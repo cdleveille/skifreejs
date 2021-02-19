@@ -136,7 +136,7 @@ export default class User {
 				console.log(method, route, res);
 				if (res.ok) {
 					this.userData = res.data;
-					this.loggedInUsername.innerHTML = `<div>${this.userData.username}</div><div id="logged-in-username-line-2">${this.userData.score}</div>`;
+					this.loggedInUsername.innerHTML = `<div>${this.userData.username}</div><div id="logged-in-username-line-2">${this.userData.score} &bull; ${this.game.util.timeToString((1000000000 - this.userData.slalomScore) * 10)}</div>`;
 					this.profileImage.src = this.game.darkMode ? this.logged_in_inverted.src : this.logged_in.src;
 					if (!this.isLoggedIn) {
 						socket.emit('user-connected', this.userData.username);
@@ -525,31 +525,54 @@ export default class User {
 	}
 
 	refreshLeaderboard(numToRetrieve) {
+		let htmlFreestyle = '', htmlSlalom = '';
 		let headers = {
 			'Content-Type': 'application/json'
 		};
 		let body = {};
-		let method = 'GET', route = '/api/leaderboard/' + numToRetrieve;
-		this.game.util.request(method, route, headers, body).then(res => {
-			console.log(method, route, res);
 
+		let method = 'GET', routeFreestyle = '/api/leaderboard/' + numToRetrieve;
+		this.game.util.request(method, routeFreestyle, headers, body).then(res => {
+			console.log(method, routeFreestyle, res);
 			if (res.ok) {
-				let html = '<ol>';
+				htmlFreestyle += 'Freestyle:<ol>';
 				for (let i = 0; i < res.data.length; i++) {
 					let username = res.data[i].username, score = res.data[i].score, crownImg = '';
-					if (i == 0) {
-						crownImg = ' <img src="' + this.crown.src + '">' ;
-					}
-					html += '<li>' + username + ' ' + score + crownImg + '</li>';
+					if (i == 0) crownImg = ' <img src="' + this.crown.src + '">' ;
+					htmlFreestyle += '<li>' + username + ' ' + score + crownImg + '</li>';
+				}
+	
+				let numToLeaveBlank = numToRetrieve - res.data.length;
+				for (let i = 0; i < numToLeaveBlank; i ++) {
+					htmlFreestyle += '<li></li>';
+				}
+	
+				htmlFreestyle += '</ol>';
+				document.getElementById('freestyle-leaderboard').innerHTML = htmlFreestyle;
+			}
+		}).catch((err) => console.log(err));
+
+		let routeSlalom = '/api/leaderboardslalom/' + numToRetrieve;
+		this.game.util.request(method, routeSlalom, headers, body).then(res => {
+			console.log(method, routeSlalom, res);
+
+			if (res.ok) {
+				htmlSlalom += 'Slalom:<ol>';
+				for (let i = 0; i < res.data.length; i++) {
+					let username = res.data[i].username, score = res.data[i].slalomScore, crownImg = '';
+					if (i == 0) crownImg = ' <img src="' + this.crown.src + '">' ;
+					htmlSlalom += '<li>';
+					if (score > 0) htmlSlalom += username + ' ' + this.game.util.timeToString((1000000000 - score) * 10) + crownImg;
+					htmlSlalom += '</li>';
 				}
 
 				let numToLeaveBlank = numToRetrieve - res.data.length;
 				for (let i = 0; i < numToLeaveBlank; i ++) {
-					html += '<li></li>';
+					htmlSlalom += '<li></li>';
 				}
 
-				html += '</ol>';
-				this.leaderboard.innerHTML = html;
+				htmlSlalom += '</ol>';
+				document.getElementById('slalom-leaderboard').innerHTML = htmlSlalom;
 			}
 		}).catch((err) => console.log(err));
 	}
@@ -615,7 +638,7 @@ export default class User {
 		socket.emit('user-disconnected');
 		window.localStorage.removeItem('loginToken');
 		this.loggedInUsername.innerHTML = '';
-		this.leaderboard.innerHTML = '';
+		//this.leaderboard.innerHTML = '';
 		this.isLoggedIn = false;
 		this.hideAll();
 		this.profileImage.src = this.game.darkMode ? this.logged_out_inverted.src : this.logged_out.src;
@@ -685,7 +708,7 @@ export default class User {
 
 	hideLeaderboard() {
 		this.leaderboard.style.display = 'none';
-		this.leaderboard.innerHTML = '';
+		//this.leaderboard.innerHTML = '';
 	}
 
 	showUserSettingsButton() {
