@@ -384,7 +384,15 @@ export default class User {
 	createSocketEventListeners() {
 		socket.on('get-active-users', users => {
 			let usernames = Object.values(users);
-			usernames = [...new Set(usernames)].sort(); // remove duplicates and sort
+			usernames = [...new Set(usernames)].sort((a, b) => {
+				if (a.toLowerCase() < b.toLowerCase()) {
+					return -1;
+				} else if (a.toLowerCase() > b.toLowerCase()) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
 			let onlineInd = `<img src="${this.onlineInd.src}" class="online-ind">`;
 			this.activeUsers.innerHTML = '';
 			this.activeUsers.innerHTML = '';
