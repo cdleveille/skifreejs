@@ -593,20 +593,24 @@ export default class Game {
 		let gameInfoStats = document.getElementById('game-info-stats');
 		gameInfoStats.style.background = 'white';
 		gameInfoStats.style.color = 'black';
-		this.gameInfoBtn.onmouseenter = () => { gameInfoStats.style.background = '#DDDDDD'; };
-		this.gameInfoBtn.onmouseleave = () => { gameInfoStats.style.background = 'white'; gameInfoStats.style.color = 'black'; };
-		this.gameInfoBtn.onmousedown = () => { gameInfoStats.style.background = '#666666'; gameInfoStats.style.color = 'white'; };
-		this.gameInfoBtn.onmouseup = () => { gameInfoStats.style.background = '#DDDDDD'; gameInfoStats.style.color = 'black'; };
+		if (!this.util.hasTouch) {
+			this.gameInfoBtn.onmouseenter = () => { gameInfoStats.style.background = '#DDDDDD'; };
+			this.gameInfoBtn.onmouseleave = () => { gameInfoStats.style.background = 'white'; gameInfoStats.style.color = 'black'; };
+			this.gameInfoBtn.onmousedown = () => { gameInfoStats.style.background = '#666666'; gameInfoStats.style.color = 'white'; };
+			this.gameInfoBtn.onmouseup = () => { gameInfoStats.style.background = '#DDDDDD'; gameInfoStats.style.color = 'black'; };
+		}
 		gameInfoStats.style.transitionDuration = '0.2s';
 		gameInfoStats.style.border = '1px solid black';
 
 		this.user.profileImage.style.background = 'white';
 		this.user.profileImage.style.border = '1px solid black';
 		this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src;
-		this.user.profileButton.onmouseenter = () => { this.user.profileImage.style.background = '#DDDDDD'; };
-		this.user.profileButton.onmouseleave = () => { this.user.profileImage.style.background = 'white'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
-		this.user.profileButton.onmousedown = () => { this.user.profileImage.style.background = '#666666'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
-		this.user.profileButton.onmouseup = () => { this.user.profileImage.style.background = '#DDDDDD'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
+		if (!this.util.hasTouch) {
+			this.user.profileButton.onmouseenter = () => { this.user.profileImage.style.background = '#DDDDDD'; };
+			this.user.profileButton.onmouseleave = () => { this.user.profileImage.style.background = 'white'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
+			this.user.profileButton.onmousedown = () => { this.user.profileImage.style.background = '#666666'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
+			this.user.profileButton.onmouseup = () => { this.user.profileImage.style.background = '#DDDDDD'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
+		}
 
 		document.getElementById('user-section').style.color = 'black';
 		document.getElementById('logged-in-username').style.color = 'black';
@@ -626,10 +630,12 @@ export default class Game {
 			button.style.background = 'white';
 			button.style.color = 'black';
 			button.style.border = '1px solid black';
-			button.onmouseenter = () => { button.style.background = '#DDDDDD'; };
-			button.onmouseleave = () => { button.style.background = 'white'; button.style.color = 'black'; };
-			button.onmousedown = () => { button.style.background = '#666666'; button.style.color = 'white'; };
-			button.onmouseup = () => { button.style.background = '#DDDDDD'; button.style.color = 'black'; };
+			if (!this.util.hasTouch) {
+				button.onmouseenter = () => { button.style.background = '#DDDDDD'; };
+				button.onmouseleave = () => { button.style.background = 'white'; button.style.color = 'black'; };
+				button.onmousedown = () => { button.style.background = '#666666'; button.style.color = 'white'; };
+				button.onmouseup = () => { button.style.background = '#DDDDDD'; button.style.color = 'black'; };
+			}
 		}
 
 		let textInputs = document.getElementsByClassName('text-input');
@@ -652,20 +658,24 @@ export default class Game {
 		let gameInfoStats = document.getElementById('game-info-stats');
 		gameInfoStats.style.background = '#444444';
 		gameInfoStats.style.color = 'white';
-		this.gameInfoBtn.onmouseenter = () => { gameInfoStats.style.background = '#666666'; };
-		this.gameInfoBtn.onmouseleave = () => { gameInfoStats.style.background = '#444444'; gameInfoStats.style.color = 'white'; };
-		this.gameInfoBtn.onmousedown = () => { gameInfoStats.style.background = 'white'; gameInfoStats.style.color = 'black'; };
-		this.gameInfoBtn.onmouseup = () => { gameInfoStats.style.background = '#666666'; gameInfoStats.style.color = 'white'; };
+		if (!this.util.hasTouch) {
+			this.gameInfoBtn.onmouseenter = () => { gameInfoStats.style.background = '#666666'; };
+			this.gameInfoBtn.onmouseleave = () => { gameInfoStats.style.background = '#444444'; gameInfoStats.style.color = 'white'; };
+			this.gameInfoBtn.onmousedown = () => { gameInfoStats.style.background = 'white'; gameInfoStats.style.color = 'black'; };
+			this.gameInfoBtn.onmouseup = () => { gameInfoStats.style.background = '#666666'; gameInfoStats.style.color = 'white'; };
+		}
 		gameInfoStats.style.transitionDuration = '0.2s';
 		gameInfoStats.style.border = '1px solid white';
 
 		this.user.profileImage.style.background = '#444444';
 		this.user.profileImage.style.border = '1px solid white';
 		this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src;
-		this.user.profileButton.onmouseenter = () => { this.user.profileImage.style.background = '#666666'; };
-		this.user.profileButton.onmouseleave = () => { this.user.profileImage.style.background = '#444444'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
-		this.user.profileButton.onmousedown = () => { this.user.profileImage.style.background = 'white'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
-		this.user.profileButton.onmouseup = () => { this.user.profileImage.style.background = '#666666'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
+		if (!this.util.hasTouch) {
+			this.user.profileButton.onmouseenter = () => { this.user.profileImage.style.background = '#666666'; };
+			this.user.profileButton.onmouseleave = () => { this.user.profileImage.style.background = '#444444'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
+			this.user.profileButton.onmousedown = () => { this.user.profileImage.style.background = 'white'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in.src : this.user.logged_out.src; };
+			this.user.profileButton.onmouseup = () => { this.user.profileImage.style.background = '#666666'; this.user.profileImage.src = this.user.isLoggedIn ? this.user.logged_in_inverted.src : this.user.logged_out_inverted.src; };
+		}
 
 		document.getElementById('user-section').style.color = 'white';
 		document.getElementById('logged-in-username').style.color = 'white';
@@ -685,10 +695,12 @@ export default class Game {
 			button.style.background = '#444444';
 			button.style.color = 'white';
 			button.style.border = '1px solid white';
-			button.onmouseenter = () => { button.style.background = '#666666'; };
-			button.onmouseleave = () => { button.style.background = '#444444'; button.style.color = 'white'; };
-			button.onmousedown = () => { button.style.background = 'white'; button.style.color = 'black'; };
-			button.onmouseup = () => { button.style.background = '#666666'; button.style.color = 'white'; };
+			if (!this.util.hasTouch) {
+				button.onmouseenter = () => { button.style.background = '#666666'; };
+				button.onmouseleave = () => { button.style.background = '#444444'; button.style.color = 'white'; };
+				button.onmousedown = () => { button.style.background = 'white'; button.style.color = 'black'; };
+				button.onmouseup = () => { button.style.background = '#666666'; button.style.color = 'white'; };
+			}
 		}
 
 		let textInputs = document.getElementsByClassName('text-input');
