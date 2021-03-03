@@ -616,7 +616,9 @@ export default class User {
 	}
 
 	chatButtonClickHandler() {
-		this.pulse(this.chatButton.offsetTop, this.chatButton.offsetLeft);
+		if (this.isVisible(this.chatButton)) {
+			this.pulse(this.chatButton.offsetTop, this.chatButton.offsetLeft);
+		}
 		if (this.isVisible(this.game.chat.chatArea)) {
 			this.game.chat.hideChat();
 		} else {
@@ -720,7 +722,6 @@ export default class User {
 
 	hideLeaderboard() {
 		this.leaderboard.style.display = 'none';
-		//this.leaderboard.innerHTML = '';
 	}
 
 	showUserSettingsButton() {

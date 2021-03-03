@@ -69,6 +69,13 @@ export default class Gamepad {
 		} else if (controller.buttons[9].value == 0 && this.pauseButtonPressedLastFrame) {
 			this.pauseButtonReleased();
 		}
+
+		// restart button (back)
+		if (controller.buttons[8].value == 1 && !this.restartButtonPressedLastFrame) {
+			this.restartButtonPressed();
+		} else if (controller.buttons[8].value == 0 && this.restartButtonPressedLastFrame) {
+			this.restartButtonReleased();
+		}
 		
 		let xAxis = controller.axes[0];
 		let yAxis = controller.axes[1];
@@ -143,5 +150,14 @@ export default class Gamepad {
 	pauseButtonReleased() {
 		this.pauseButtonPressedLastFrame = false;
 		this.game.togglePause();
+	}
+
+	restartButtonPressed() {
+		this.restartButtonPressedLastFrame = true;
+	}
+
+	restartButtonReleased() {
+		this.restartButtonPressedLastFrame = false;
+		this.game.restart();
 	}
 }

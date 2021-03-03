@@ -22,7 +22,7 @@ export default class Chat {
 		this.sendContainer.addEventListener('submit', (e) => {
 			e.preventDefault();
 			let now = this.game.util.timestamp();
-			if (this.messageInput.value.length <= 128 && this.messageInput.value.trim() != '' && now - this.lastMessageSentTime > 3000) {
+			if (this.messageInput.value.length <= 128 && this.messageInput.value.trim() != '' && now - this.lastMessageSentTime > 1000) {
 				if (this.game.user.isLoggedIn) {
 					let message = this.messageInput.value;
 					this.prependMessage(`${this.game.user.userData.username}: ${message}`);
