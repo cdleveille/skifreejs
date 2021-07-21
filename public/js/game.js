@@ -44,7 +44,6 @@ export default class Game {
 		this.loadAssets();
 		this.darkModeOff();
 		this.init();
-		
 	}
 
 	// initialize game settings and generate game objects for start of game
