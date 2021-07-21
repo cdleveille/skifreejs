@@ -17,7 +17,7 @@ export default class Jwt {
 
 	public static async Verify(token: string): Promise<IJWT> {
 		try {
-			const data: IJWT = <IJWT>jwt.verify(token, config.JWT_SECRET);
+			const data: IJWT = <IJWT><unknown>jwt.verify(token, config.JWT_SECRET);
 			return {
 				_id: data._id,
 				username: data.username,
