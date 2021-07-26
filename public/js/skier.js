@@ -76,18 +76,9 @@ export default class Skier {
 		this.skier_trick2 = this.game.util.loadImage('/img/skier_trick2.png', this);
 	}
 
-	update(mouseAndVelocityInfo, gamepadInfo) {
+	update(mouseAndVelocityInfo) {
 		this.currentSpeed = Math.sqrt(Math.pow(this.xv, 2) + Math.pow(this.yv, 2));
-
-		let mouseToSkierAngle, mouseAngleVectors;
-		if (gamepadInfo) {
-			mouseToSkierAngle = gamepadInfo.gamepadAnalogAngle;
-			mouseAngleVectors = gamepadInfo.gamepadAnalogVectors;
-		} else {
-			mouseToSkierAngle = mouseAndVelocityInfo[0];
-			mouseAngleVectors = mouseAndVelocityInfo[1];
-		}
-		let vVectors = mouseAndVelocityInfo[2];
+		let mouseToSkierAngle = mouseAndVelocityInfo[0], mouseAngleVectors = mouseAndVelocityInfo[1], vVectors = mouseAndVelocityInfo[2];
 
 		// mouse up / left
 		if ((mouseToSkierAngle < 90 && mouseToSkierAngle > -5) || mouseToSkierAngle == -90) {

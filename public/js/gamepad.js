@@ -6,7 +6,7 @@ export default class Gamepad {
 		this.jumpPressedLastFrame = false;
 		this.trick1PressedLastFrame = false;
 		this.pauseButtonPressedLastFrame = false;
-		this.deadzone = 0.15;
+		this.deadzone = 0.35;
 		if ('GamepadEvent' in window) {
 			window.addEventListener('gamepadconnected', (e) => { this.connectHandler(e); });
 			window.addEventListener('gamepaddisconnected', (e) => { this.disconnectHandler(e); });
@@ -102,7 +102,7 @@ export default class Gamepad {
 		let angDegrees = this.game.util.degrees(ang);
 		if (Math.abs(angDegrees) == 90) angDegrees *= -1;
 
-		if (magnitude > 0.2) {
+		if (magnitude > this.deadzone) {
 			return { gamepadAnalogAngle: angDegrees, gamepadAnalogVectors: [xAxis, yAxis] };
 		}
 
