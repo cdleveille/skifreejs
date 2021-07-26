@@ -20,7 +20,7 @@
 		"type": "git",
 		"url": "git+https://github.com/cdleveille/skifreejs.git"
 	},
-	"author": "Chris Leveille ",
+	"author": "Chris Leveille",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/cdleveille/skifreejs/issues"
