@@ -43,6 +43,21 @@ Languages/technologies used include:
     - H: show/hide HUD
     - C: show/hide chat
 
+### Gamepad Controls (works with any gamepad, XInput shown for reference):
+- While Skiing:
+    - Left analog stick: steer
+    - Button 0 (A): jump
+- While Crashed:
+    - Button 0 (A): stand up
+- While Jumping:
+    - Button 0 (A): advance backflip stage
+    - Button 1 (B): trick 1
+    - Left analog stick up: trick 2
+- General:
+    - Start: pause
+    - Button 9 (start): pause
+    - Button 8 (back): restart
+
 ### Mobile Controls:
 - While Skiing:
     - Touch below skier: steer
