@@ -303,9 +303,10 @@ export default class Game {
 
 	// update the gamestate
 	update(now, step) {
+		let gamepadInfo = this.gamepad.update();
 		if (this.isPaused) return;
 		this.currentTime = now;
-		this.skier.update(this.getMouseAndVelocityInfo());
+		this.skier.update(this.getMouseAndVelocityInfo(gamepadInfo));
 		this.lift.update(step);
 		this.npcHandler.update(step);
 		this.updateSkierTrail(step);
@@ -478,8 +479,7 @@ export default class Game {
 	}
 
 	// return info about the instantaneous skier-to-mouse angle and velocity vectors
-	getMouseAndVelocityInfo() {
-		let gamepadInfo = this.gamepad.update();
+	getMouseAndVelocityInfo(gamepadInfo) {
 		let mouseDiffX, mouseDiffY;
 		if (gamepadInfo) {
 			this.mousePos.x = (this.gameWidth / 2) + 7 + (10 * gamepadInfo.gamepadAnalogVectors[0]);
