@@ -43,7 +43,8 @@ Languages/technologies used include:
     - H: show/hide HUD
     - C: show/hide chat
 
-### Gamepad Controls (works with any gamepad, XInput shown for reference):
+### Gamepad Controls:
+Works with any gamepad - XInput controls shown for reference.
 - While Skiing:
     - Left analog stick: steer
     - Button 0 (A): jump
