@@ -68,7 +68,7 @@ export default class NPCHandler {
 	spawnNewDog() {
 		let x = -window.innerWidth / 2 - 40;
 		let y = this.game.util.randomInt(window.innerHeight / 3, window.innerHeight * 2);
-		let dog = { x: x, y: y, xv: 0.3, yv: 0, hbXOffset: -5, hbYOffset: -5, hbWidth: 31, hbHeight: 25, isCrashed: false, timestamp: this.game.util.timestamp(), img: this.dog1 };
+		let dog = { x: x, y: y, xv: 0.3, yv: 0, hbXOffset: -5, hbYOffset: -5, hbWidth: 31, hbHeight: 25, isCrashed: false, hasCollided: false, timestamp: this.game.util.timestamp(), img: this.dog1 };
 		this.dogs.push(dog);
 	}
 
@@ -303,8 +303,9 @@ export default class NPCHandler {
 
 	// make the dog crash
 	crashDogOnCollision(dog) {
-		if (!dog.isCrashed) {
+		if (!dog.isCrashed && !dog.hasCollided) {
 			dog.isCrashed = true;
+			dog.hasCollided = true;
 			dog.crashTimestamp = this.game.util.timestamp();
 		}
 	}
