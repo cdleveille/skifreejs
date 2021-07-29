@@ -652,7 +652,6 @@ export default class User {
 		socket.emit('user-disconnected');
 		window.localStorage.removeItem('loginToken');
 		this.loggedInUsername.innerHTML = '';
-		//this.leaderboard.innerHTML = '';
 		this.isLoggedIn = false;
 		this.hideAll();
 		this.profileImage.src = this.game.darkMode ? this.logged_out_inverted.src : this.logged_out.src;
