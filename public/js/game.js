@@ -7,6 +7,7 @@ import User from './user.js';
 import Util from './util.js';
 import socket from './socket.js';
 import NPCHandler from './npc.js';
+import Yeti from './yeti.js';
 import Slalom from './slalom.js';
 import Chat from './chat.js';
 import Gamepad from './gamepad.js';
@@ -18,6 +19,7 @@ export default class Game {
 		this.skier = new Skier(this);
 		this.lift = new Lift(this);
 		this.npcHandler = new NPCHandler(this);
+		this.yeti = new Yeti(this);
 		this.slalom = new Slalom(this);
 		this.chat = new Chat(this);
 		this.gamepad = new Gamepad(this);
@@ -51,6 +53,7 @@ export default class Game {
 		this.gameWidth = Math.max(screen.width, window.innerWidth);
 		this.gameHeight = Math.max(screen.height, window.innerHeight);
 		this.skier.init();
+		this.yeti.init();
 		this.lift.init();
 		this.slalom.init();
 		this.isPaused = false;
@@ -94,6 +97,7 @@ export default class Game {
 		this.skier.loadAssets();
 		this.lift.loadAssets();
 		this.npcHandler.loadAssets();
+		this.yeti.loadAssets();
 		this.slalom.loadAssets();
 		this.images = this.images.concat(this.user.images, this.skier.images, this.lift.images, this.npcHandler.images, this.slalom.images);
 	}
@@ -309,6 +313,7 @@ export default class Game {
 		this.skier.update(this.getMouseAndVelocityInfo(gamepadInfo));
 		this.lift.update(step);
 		this.npcHandler.update(step);
+		this.yeti.update(step);
 		this.updateSkierTrail(step);
 		this.updateLogo(step);
 		this.slalom.update(step);
@@ -480,14 +485,13 @@ export default class Game {
 
 	// return info about the instantaneous skier-to-mouse angle and velocity vectors
 	getMouseAndVelocityInfo(gamepadInfo) {
-		let mouseDiffX, mouseDiffY;
 		if (gamepadInfo) {
 			this.mousePos.x = (this.gameWidth / 2) + 7 + (10 * gamepadInfo.gamepadAnalogVectors[0]);
 			this.mousePos.y = (this.gameHeight / 3) + 32 + (10 * gamepadInfo.gamepadAnalogVectors[1]);
 		}
 
-		mouseDiffX = -(this.mousePos.x - ((this.gameWidth / 2) + 7));
-		mouseDiffY = -(this.mousePos.y - ((this.gameHeight / 3) + 32));
+		let mouseDiffX = -(this.mousePos.x - ((this.gameWidth / 2) + 7));
+		let mouseDiffY = -(this.mousePos.y - ((this.gameHeight / 3) + 32));
 		let mouseAtanDegrees = this.util.degrees(Math.atan(mouseDiffY / mouseDiffX));
 		let mouseAngle = 0, mouseDiffXVector = 0, mouseDiffYVector = 0;
 
@@ -833,6 +837,9 @@ export default class Game {
 				}
 			}
 		}
+
+		// draw yeti
+		this.yeti.draw(ctx);
 
 		// draw lift chairs
 		this.lift.drawChairs(ctx);

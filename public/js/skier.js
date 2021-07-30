@@ -52,6 +52,7 @@ export default class Skier {
 		this.trick1Disabled = false;
 		this.isDoingTrick2 = false;
 		this.trick2Times = 0;
+		this.isAlive = true;
 	}
 
 	loadAssets() {
@@ -77,6 +78,8 @@ export default class Skier {
 	}
 
 	update(mouseAndVelocityInfo) {
+		if (!this.isAlive) return;
+
 		this.currentSpeed = Math.sqrt(Math.pow(this.xv, 2) + Math.pow(this.yv, 2));
 		let mouseToSkierAngle = mouseAndVelocityInfo[0], mouseAngleVectors = mouseAndVelocityInfo[1], vVectors = mouseAndVelocityInfo[2];
 
@@ -312,7 +315,14 @@ export default class Skier {
 		}
 	}
 
+	die() {
+		this.game.recordAndResetStyle();
+		this.xv = 0, this.yv = 0;
+		this.isAlive = false;
+	}
+
 	draw(ctx) {
+		if (!this.isAlive) return;
 		let xOffset = 0;
 		switch (this.currentImage) {
 		case this.skier_left:
