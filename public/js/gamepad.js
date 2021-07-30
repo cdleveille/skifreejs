@@ -116,15 +116,19 @@ export default class Gamepad {
 	}
 
 	jumpReleased() {
-		this.jumpPressedLastFrame = false;
-		if (!this.game.skier.isCrashed) {
-			if (!this.game.skier.isJumping) {
-				this.game.skier.isJumping = true;
-				this.game.skier.jumpV = this.game.skier.jumpVInit;
+		if (this.game.skier.isAlive && !this.game.skier.isEaten) {
+			this.jumpPressedLastFrame = false;
+			if (!this.game.skier.isCrashed) {
+				if (!this.game.skier.isJumping) {
+					this.game.skier.isJumping = true;
+					this.game.skier.jumpV = this.game.skier.jumpVInit;
+				}
+			} else if (this.game.skier.isStopped) {
+				this.game.skier.isCrashed = false;
+				this.game.style = 0;
 			}
-		} else if (this.game.skier.isStopped) {
-			this.game.skier.isCrashed = false;
-			this.game.style = 0;
+		} else {
+			this.game.restart();
 		}
 	}
 

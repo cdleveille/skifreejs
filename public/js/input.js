@@ -48,6 +48,9 @@ export default class InputHandler {
 							game.skier.isCrashed = false;
 							game.style = 0;
 						}
+						if (!game.skier.isAlive && game.skier.isEaten) {
+							game.restart();
+						}
 					} else if (event.button == 2) {
 						game.skier.isDoingTrick1 = false;
 						game.skier.trick1EndTime = game.util.timestamp();
@@ -185,9 +188,13 @@ export default class InputHandler {
 			canvas.addEventListener('touchend', (event) => {
 				event.preventDefault();
 				if (!game.isPaused) {
-					if (game.skier.isDoingTrick1) {
-						game.skier.isDoingTrick1 = false;
-						game.skier.trick1EndTime = game.util.timestamp();
+					if (game.skier.isAlive && !game.skier.isEaten) {
+						if (game.skier.isDoingTrick1) {
+							game.skier.isDoingTrick1 = false;
+							game.skier.trick1EndTime = game.util.timestamp();
+						}
+					} else {
+						game.restart();
 					}
 				}
 			});

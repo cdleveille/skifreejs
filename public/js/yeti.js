@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 export default class Yeti {
 	constructor(game) {
 		this.game = game;
@@ -51,7 +52,7 @@ export default class Yeti {
 			if (!this.game.skier.isEaten && this.isCollidingWithSkier()) {
 				this.eatSkier();
 			} else {
-				this.flex();
+				this.intimidate();
 			}
 		}
 	}
@@ -156,7 +157,7 @@ export default class Yeti {
 		}
 	}
 
-	flex() {
+	intimidate() {
 		let now = this.game.util.timestamp();
 		if (!this.isJumping && (!this.timeOfLastJump || now - this.timeOfLastJump >= this.timeUntilNextJump)) {
 			this.isJumping = true;
