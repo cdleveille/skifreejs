@@ -75,6 +75,8 @@ export default class Slalom {
 	}
 
 	update(step) {
+		if (!this.game.skier.isAlive) return;
+
 		for (let gate of this.gates) {
 			// check if skier has passed the start gate
 			if (!gate.isPassed && gate.y <= 0) {

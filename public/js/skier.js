@@ -53,6 +53,7 @@ export default class Skier {
 		this.isDoingTrick2 = false;
 		this.trick2Times = 0;
 		this.isAlive = true;
+		this.isEaten = false;
 	}
 
 	loadAssets() {

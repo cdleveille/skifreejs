@@ -394,6 +394,8 @@ export default class Game {
 
 	// update the trail behind the skier
 	updateSkierTrail(step) {
+		if (!this.skier.isAlive) return;
+
 		// add coordinate to skier trail
 		if (!this.skier.isStopped && !this.skier.isJumping) {
 			this.skierTrail.push({ x: 2, y: 24 });
