@@ -55,7 +55,6 @@ Works with any gamepad - XInput controls shown for reference.
     - Button 1 (B): trick 1
     - Left analog stick up: trick 2
 - General:
-    - Start: pause
     - Button 9 (start): pause
     - Button 8 (back): restart
 
