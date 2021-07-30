@@ -64,7 +64,7 @@ export default class Yeti {
 		let yetiToSkierInfo = this.getYetiToSkierAngleInfo();
 
 		this.setRunImg(yetiToSkierInfo.pursuitAngle);
-		this.currentImg = this.runImg;
+		this.currentImg = this.runImg || this.runImg1;
 
 		this.xv = yetiToSkierInfo.diffVector.x * this.speed;
 		this.yv = yetiToSkierInfo.diffVector.y * this.speed;
