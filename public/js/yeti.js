@@ -4,15 +4,17 @@ export default class Yeti {
 		this.images = [];
 		this.speed = this.game.skier.maxSpeed / 530;
 		this.runAnimTick = 150;
-		this.eatAnimTick = 100;
+		this.eatAnimTick = 140;
+		this.jumpVInit = 0.45;
+		this.jumpGravity = 0.004;
 	}
 
 	init() {
-		this.x = -100;
-		this.y = -200;
-		this.xv = 0;
-		this.yv = 0;
+		this.x = -100, this.y = -200;
+		this.xv = 0, this.yv = 0, this.jumpV = 0, this.jumpOffset = 0;
 		this.tick = this.game.util.timestamp();
+		this.setTimeUntilNextJump();
+		this.isJumping = false;
 	}
 
 	loadAssets() {
@@ -32,22 +34,30 @@ export default class Yeti {
 	}
 
 	update(step) {
+		// pursue the skier if he is alive
 		if (this.game.skier.isAlive) {
-			if (this.isAwayFromSkier()) {
+			if (!this.isCollidingWithSkier()) {
 				this.runTowardSkier();
 			} else {
 				this.stop();
 				this.killSkier();
 			}
+
+			// update yeti position
 			this.x -= this.game.skier.xv * step - this.xv;
 			this.y -= this.game.skier.yv * step - this.yv;
 		} else {
-			this.eatSkier();
+			this.stop();
+			if (!this.game.skier.isEaten && this.isCollidingWithSkier()) {
+				this.eatSkier();
+			} else {
+				this.flex();
+			}
 		}
 	}
 
-	isAwayFromSkier() {
-		return this.game.util.getDistanceBetweenPoints(this.x + 12, this.y + 20, 7, 24) > 24;
+	isCollidingWithSkier() {
+		return this.game.util.getDistanceBetweenPoints(this.x + 12, this.y + 20, 7, 24) <= 24;
 	}
 
 	runTowardSkier() {
@@ -128,6 +138,8 @@ export default class Yeti {
 
 	// proceed through the eat image sequence
 	eatSkier() {
+		if (this.game.skier.isEaten) return;
+
 		let now = this.game.util.timestamp();
 		if (now - this.deathTime < this.eatAnimTick) {
 			this.currentImg = this.yeti_eat1;
@@ -137,14 +149,42 @@ export default class Yeti {
 			this.currentImg = this.yeti_eat3;
 		} else if (now - this.deathTime < this.eatAnimTick * 4) {
 			this.currentImg = this.yeti_eat4;
-		} else if (now - this.deathTime < this.eatAnimTick * 5) {
+		} else if (now - this.deathTime < this.eatAnimTick * 10) {
 			this.currentImg = this.yeti_eat5;
 		} else {
-			this.currentImg = this.yeti1;
+			this.game.skier.isEaten = true;
 		}
 	}
 
+	flex() {
+		let now = this.game.util.timestamp();
+		if (!this.isJumping && (!this.timeOfLastJump || now - this.timeOfLastJump >= this.timeUntilNextJump)) {
+			this.isJumping = true;
+			this.jumpV = this.jumpVInit;
+			this.timeOfLastJump = now;
+			this.setTimeUntilNextJump();
+		}
+
+		if (!this.isJumping) {
+			this.currentImg = this.yeti1;
+		} else {
+			this.currentImg = this.yeti2;
+			this.jumpOffset += this.jumpV;
+			this.jumpV -= this.jumpGravity;
+
+			if (this.jumpOffset <= 0) {
+				this.currentImg = this.yeti1;
+				this.isJumping = false;
+				this.jumpOffset = 0;
+			}
+		}
+	}
+
+	setTimeUntilNextJump() {
+		this.timeUntilNextJump = this.game.util.randomInt(250, 1500);
+	}
+
 	draw(ctx) {
-		ctx.drawImage(this.currentImg, Math.floor(this.game.skier.x + this.x), Math.floor(this.game.skier.y + this.y));
+		ctx.drawImage(this.currentImg, Math.floor(this.game.skier.x + this.x), Math.floor(this.game.skier.y + this.y - this.jumpOffset));
 	}
 }
