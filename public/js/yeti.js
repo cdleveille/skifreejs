@@ -11,7 +11,7 @@ export default class Yeti {
 	}
 
 	init() {
-		this.x = -100, this.y = -200;
+		this.hasSpawned = false;
 		this.xv = 0, this.yv = 0, this.jumpV = 0, this.jumpOffset = 0;
 		this.tick = this.game.util.timestamp();
 		this.setTimeUntilNextJump();
@@ -35,6 +35,11 @@ export default class Yeti {
 	}
 
 	update(step) {
+		if (!this.hasSpawned && Math.ceil(this.game.yDist / 28.7514) > 1000) {
+			this.spawn();
+		}
+		if (!this.hasSpawned) return;
+
 		// pursue the skier if he is alive
 		if (this.game.skier.isAlive) {
 			if (!this.isCollidingWithSkier()) {
@@ -55,6 +60,13 @@ export default class Yeti {
 				this.intimidate();
 			}
 		}
+	}
+
+	spawn() {
+		this.hasSpawned = true;
+		let side = this.game.util.randomInt(0, 2);
+		this.x = side == 0 ? this.game.gameWidth / 2 : -this.game.gameWidth / 2;
+		this.y = this.game.gameHeight / 2;
 	}
 
 	isCollidingWithSkier() {
@@ -186,6 +198,7 @@ export default class Yeti {
 	}
 
 	draw(ctx) {
+		if (!this.hasSpawned) return;
 		ctx.drawImage(this.currentImg, Math.floor(this.game.skier.x + this.x), Math.floor(this.game.skier.y + this.y - this.jumpOffset));
 	}
 }

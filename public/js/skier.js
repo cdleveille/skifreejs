@@ -319,6 +319,7 @@ export default class Skier {
 	die() {
 		this.game.recordAndResetStyle();
 		this.xv = 0, this.yv = 0;
+		this.currentSpeed = 0;
 		this.isAlive = false;
 	}
 
