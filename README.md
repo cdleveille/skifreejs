@@ -21,8 +21,8 @@ Languages/technologies used include:
 1. Download or clone repository
 2. Install [Node.js](https://nodejs.org/en/)
 3. Install package dependencies: ```npm i```
-4. Start the game server: ```npm run start```
-5. Go to [http://localhost:3000](http://localhost:3000/)
+4. Start the game server: ```npm run start``` or ```npm run dev```
+5. Go to [http://localhost:3000](http://localhost:3000/) or launch the 'dev' debug configuration.
 
 ### PC Controls:
 - While Skiing:
