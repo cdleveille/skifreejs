@@ -43,6 +43,7 @@
 		"eslint": "^7.31.0",
 		"javascript-obfuscator": "^2.18.0",
 		"nodemon": "^2.0.12",
+		"npm": "^7.20.3",
 		"ts-node": "^9.1.1",
 		"typescript": "^4.3.5"
 	},
