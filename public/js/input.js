@@ -58,43 +58,32 @@ export default class InputHandler {
 				}
 			});
 
-			let left = 65, right = 68, f2 = 113, space = 32, c = 67, h = 72;
-
 			document.addEventListener('keydown', (event) => {
+				let key = event.code;
 				if (!game.user.isTextInputActive()) {
-					switch (event.keyCode) {
-					case left:
-						if (game.skier.isStopped) {
+					if (game.skier.isStopped) {
+						if (key == 'KeyA' || key == 'ArrowLeft') {
 							game.skier.isSkatingLeft = true;
-						}
-						break;
-					case right:
-						if (game.skier.isStopped) {
+						} else if (key == 'KeyD' || key == 'ArrowRight') {
 							game.skier.isSkatingRight = true;
 						}
-						break;
 					}
 				}
 			});
 
 			document.addEventListener('keyup', (event) => {
-				switch (event.keyCode) {
-				case left:
+				let key = event.code;
+				if (key == 'KeyA' || key == 'ArrowLeft') {
 					game.skier.isSkatingLeft = false;
-					break;
-				case right:
+				} else if (key == 'KeyD' || key == 'ArrowRight') {
 					game.skier.isSkatingRight = false;
-					break;
-				case space:
+				} else if (key == 'Space') {
 					game.togglePause();
-					break;
-				case f2:
+				} else if (key == 'F2') {
 					game.restart();
-					break;
-				case c:
+				} else if (key == 'KeyC') {
 					if (!game.user.isTextInputActive()) game.user.chatButtonClickHandler();
-					break;
-				case h:
+				} else if (key == 'KeyH') {
 					if (!game.user.isTextInputActive()) {
 						game.hideHUD = !game.hideHUD;
 						if (game.hideHUD) {
@@ -113,7 +102,6 @@ export default class InputHandler {
 							if (!game.chat.isChatHidden) game.chat.showChat(true);
 						}
 					}
-					break;
 				}
 			});
 
