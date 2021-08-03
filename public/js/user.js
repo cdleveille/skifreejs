@@ -142,7 +142,7 @@ export default class User {
 						socket.emit('user-connected', this.userData.username);
 					}
 					this.isLoggedIn = true;
-					//this.refreshScoresFromDB();
+					this.refreshScoresFromDB();
 				}
 			}).catch(err => console.log(err));
 		} else {
@@ -181,14 +181,12 @@ export default class User {
 	}
 
 	refreshScoresFromDB() {
-		if (!this.isLoggedIn) return;
+		if (!this.isLoggedIn || !this.userData.username) return;
 		let headers = {
 			'Content-Type': 'application/json'
 		};
-		let body = {
-			username: this.userData.username
-		};
-		let method = 'GET', route = '/api/getuser';
+		let body = {};
+		let method = 'GET', route = '/api/getuser/' + this.userData.username;
 		this.game.util.request(method, route, headers, body).then(res => {
 			console.log(method, route, res);
 			if (res.ok) {

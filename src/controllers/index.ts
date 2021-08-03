@@ -85,9 +85,10 @@ app.post('/api/login', async (req: Request, res: Response, next: NextFunction): 
 	}
 });
 
-app.get('/api/getuser', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+app.get('/api/getuser/:username', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
 	try {
-		const user: IUser = await _User.GetUser(req.body.username);
+		const username = req.params.username;
+		const user: IUser = await _User.GetUser(username);
 
 		return res.status(200).send({
 			ok: true,
@@ -95,7 +96,8 @@ app.get('/api/getuser', async (req: Request, res: Response, next: NextFunction):
 			data: {
 				username: user.username,
 				score: user.score,
-				slalomScore: user.slalomScore
+				slalomScore: user.slalomScore,
+				lastUpdated: user.lastUpdated
 			}
 		} as IResponse);
 	} catch (error) {

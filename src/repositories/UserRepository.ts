@@ -52,7 +52,7 @@ class UserRepository extends Base {
 
 	public async GetUser(username: string): Promise<IUser> {
 		try {
-			const query: IUser = await User.findOne({ username: username }).lean();
+			const query: IUser = await User.findOne({ username: username, });
 			if (!query) throw Error('username not found');
 
 			return query;
