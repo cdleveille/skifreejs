@@ -85,6 +85,24 @@ app.post('/api/login', async (req: Request, res: Response, next: NextFunction): 
 	}
 });
 
+app.get('/api/getuser', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+	try {
+		const user: IUser = await _User.GetUser(req.body.username);
+
+		return res.status(200).send({
+			ok: true,
+			status: 200,
+			data: {
+				username: user.username,
+				score: user.score,
+				slalomScore: user.slalomScore
+			}
+		} as IResponse);
+	} catch (error) {
+		next(error);
+	}
+});
+
 app.post('/api/validate', validate, async (req: Request, res: Response): Promise<Response> => {
 	return res.status(200).send({
 		ok: true,

@@ -136,16 +136,13 @@ export default class User {
 				console.log(method, route, res);
 				if (res.ok) {
 					this.userData = res.data;
-					let slalomTimeHTML = '';
-					if (this.userData.slalomScore) slalomTimeHTML = ` &bull; ${this.game.util.timeToString((1000000000 - this.userData.slalomScore))}`;
-					this.loggedInUsername.innerHTML = `<div>${this.userData.username}</div><div id="logged-in-username-line-2">${this.userData.score + slalomTimeHTML}`;
-					this.loggedInUsername.innerHTML += '</div>';
-
+					this.updateScoreUI(this.userData);
 					this.profileImage.src = this.game.darkMode ? this.logged_in_inverted.src : this.logged_in.src;
 					if (!this.isLoggedIn) {
 						socket.emit('user-connected', this.userData.username);
 					}
 					this.isLoggedIn = true;
+					//this.refreshScoresFromDB();
 				}
 			}).catch(err => console.log(err));
 		} else {
@@ -153,30 +150,59 @@ export default class User {
 		}
 	}
 
+	updateScoreUI(userData) {
+		let slalomTimeHTML = '';
+		if (userData.slalomScore) slalomTimeHTML = ` &bull; ${this.game.util.timeToString((1000000000 - userData.slalomScore))}`;
+		this.loggedInUsername.innerHTML = `<div>${userData.username}</div><div id="logged-in-username-line-2">${userData.score + slalomTimeHTML}`;
+		this.loggedInUsername.innerHTML += '</div>';
+	}
+
+	logIn(username, password) {
+		let messages = [];
+		let headers = {
+			'Content-Type': 'application/json'
+		};
+		let body = {
+			username: username,
+			password: password
+		};
+		let method = 'POST', route = '/api/login';
+		this.game.util.request(method, route, headers, body).then(res => {
+			console.log(method, route, res);
+			if (res.ok) {
+				window.localStorage.setItem('loginToken', res.data.token);
+				this.validateLoginToken();
+				this.hideAll();
+			} else {
+				messages.push(res.data.replace(/error: /gi, ''));
+				this.signInError.innerText = messages.join('\n');
+			}
+		}).catch(err => console.log(err));
+	}
+
+	refreshScoresFromDB() {
+		if (!this.isLoggedIn) return;
+		let headers = {
+			'Content-Type': 'application/json'
+		};
+		let body = {
+			username: this.userData.username
+		};
+		let method = 'GET', route = '/api/getuser';
+		this.game.util.request(method, route, headers, body).then(res => {
+			console.log(method, route, res);
+			if (res.ok) {
+				this.updateScoreUI(res.data);
+			} else {
+				console.log(res.data);
+			}
+		}).catch(err => console.log(err));
+	}
+
 	createFormSubmitEventListeners() {
 		this.signInForm.addEventListener('submit', (e) => {
 			e.preventDefault();
-			let messages = [];
-
-			let headers = {
-				'Content-Type': 'application/json'
-			};
-			let body = {
-				username: this.signInUsername.value,
-				password: this.signInPassword.value
-			};
-			let method = 'POST', route = '/api/login';
-			this.game.util.request(method, route, headers, body).then(res => {
-				console.log(method, route, res);
-				if (res.ok) {
-					window.localStorage.setItem('loginToken', res.data.token);
-					this.validateLoginToken();
-					this.hideAll();
-				} else {
-					messages.push(res.data.replace(/error: /gi, ''));
-					this.signInError.innerText = messages.join('\n');
-				}
-			}).catch(err => console.log(err));
+			this.logIn(this.signInUsername.value, this.signInPassword.value);
 		});
 
 		this.registerForm.addEventListener('submit', (e) => {

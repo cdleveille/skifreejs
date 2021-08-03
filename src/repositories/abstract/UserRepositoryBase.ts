@@ -6,6 +6,7 @@ import { ILeaderBoard, INewPassword, INewUsername, INewEmail, INewProfile, IGetP
 export default abstract class UserRepositoryBase {
 	public abstract Register(user: IUser): Promise<IUser>;
 	public abstract Login(user: IUser): Promise<IUser>;
+	public abstract GetUser(username: string): Promise<IUser>;
 	public abstract UpdateScore(user: INewScore): Promise<IUser>;
 	public abstract UpdateScoreSlalom(user: INewScoreSlalom): Promise<IUser>;
 	public abstract LeaderBoard(limit: number): Promise<ILeaderBoard>;
