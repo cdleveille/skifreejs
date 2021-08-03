@@ -6,7 +6,7 @@ export default class User {
 		this.images = [];
 		this.leaderboardScoreCount = 10;
 		this.getHTMLElements();
-		this.validateLoginToken();
+		this.validateLoginToken(true);
 		this.createFormSubmitEventListeners();
 		this.createSocketEventListeners();
 		this.refreshLeaderboard(this.leaderboardScoreCount);
@@ -122,7 +122,7 @@ export default class User {
 	}
 
 	// authorize the current locally-stored login token with the server, which responds with user data
-	validateLoginToken() {
+	validateLoginToken(refreshScoresFromDB) {
 		let loginToken = window.localStorage.getItem('loginToken');
 
 		if (loginToken) {
@@ -136,13 +136,14 @@ export default class User {
 				console.log(method, route, res);
 				if (res.ok) {
 					this.userData = res.data;
-					this.updateScoreUI(this.userData);
+					if (!refreshScoresFromDB) this.updateScoreUI(res.data);
 					this.profileImage.src = this.game.darkMode ? this.logged_in_inverted.src : this.logged_in.src;
 					if (!this.isLoggedIn) {
 						socket.emit('user-connected', this.userData.username);
 					}
 					this.isLoggedIn = true;
-					this.refreshScoresFromDB();
+					// get latest scores from database (if user did not just log in or register, existing local login token could be outdated)
+					if (refreshScoresFromDB) this.refreshLoggedInUserScoresFromDB();
 				}
 			}).catch(err => console.log(err));
 		} else {
@@ -180,13 +181,16 @@ export default class User {
 		}).catch(err => console.log(err));
 	}
 
-	refreshScoresFromDB() {
-		if (!this.isLoggedIn || !this.userData.username) return;
+	refreshLoggedInUserScoresFromDB() {
+		if (this.isLoggedIn && this.userData.username) this.refreshUserScoresFromDB(this.userData.username);
+	}
+
+	refreshUserScoresFromDB(username) {
 		let headers = {
 			'Content-Type': 'application/json'
 		};
 		let body = {};
-		let method = 'GET', route = '/api/getuser/' + this.userData.username;
+		let method = 'GET', route = '/api/getuser/' + username;
 		this.game.util.request(method, route, headers, body).then(res => {
 			console.log(method, route, res);
 			if (res.ok) {
