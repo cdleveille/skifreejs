@@ -14,17 +14,20 @@ Languages/technologies used include:
 - bcrypt
 - MongoDB
 
-### Play live on Heroku:
+## Play
+
+### On Heroku
 [skifreejs.herokuapp.com](https://skifreejs.herokuapp.com/)
 
-### Play locally from source code:
+### Locally from source code
 1. Download or clone repository
 2. Install [Node.js](https://nodejs.org/en/)
 3. Install package dependencies: ```npm i```
 4. Start the game server: ```npm run start``` or ```npm run dev```
-5. Go to [http://localhost:3000](http://localhost:3000/) or launch the 'dev' debug configuration.
+5. Go to [http://localhost:3000](http://localhost:3000/) or launch the 'dev' debug configuration
 
-### PC Controls:
+## Controls
+### PC
 - While Skiing:
     - Move mouse: steer
     - Left click: jump
@@ -43,7 +46,7 @@ Languages/technologies used include:
     - H: show/hide HUD
     - C: show/hide chat
 
-### Gamepad Controls:
+### Gamepad
 Works with any gamepad - XInput controls shown for reference.
 - While Skiing:
     - Left analog stick: steer
@@ -58,7 +61,7 @@ Works with any gamepad - XInput controls shown for reference.
     - Button 9 (start): pause
     - Button 8 (back): restart
 
-### Mobile Controls:
+### Touchscreen
 - While Skiing:
     - Touch below skier: steer
     - Touch above skier: jump
@@ -70,7 +73,7 @@ Works with any gamepad - XInput controls shown for reference.
 
 ---
 
-### Package Credits:
+## Package Credits
 - [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
 - [body-parser](https://github.com/expressjs/body-parser)
 - [cluster](https://github.com/LearnBoost/cluster)
