@@ -52,6 +52,11 @@ export default class Yeti {
 			// update yeti position
 			this.x -= this.game.skier.xv * step - this.xv;
 			this.y -= this.game.skier.yv * step - this.yv;
+
+			// don't let the yeti fall too far behind the skier
+			if (this.y < -this.game.gameHeight / 3 - 40) {
+				this.y = -this.game.gameHeight / 3 - 40;
+			}
 		} else {
 			this.stop();
 			if (!this.game.skier.isEaten && this.isCollidingWithSkier()) {
@@ -66,7 +71,7 @@ export default class Yeti {
 		this.hasSpawned = true;
 		let side = this.game.util.randomInt(0, 2);
 		this.x = side == 0 ? this.game.gameWidth / 2 : -this.game.gameWidth / 2;
-		this.y = this.game.gameHeight / 2;
+		this.y = this.game.gameHeight * 0.6;
 	}
 
 	isCollidingWithSkier() {
