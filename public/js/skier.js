@@ -14,7 +14,6 @@ export default class Skier {
 			this.jumpGravity = 0.01;
 		}
 		this.enforceMaxSpeed = true;
-		this.skateV = 225;
 		this.accelX = 2;
 		this.accelY = 3;
 		this.decel = -2.75;
@@ -35,8 +34,6 @@ export default class Skier {
 		this.currentImage = this.skier_left;
 		this.currentJumpImage = this.skier_jump_left;
 		this.jumpStage = 1;
-		this.isSkatingLeft = false;
-		this.isSkatingRight = false;
 		this.xv = 0;
 		this.yv = 0;
 		this.jumpOffset = 0;
@@ -54,6 +51,8 @@ export default class Skier {
 		this.trick2Times = 0;
 		this.isAlive = true;
 		this.isEaten = false;
+		this.heading = 'left';
+		this.updateMouseAndVelocityInfo();
 	}
 
 	loadAssets() {
@@ -78,89 +77,221 @@ export default class Skier {
 		this.skier_trick2 = this.game.util.loadImage('/img/skier_trick2.png', this);
 	}
 
-	update(mouseAndVelocityInfo) {
+	updateSkierHeading(angle) {
+		// above skier
+		if ((angle < 90 && angle > -5) || angle == -90) {
+			return 'left';
+		} else if ((angle > 90 && angle < 180) || angle < -175) {
+			return 'right';
+		// below skier
+		} else {
+			if (angle < -5 && angle > -50) {
+				return 'left_down';
+			} else if (angle < -50 && angle > -75) {
+				return 'down_left';
+			} else if ((angle < -75 && angle > -105) || angle == 90) {
+				return 'down';
+			} else if (angle < -105 && angle > -130) {
+				return 'down_right';
+			} else if (angle < -130 && angle > -175) {
+				return 'right_down';
+			}
+		}
+	}
+
+	updateMouseAndVelocityInfo(gamepadInfo) {
+		this.mouseAndVelocityInfo = this.game.getMouseAndVelocityInfo(gamepadInfo);
+		this.mouseToSkierAngle = this.mouseAndVelocityInfo[0];
+		this.mouseAngleVectors = this.mouseAndVelocityInfo[1];
+		this.vVectors = this.mouseAndVelocityInfo[2];
+		this.heading = this.updateSkierHeading(this.mouseToSkierAngle);
+	}
+
+	leftKeyPressed() {
+		if (this.isCrashed) {
+			this.updateMousePosOnKeyPress(-50, -50);
+			this.game.skier.isCrashed = false;
+			this.game.style = 0;
+		} else {
+			if (this.heading == 'right') {
+				this.updateMousePosOnKeyPress(50, 14);
+			} else if (this.heading == 'right_down') {
+				this.updateMousePosOnKeyPress(32, 50);
+			} else if (this.heading == 'down_right') {
+				this.updateMousePosOnKeyPress(0, 50);
+			} else if (this.heading == 'down') {
+				this.updateMousePosOnKeyPress(-32, 50);
+			} else if (this.heading == 'down_left') {
+				this.updateMousePosOnKeyPress(-50, 14);
+			} else if (this.heading == 'left_down') {
+				this.updateMousePosOnKeyPress(-50, -50);
+			}
+		}
+		
+	}
+
+	rightKeyPressed() {
+		if (this.isCrashed) {
+			this.updateMousePosOnKeyPress(50, -50);
+			this.game.skier.isCrashed = false;
+			this.game.style = 0;
+			
+		} else {
+			if (this.heading == 'left') {
+				this.updateMousePosOnKeyPress(-50, 14);
+			} else if (this.heading == 'left_down') {
+				this.updateMousePosOnKeyPress(-32, 50);
+			} else if (this.heading == 'down_left') {
+				this.updateMousePosOnKeyPress(0, 50);
+			} else if (this.heading == 'down') {
+				this.updateMousePosOnKeyPress(32, 50);
+			} else if (this.heading == 'down_right') {
+				this.updateMousePosOnKeyPress(50, 14);
+			} else if (this.heading == 'right_down') {
+				this.updateMousePosOnKeyPress(50, -50);
+			}
+		}
+	}
+
+	downKeyPressed() {
+		if (this.isCrashed) {
+			this.isCrashed = false;
+			this.game.style = 0;
+		}
+		this.updateMousePosOnKeyPress(0, 50);
+	}
+
+	upKeyPressed() {
+		if (!this.isCrashed && this.isJumping) {
+			this.rotateJumpStage();
+		}
+	}
+
+	downLeftKeyPressed() {
+		if (this.isCrashed) {
+			this.game.skier.isCrashed = false;
+			this.game.style = 0;
+		}
+		this.updateMousePosOnKeyPress(-32, 50);
+	}
+
+	downRightKeyPressed() {
+		if (this.isCrashed) {
+			this.game.skier.isCrashed = false;
+			this.game.style = 0;
+		}
+		this.updateMousePosOnKeyPress(32, 50);
+	}
+
+	upLeftKeyPressed() {
+		if (this.isCrashed) {
+			this.game.skier.isCrashed = false;
+			this.game.style = 0;
+		}
+		this.updateMousePosOnKeyPress(-50, -50);
+	}
+
+	upRightKeyPressed() {
+		if (this.isCrashed) {
+			this.game.skier.isCrashed = false;
+			this.game.style = 0;
+		}
+		this.updateMousePosOnKeyPress(50, -50);
+	}
+
+	trick1KeyPressed() {
+		if (!this.trick1Disabled && !this.isCrashed && this.isJumping) {
+			this.isDoingTrick1 = true;
+			this.trick1Disabled = true;
+			this.trick1StartTime = this.game.util.timestamp();
+		}
+	}
+
+	upKeyReleased() {
+		if (!this.isCrashed) {
+			if (!this.isJumping) {
+				this.isJumping = true;
+				this.jumpV = this.jumpVInit;
+			}
+		} else if (this.isStopped) {
+			this.isCrashed = false;
+			this.game.style = 0;
+			this.updateMousePosOnKeyPress(-50, -50);
+		}
+		if (!this.isAlive && this.isEaten) {
+			this.game.restart();
+		}
+	}
+
+	trick1KeyReleased() {
+		this.isDoingTrick1 = false;
+		this.trick1EndTime = this.game.util.timestamp();
+	}
+
+	updateMousePosOnKeyPress(x, y) {
+		this.game.mousePos.x = this.x + 7 + x;
+		this.game.mousePos.y = this.y + 32 + y;
+		this.updateMouseAndVelocityInfo();
+	}
+
+	update(gamepadInfo) {
+		this.updateMouseAndVelocityInfo(gamepadInfo);
 		if (!this.isAlive) return;
 
-		this.currentSpeed = Math.sqrt(Math.pow(this.xv, 2) + Math.pow(this.yv, 2));
-		let mouseToSkierAngle = mouseAndVelocityInfo[0], mouseAngleVectors = mouseAndVelocityInfo[1], vVectors = mouseAndVelocityInfo[2];
-
-		// mouse up / left
-		if ((mouseToSkierAngle < 90 && mouseToSkierAngle > -5) || mouseToSkierAngle == -90) {
+		if (this.heading == 'left') {
 			if (this.isJumping) {
-				this.determineJumpImage(this.skier_jump_left, mouseToSkierAngle);
-			} else if (this.isSkatingLeft && !this.isCrashed) {
-				this.currentImage = this.skier_skate_left;
-				this.xv = -this.skateV;
-				this.isStopped = false;
-			} else if (this.isSkatingRight && !this.isCrashed) {
-				this.currentImage = this.skier_skate_right;
-				this.xv = this.skateV;
-				this.isStopped = false;
+				this.determineJumpImage(this.skier_jump_left, this.mouseToSkierAngle);
 			} else {
 				this.currentImage = this.skier_left;
-				this.decelerateToStop(vVectors);
+				this.decelerateToStop(this.vVectors);
 			}
-			// mouse up / right
-		} else if (mouseToSkierAngle < -175 || (mouseToSkierAngle > 90 && mouseToSkierAngle < 180)) {
+		} else if (this.heading == 'right') {
 			if (this.isJumping) {
-				this.determineJumpImage(this.skier_jump_right, mouseToSkierAngle);
-			} else if (this.isSkatingLeft && !this.isCrashed) {
-				this.currentImage = this.skier_skate_left;
-				this.xv = -this.skateV;
-				this.isStopped = false;
-			} else if (this.isSkatingRight && !this.isCrashed) {
-				this.currentImage = this.skier_skate_right;
-				this.xv = this.skateV;
-				this.isStopped = false;
+				this.determineJumpImage(this.skier_jump_right, this.mouseToSkierAngle);
 			} else {
 				this.currentImage = this.skier_right;
-				this.decelerateToStop(vVectors);
+				this.decelerateToStop(this.vVectors);
 			}
 		} else {
-			if (mouseToSkierAngle < -5 && mouseToSkierAngle > -50) {
+			if (this.heading == 'left_down') {
 				if (this.isJumping) {
-					this.determineJumpImage(this.skier_jump_left, mouseToSkierAngle);
+					this.determineJumpImage(this.skier_jump_left, this.mouseToSkierAngle);
 				} else {
 					this.currentImage = this.skier_left_down;
 				}
-			} else if (mouseToSkierAngle < -50 && mouseToSkierAngle > -75) {
+			} else if (this.heading == 'down_left') {
 				if (this.isJumping) {
-					this.determineJumpImage(this.skier_jump_left, mouseToSkierAngle);
+					this.determineJumpImage(this.skier_jump_left, this.mouseToSkierAngle);
 				} else {
 					this.currentImage = this.skier_down_left;
 				}
-			} else if (mouseToSkierAngle < -75 && mouseToSkierAngle > -105 || mouseToSkierAngle == 90) {
+			} else if (this.heading == 'down') {
 				if (this.isJumping) {
-					this.determineJumpImage(this.skier_jump_down, mouseToSkierAngle);
+					this.determineJumpImage(this.skier_jump_down, this.mouseToSkierAngle);
 				} else {
 					this.currentImage = this.skier_down;
 				}
-			} else if (mouseToSkierAngle < -105 && mouseToSkierAngle > -130) {
+			} else if (this.heading == 'down_right') {
 				if (this.isJumping) {
-					this.determineJumpImage(this.skier_jump_right, mouseToSkierAngle);
+					this.determineJumpImage(this.skier_jump_right, this.mouseToSkierAngle);
 				} else {
 					this.currentImage = this.skier_down_right;
 				}
-			} else if (mouseToSkierAngle < -130 && mouseToSkierAngle > -175) {
+			} else if (this.heading == 'right_down') {
 				if (this.isJumping) {
-					this.determineJumpImage(this.skier_jump_right, mouseToSkierAngle);
+					this.determineJumpImage(this.skier_jump_right, this.mouseToSkierAngle);
 				} else {
 					this.currentImage = this.skier_right_down;
 				}
 			}
 
-			if (!this.isStopped) {
-				this.isSkatingLeft = false;
-				this.isSkatingRight = false;
-			}
-
 			let xFlip = 1;
-			if (mouseToSkierAngle > -90 && mouseToSkierAngle < 0) {
+			if (this.mouseToSkierAngle > -90 && this.mouseToSkierAngle < 0) {
 				xFlip = -1;
 			}
 
-			let maxSpeedX = this.maxSpeed * mouseAngleVectors[0] * xFlip * .75;
-			let maxSpeedY = this.maxSpeed * mouseAngleVectors[1];
+			let maxSpeedX = this.maxSpeed * this.mouseAngleVectors[0] * xFlip * .75;
+			let maxSpeedY = this.maxSpeed * this.mouseAngleVectors[1];
 
 			if (!this.isJumping) {
 				this.maxSpeedXBeforeJump = maxSpeedX;
@@ -168,8 +299,8 @@ export default class Skier {
 
 				if (!this.isCrashed) {
 					this.isStopped = false;
-					this.xv += this.accelX * mouseAngleVectors[0];
-					this.yv += this.accelY * mouseAngleVectors[1];
+					this.xv += this.accelX * this.mouseAngleVectors[0];
+					this.yv += this.accelY * this.mouseAngleVectors[1];
 				}
 			} else {
 				maxSpeedX = this.maxSpeedXBeforeJump;
@@ -186,6 +317,8 @@ export default class Skier {
 					this.yv = maxSpeedY;
 				}
 			}
+
+			this.currentSpeed = Math.sqrt(Math.pow(this.xv, 2) + Math.pow(this.yv, 2));
 		}
 
 		// handle jumps
@@ -193,6 +326,7 @@ export default class Skier {
 			this.jumpOffset += this.jumpV;
 			this.jumpV -= this.jumpGravity;
 
+			// skier lands back on ground at the end of a jump
 			if (this.jumpOffset <= 0) {
 
 				// crash the skier if in the middle of a trick
@@ -243,7 +377,7 @@ export default class Skier {
 		if (this.isCrashed) {
 			this.currentImage = this.skier_falling;
 			if (!this.isJumping) {
-				this.decelerateToStop(vVectors);
+				this.decelerateToStop(this.vVectors);
 			}
 			if (this.isStopped) {
 				this.currentImage = this.skier_sit;
@@ -255,6 +389,7 @@ export default class Skier {
 
 	// decelerate the skier until stopped
 	decelerateToStop(vVectors) {
+		this.updateMouseAndVelocityInfo();
 		if (!this.isStopped && !this.isJumping) {
 			let xDecelAmt = this.decel * vVectors[0];
 			let yDecelAmt = this.decel * vVectors[1];
@@ -284,17 +419,17 @@ export default class Skier {
 		}
 	}
 
-	determineJumpImage(regular, mouseToSkierAngle) {
+	determineJumpImage(regular, angle) {
 		switch(this.jumpStage) {
 		case 1:
 			if (this.isDoingTrick1) {
-				if (mouseToSkierAngle >= -90 && mouseToSkierAngle < 90) {
+				if (angle >= -90 && angle < 90) {
 					this.currentImage = this.skier_trick1_left;
 				} else {
 					this.currentImage = this.skier_trick1_right;
 				}
 				this.isDoingTrick2 = false;
-			} else if (((mouseToSkierAngle > 20 && mouseToSkierAngle < 160 && mouseToSkierAngle != 90) || mouseToSkierAngle == -90) && !this.isStopped) {
+			} else if (((angle > 20 && angle < 160 && angle != 90) || angle == -90) && !this.isStopped) {
 				this.currentImage = this.skier_trick2;
 				if (!this.isDoingTrick2) {
 					this.isDoingTrick2 = true;

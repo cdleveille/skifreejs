@@ -18,6 +18,7 @@ export default class InputHandler {
 			canvas.addEventListener('mousemove', (event) => {
 				game.mousePos.x = event.clientX - ((window.innerWidth - canvas.width) / 2);
 				game.mousePos.y = event.clientY - ((window.innerHeight - canvas.height) / 2);
+				game.skier.updateMouseAndVelocityInfo();
 			});
 
 			canvas.addEventListener('mousedown', (event) => {
@@ -38,7 +39,7 @@ export default class InputHandler {
 
 			canvas.addEventListener('mouseup', (event) => {
 				if (!game.isPaused) {
-					if (event.button == 0) {
+					if (event.button == 0) { 
 						if (!game.skier.isCrashed) {
 							if (!game.skier.isJumping) {
 								game.skier.isJumping = true;
@@ -60,26 +61,34 @@ export default class InputHandler {
 
 			document.addEventListener('keydown', (event) => {
 				let key = event.code;
-				if (!game.user.isTextInputActive()) {
-					if (game.skier.isStopped) {
-						if (key == 'KeyA' || key == 'ArrowLeft') {
-							game.skier.isSkatingLeft = true;
-						} else if (key == 'KeyD' || key == 'ArrowRight') {
-							game.skier.isSkatingRight = true;
-						}
+				if (!event.repeat && !game.isPaused) {
+					if (key == 'ArrowDown' || key == 'KeyS' || key == 'Numpad2') {
+						if (!game.user.isTextInputActive()) game.skier.downKeyPressed();
+					} else if (key == 'ArrowLeft' || key == 'KeyA'  || key == 'Numpad4') {
+						if (!game.user.isTextInputActive()) game.skier.leftKeyPressed();
+					} else if (key == 'ArrowRight' || key == 'KeyD' || key == 'Numpad6') {
+						if (!game.user.isTextInputActive()) game.skier.rightKeyPressed();
+					} else if (key == 'ArrowUp' || key == 'KeyW' || key == 'Numpad8') {
+						if (!game.user.isTextInputActive()) game.skier.upKeyPressed();
+					} else if (key == 'ShiftLeft' || key == 'ControlRight' || key == 'Numpad0') {
+						if (!game.user.isTextInputActive()) game.skier.trick1KeyPressed();
+					} else if (key == 'Numpad1') {
+						if (!game.user.isTextInputActive()) game.skier.downLeftKeyPressed();
+					} else if (key == 'Numpad3') {
+						if (!game.user.isTextInputActive()) game.skier.downRightKeyPressed();
+					} else if (key == 'Numpad7') {
+						if (!game.user.isTextInputActive()) game.skier.upLeftKeyPressed();
+					} else if (key == 'Numpad9') {
+						if (!game.user.isTextInputActive()) game.skier.upRightKeyPressed();
 					}
 				}
 			});
 
 			document.addEventListener('keyup', (event) => {
 				let key = event.code;
-				if (key == 'KeyA' || key == 'ArrowLeft') {
-					game.skier.isSkatingLeft = false;
-				} else if (key == 'KeyD' || key == 'ArrowRight') {
-					game.skier.isSkatingRight = false;
-				} else if (key == 'Space') {
-					game.togglePause();
-				} else if (key == 'F2') {
+				if (key == 'Space') {
+					if (!game.user.isTextInputActive()) game.togglePause();
+				}else if (key == 'F2') {
 					game.restart();
 				} else if (key == 'KeyC') {
 					if (!game.user.isTextInputActive()) game.user.chatButtonClickHandler();
@@ -101,6 +110,13 @@ export default class InputHandler {
 							game.restartImg.style.display = 'block';
 							if (!game.chat.isChatHidden) game.chat.showChat(true);
 						}
+					}
+				}
+				if (!game.isPaused) {
+					if (key == 'ArrowUp' || key == 'KeyW' || key == 'Numpad8') {
+						if (!game.user.isTextInputActive()) game.skier.upKeyReleased();
+					} else if (key == 'ShiftLeft' || key == 'ControlRight' || key == 'Numpad0') {
+						if (!game.user.isTextInputActive()) game.skier.trick1KeyReleased();
 					}
 				}
 			});
@@ -169,6 +185,7 @@ export default class InputHandler {
 					if (touchY > game.skier.y) {
 						game.mousePos.x = touchX;
 						game.mousePos.y = touchY;
+						game.skier.updateMouseAndVelocityInfo();
 					}
 				}
 			});

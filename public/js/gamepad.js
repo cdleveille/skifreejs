@@ -3,9 +3,6 @@ export default class Gamepad {
 	constructor(game) {
 		this.game = game;
 		this.controllers = {};
-		this.jumpPressedLastFrame = false;
-		this.trick1PressedLastFrame = false;
-		this.pauseButtonPressedLastFrame = false;
 		this.deadzone = 0.35;
 		if ('GamepadEvent' in window) {
 			window.addEventListener('gamepadconnected', (e) => { this.connectHandler(e); });
@@ -60,6 +57,39 @@ export default class Gamepad {
 				this.trick1Pressed();
 			} else if (controller.buttons[1].value == 0 && this.trick1PressedLastFrame) {
 				this.trick1Released();
+			}
+
+			// d-pad up
+			if (controller.buttons[12].value == 1 && !this.dpadUpPressedLastFrame) {
+				this.dpadUpPressedLastFrame = true;
+				this.game.skier.upKeyPressed();
+			} else if (controller.buttons[12].value == 0 && this.dpadUpPressedLastFrame) {
+				this.dpadUpPressedLastFrame = false;
+				this.game.skier.upKeyReleased();
+			}
+
+			// d-pad down
+			if (controller.buttons[13].value == 1 && !this.dpadDownPressedLastFrame) {
+				this.dpadDownPressedLastFrame = true;
+				this.game.skier.downKeyPressed();
+			} else if (controller.buttons[13].value == 0 && this.dpadDownPressedLastFrame) {
+				this.dpadDownPressedLastFrame = false;
+			}
+
+			// d-pad left
+			if (controller.buttons[14].value == 1 && !this.dpadLeftPressedLastFrame) {
+				this.dpadLeftPressedLastFrame = true;
+				this.game.skier.leftKeyPressed();
+			} else if (controller.buttons[14].value == 0 && this.dpadLeftPressedLastFrame) {
+				this.dpadLeftPressedLastFrame = false;
+			}
+
+			// d-pad right
+			if (controller.buttons[15].value == 1 && !this.dpadRightPressedLastFrame) {
+				this.dpadRightPressedLastFrame = true;
+				this.game.skier.rightKeyPressed();
+			} else if (controller.buttons[15].value == 0 && this.dpadRightPressedLastFrame) {
+				this.dpadRightPressedLastFrame = false;
 			}
 		}
 

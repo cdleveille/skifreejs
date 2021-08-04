@@ -16,7 +16,7 @@ Languages/technologies used include:
 
 ## Play
 
-### On Heroku
+### Online on Heroku
 [skifreejs.herokuapp.com](https://skifreejs.herokuapp.com/)
 
 ### Locally from source code
@@ -27,49 +27,46 @@ Languages/technologies used include:
 5. Go to [http://localhost:3000](http://localhost:3000/) or launch the 'dev' debug configuration
 
 ## Controls
-### PC
+### Mouse & Keyboard
 - While Skiing:
-    - Move mouse: steer
-    - Left click: jump
-- While Stopped:
-    - A: skate left
-    - D: skate right
+    - Steer: move mouse / arrow keys / ASD / numpad
+    - Jump: left click / up arrow key / W / numpad 8
 - While Crashed:
-    - Left click: stand up
+    - Stand up: left click / WASD / arrow keys / numpad
 - While Jumping:
-    - Left click: advance backflip stage
-    - Right click (hold): trick 1
-    - Move mouse above skier: trick 2
+    - Advance backflip stage: left click / W key / up arrow / numpad 8
+    - Trick 1: right click / left shift / right ctrl / numpad 0 (hold)
+    - Trick 2: move mouse above skier
 - General:
-    - Spacebar: pause
-    - F2: restart
-    - H: show/hide HUD
-    - C: show/hide chat
+    - Pause: spacebar
+    - Restart: F2
+    - Show/hide HUD: H
+    - Show/hide chat: C
 
 ### Gamepad
 Works with any gamepad - XInput controls shown for reference.
 - While Skiing:
-    - Left analog stick: steer
-    - Button 0 (A): jump
+    - Steer: left analog stick / d-pad
+    - Jump: button 0 (A)
 - While Crashed:
-    - Button 0 (A): stand up
+    - Stand up: button 0 (A) / d-pad
 - While Jumping:
-    - Button 0 (A): advance backflip stage
-    - Button 1 (B): trick 1
-    - Left analog stick up: trick 2
+    - Advance backflip stage: button 0 (A) / d-pad up
+    - Trick 1: button 1 (B)
+    - Trick 2: left analog stick up
 - General:
-    - Button 9 (start): pause
-    - Button 8 (back): restart
+    - Pause: button 9 (start)
+    - Restart: button 8 (back)
 
 ### Touchscreen
 - While Skiing:
-    - Touch below skier: steer
-    - Touch above skier: jump
+    - Steer: touch below skier
+    - Jump: touch above skier
 - While Crashed:
-    - Touch below skier: stand up
+    - Stand up: touch below skier
 - While Jumping:
-    - Touch above skier: advance backflip stage
-    - Touch below skier (hold): trick 1
+    - Advance backflip stage: touch above skier
+    - Trick 1: touch below skier (hold)
 
 ---
 

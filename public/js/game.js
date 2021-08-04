@@ -50,6 +50,7 @@ export default class Game {
 
 	// initialize game settings and generate game objects for start of game
 	init() {
+		this.mousePos = {x: 0, y: 0};
 		this.gameWidth = Math.max(screen.width, window.innerWidth);
 		this.gameHeight = Math.max(screen.height, window.innerHeight);
 		this.skier.init();
@@ -58,7 +59,6 @@ export default class Game {
 		this.slalom.init();
 		this.isPaused = false;
 		this.yDist = 0;
-		this.mousePos = {x: 0, y: 0};
 		this.timestampFire = this.util.timestamp();
 		this.skierTrail = [];
 		this.currentTreeFireImg = this.tree_bare_fire1;
@@ -310,7 +310,7 @@ export default class Game {
 		let gamepadInfo = this.gamepad.update();
 		if (this.isPaused) return;
 		this.currentTime = now;
-		this.skier.update(this.getMouseAndVelocityInfo(gamepadInfo));
+		this.skier.update(gamepadInfo);
 		this.lift.update(step);
 		this.npcHandler.update(step);
 		this.yeti.update(step);
@@ -456,7 +456,7 @@ export default class Game {
 
 	// make the skier jump
 	jumpOnCollision() {
-		if (!this.game.skier.isCrashed && !this.game.skier.isSkatingLeft && !this.game.skier.isSkatingRight && !this.game.skier.isJumping) {
+		if (!this.game.skier.isCrashed && !this.game.skier.isJumping) {
 			let jumpV = this.game.skier.yv * this.game.jumpVMult + this.game.jumpVBase;
 			this.game.skier.jumpV = jumpV;
 			this.game.skier.isJumping = true;
