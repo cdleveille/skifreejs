@@ -146,8 +146,8 @@ export default class Gamepad {
 	}
 
 	jumpReleased() {
+		this.jumpPressedLastFrame = false;
 		if (this.game.skier.isAlive && !this.game.skier.isEaten) {
-			this.jumpPressedLastFrame = false;
 			if (!this.game.skier.isCrashed) {
 				if (!this.game.skier.isJumping) {
 					this.game.skier.isJumping = true;
