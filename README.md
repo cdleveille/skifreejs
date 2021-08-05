@@ -3,6 +3,8 @@ Fan remake of the classic PC game from Windows Entertainment Pack 3. Written in 
 
 Original SkiFree graphics/feel enhanced by modern PWA/SPA standards and open source technology stack. Features user login system, leaderboards, and chat box. Supports mouse, keyboard, gamepad, and touchscreen controls.
 
+Inspired by [the original](https://ski.ihoc.net/) by Chris Pirih.
+
 ![screenshot](https://user-images.githubusercontent.com/1410481/107723050-3be67380-6cae-11eb-9cf6-32e21a840cb4.png)
 
 Languages/technologies used include:
