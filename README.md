@@ -1,5 +1,7 @@
 # skifreejs
-Fan remake of the classic PC game from Windows Entertainment Pack 3, written in JavaScript/HTML5 Canvas backed by Node.js
+Fan remake of the classic PC game from Windows Entertainment Pack 3. Written in JavaScript/HTML5 Canvas backed by Node.js.
+
+Original SkiFree graphics/feel enhanced by modern PWA/SPA standards and open source software. Features user login system, leaderboards, and chat box. Supports mouse, keyboard, gamepad, and touchscreen controls.
 
 ![screenshot](https://user-images.githubusercontent.com/1410481/107723050-3be67380-6cae-11eb-9cf6-32e21a840cb4.png)
 
@@ -15,7 +17,6 @@ Languages/technologies used include:
 - MongoDB
 
 ## Play
-
 ### Online on Heroku
 [skifreejs.herokuapp.com](https://skifreejs.herokuapp.com/)
 
@@ -83,6 +84,7 @@ Works with any gamepad - XInput controls shown for reference.
 - [ejs](https://github.com/mde/ejs)
 - [eslint](https://github.com/eslint/eslint)
 - [express](https://github.com/expressjs/express)
+- [glob-parent](https://www.npmjs.com/package/glob-parent)
 - [helmet](https://github.com/helmetjs/helmet)
 - [http-server](https://github.com/http-party/http-server)
 - [javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator)
@@ -95,6 +97,7 @@ Works with any gamepad - XInput controls shown for reference.
 - [node](https://nodejs.org/en/)
 - [nodemailer](https://github.com/nodemailer/nodemailer)
 - [nodemon](https://github.com/remy/nodemon)
+- [npm](https://www.npmjs.com/package/npm)
 - [os](https://nodejs.org/api/os.html)
 - [path](https://github.com/jinder/path)
 - [response-time](https://github.com/expressjs/response-time)

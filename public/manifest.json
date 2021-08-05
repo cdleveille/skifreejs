@@ -1,7 +1,7 @@
 {
 	"name": "skifreejs",
 	"short_name": "skifreejs",
-	"description": "Fan remake of the classic PC game from Windows Entertainment Pack 3",
+	"description": "Fan remake of the classic PC game from Windows Entertainment Pack 3. Written in JavaScript/HTML5 Canvas backed by Node.js.",
 	"theme_color": "#317EFB",
 	"background_color": "#fff",
 	"display": "standalone",
