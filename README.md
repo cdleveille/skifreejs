@@ -1,7 +1,7 @@
 # skifreejs
 Fan remake of the classic PC game from Windows Entertainment Pack 3. Written in JavaScript/HTML5 Canvas backed by Node.js.
 
-Original SkiFree graphics/feel enhanced by modern PWA/SPA standards and open source software. Features user login system, leaderboards, and chat box. Supports mouse, keyboard, gamepad, and touchscreen controls.
+Original SkiFree graphics/feel enhanced by modern PWA/SPA standards and open source technology stack. Features user login system, leaderboards, and chat box. Supports mouse, keyboard, gamepad, and touchscreen controls.
 
 ![screenshot](https://user-images.githubusercontent.com/1410481/107723050-3be67380-6cae-11eb-9cf6-32e21a840cb4.png)
 
