@@ -17,7 +17,6 @@ Languages/technologies used include:
 - MongoDB
 
 ## Play
-### Online on Heroku
 [skifreejs.herokuapp.com](https://skifreejs.herokuapp.com/)
 
 ## Controls
