@@ -10,6 +10,7 @@ export default class Yeti {
 		this.jumpGravity = 0.004;
 	}
 
+	// initialize the yeti for a new run
 	init() {
 		this.hasSpawned = false;
 		this.xv = 0, this.yv = 0, this.jumpV = 0, this.jumpOffset = 0;
@@ -18,6 +19,7 @@ export default class Yeti {
 		this.isJumping = false;
 	}
 
+	// load yeti assets
 	loadAssets() {
 		this.yeti1 = this.game.util.loadImage('/img/yeti1.png', this);
 		this.yeti2 = this.game.util.loadImage('/img/yeti2.png', this);
@@ -34,6 +36,7 @@ export default class Yeti {
 		this.yeti_eat5 = this.game.util.loadImage('/img/yeti_eat5.png', this);
 	}
 
+	// update the state of the yeti
 	update(step) {
 		if (!this.hasSpawned && Math.ceil(this.game.yDist / 28.7514) > 1000) {
 			this.spawn();
@@ -67,6 +70,7 @@ export default class Yeti {
 		}
 	}
 
+	// spawn the yeti on the game canvas
 	spawn() {
 		this.hasSpawned = true;
 		let side = this.game.util.randomInt(0, 2);
@@ -88,6 +92,7 @@ export default class Yeti {
 		this.yv = yetiToSkierInfo.diffVector.y * this.speed;
 	}
 
+	// find the proper image to use for the yeti based on the direction he is running in
 	setRunImg(pursuitAngle) {
 		// set images to alternate between based on pursuit angle
 		if (pursuitAngle < -90) {
@@ -109,6 +114,7 @@ export default class Yeti {
 		}
 	}
 
+	// return info about the angle between the yeti and skier
 	getYetiToSkierAngleInfo() {
 		let diffX = this.x;
 		let diffY = this.y;
@@ -174,6 +180,7 @@ export default class Yeti {
 		}
 	}
 
+	// after eating the skier, proceed to jump in place and further intimidate the human player
 	intimidate() {
 		let now = this.game.util.timestamp();
 		if (!this.isJumping && (!this.timeOfLastJump || now - this.timeOfLastJump >= this.timeUntilNextJump)) {
@@ -202,6 +209,7 @@ export default class Yeti {
 		this.timeUntilNextJump = this.game.util.randomInt(250, 1500);
 	}
 
+	// render the current state of the yeti
 	draw(ctx) {
 		if (!this.hasSpawned) return;
 		ctx.drawImage(this.currentImg, Math.floor(this.game.skier.x + this.x), Math.floor(this.game.skier.y + this.y - this.jumpOffset));

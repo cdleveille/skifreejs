@@ -151,6 +151,7 @@ export default class User {
 		}
 	}
 
+	// update the best freestyle score and slalom time shown in the user menu
 	updateScoreUI(userData) {
 		let slalomTimeHTML = '';
 		if (userData.slalomScore) slalomTimeHTML = ` &bull; ${this.game.util.timeToString((1000000000 - userData.slalomScore))}`;
@@ -158,6 +159,8 @@ export default class User {
 		this.loggedInUsername.innerHTML += '</div>';
 	}
 
+	// authenticate the username and password the user typed in with the database
+	// if valid, respond with a login token to be stored locally in the browser
 	logIn(username, password) {
 		let messages = [];
 		let headers = {
@@ -181,10 +184,12 @@ export default class User {
 		}).catch(err => console.log(err));
 	}
 
+	// get the best freestyle and slalom score for the logged in user from the database
 	refreshLoggedInUserScoresFromDB() {
 		if (this.isLoggedIn && this.userData.username) this.refreshUserScoresFromDB(this.userData.username);
 	}
 
+	// get the best freestyle and slalom score for a given user from the database
 	refreshUserScoresFromDB(username) {
 		let headers = {
 			'Content-Type': 'application/json'
@@ -201,6 +206,7 @@ export default class User {
 		}).catch(err => console.log(err));
 	}
 
+	// set up submit event listeners for various forms on the user menu ui
 	createFormSubmitEventListeners() {
 		this.signInForm.addEventListener('submit', (e) => {
 			e.preventDefault();
@@ -409,6 +415,7 @@ export default class User {
 		});
 	}
 
+	// set up socket event listeners 
 	createSocketEventListeners() {
 		socket.on('get-active-users', users => {
 			let usernames = Object.values(users);
@@ -564,6 +571,7 @@ export default class User {
 		}
 	}
 
+	// get the top freestyle and slalom scores from the database
 	refreshLeaderboard(numToRetrieve) {
 		let htmlFreestyle = '', htmlSlalom = '';
 		let headers = {
