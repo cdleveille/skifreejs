@@ -3,7 +3,7 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"module": "commonjs",
-		"target": "esnext",
+		"target": "ESNext",
 		"esModuleInterop": true,
 		"noImplicitAny": true,
 		"moduleResolution": "node",
