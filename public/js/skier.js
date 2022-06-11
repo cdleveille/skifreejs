@@ -163,8 +163,6 @@ export default class Skier {
 					this.yv = maxSpeedY;
 				}
 			}
-
-			this.currentSpeed = Math.sqrt(Math.pow(this.xv, 2) + Math.pow(this.yv, 2));
 		}
 
 		// handle jumps
@@ -264,6 +262,7 @@ export default class Skier {
 		this.mouseAngleVectors = this.mouseAndVelocityInfo[1];
 		this.vVectors = this.mouseAndVelocityInfo[2];
 		this.heading = this.getSkierHeading(this.mouseToSkierAngle);
+		this.calculateCurrentSpeed();
 	}
 
 	leftKeyPressed() {
@@ -415,6 +414,10 @@ export default class Skier {
 				this.isStopped = true;
 			}
 		}
+	}
+
+	calculateCurrentSpeed() {
+		this.currentSpeed = Math.sqrt(Math.pow(this.xv, 2) + Math.pow(this.yv, 2));
 	}
 
 	// move between jump/backflip stages
