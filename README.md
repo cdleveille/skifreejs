@@ -19,7 +19,7 @@ Languages/technologies used include:
 - MongoDB
 
 ## Play
-[skifreejs.herokuapp.com](https://skifreejs.herokuapp.com/)
+[skifreejs.fly.dev](https://skifreejs.fly.dev/)
 
 ## Controls
 ### Mouse & Keyboard
